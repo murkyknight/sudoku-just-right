@@ -1,0 +1,16 @@
+.container {
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-board-container {
+  max-width: 593px;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  border: 5px solid black;
+  /* box-sizing: border-box; */
+}

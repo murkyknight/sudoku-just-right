@@ -11,6 +11,6 @@ describe('App component', () => {
     render(<App />)
     const button = screen.getByRole('button', { name: /count is 0/i })
     fireEvent.click(button)
-    expect(button).toHaveTextContent(/count is 1/i)     
+    expect(button).toHaveTextContent(/count is 1/i)
   })
 })

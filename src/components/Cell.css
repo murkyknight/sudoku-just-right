@@ -1,0 +1,39 @@
+.cell {
+  width: 65px;
+  height: 65px;
+  /* border: 1px solid rgb(69, 69, 69); */
+  /* border: 1px solid rgb(0, 74, 83); */
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  /* box-sizing: border-box; */
+}
+
+.cell-candidate-container {
+  display: flex;
+  gap: 0px 5px;
+}
+
+.cell-candidate {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  cursor: pointer;
+  width: 21px;
+  height: 21px;
+  content-visibility: hidden;
+  color: #828282;
+  /* background-color: lightgreen; */
+}
+
+.light-bg {
+  background-color: #414141;
+}
+
+.dark-bg {
+  background-color: #333333;
+}
+
+.active {
+  content-visibility: visible;
+}

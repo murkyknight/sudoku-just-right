@@ -1,0 +1,24 @@
+.house-container {
+  width: 195px;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  /* box-sizing: border-box; */
+}
+
+.house-cell-container {
+  display: flex;
+}
+
+.border-left-thick-1 {
+  border-right: 4px solid black;
+}
+
+.border-right-thick-1 {
+  border-right: 4px solid black;
+}
+
+.border-bottom-thick-1 {
+  border-bottom: 4px solid black;
+}
