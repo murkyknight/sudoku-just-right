@@ -13,7 +13,7 @@ const meta = {
   },
 } satisfies Meta<typeof Cell>
 
-type Canvas = unknown
+type Canvas = ReturnType<typeof within>
 
 const getCandidateButton = (canvas: Canvas, candidate: number) =>
   canvas.getByRole('button', { name: `candidate-${candidate}` })
