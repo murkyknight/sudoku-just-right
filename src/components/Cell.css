@@ -1,29 +1,28 @@
 .cell {
   width: 65px;
   height: 65px;
-  /* border: 1px solid rgb(69, 69, 69); */
-  /* border: 1px solid rgb(0, 74, 83); */
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  /* box-sizing: border-box; */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 3px 5px;
+  background-color: #414141; /* for testing, TODO: need to make dynamic through config */
 }
 
-.cell-candidate-container {
-  display: flex;
-  gap: 0px 5px;
-}
-
-.cell-candidate {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+.cell .candidate {
   cursor: pointer;
-  width: 21px;
-  height: 21px;
-  content-visibility: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #828282;
-  /* background-color: lightgreen; */
+  /* remove default button css */
+  padding: 0;
+  border: none;
+  font: inherit;
+  background-color: inherit;
+  outline: inherit;
+  /* background-color: lightgreen; */ /* for testing */
 }
 
 .light-bg {
@@ -34,6 +33,3 @@
   background-color: #333333;
 }
 
-.active {
-  content-visibility: visible;
-}
