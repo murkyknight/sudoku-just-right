@@ -25,6 +25,11 @@
   /* background-color: lightgreen; */ /* for testing */
 }
 
+.cell .candidate.highlight {
+  font-weight: 600;
+  color: aqua;
+}
+
 .light-bg {
   background-color: #414141;
 }

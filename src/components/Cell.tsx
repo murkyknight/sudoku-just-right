@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 import './Cell.css'
 
 // TODO: Add value prop for testing - we probs will use zustard or some other state managment
@@ -27,29 +27,37 @@ const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export default function Cell({ additionalClasses }: CellProps) {
   const [candidatesMask, setCandidatesMask] = useState(0)
+  const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   // TODO: Do we need CellCandidate component to avoid dupe onClick logic?
   //  - number
   //  - isSelected
   //  - onClick - handles inital selection, highliting and striking
 
-  const handleUpdate = (candidate: number) => {
+  const handleUpdate = (event: MouseEvent<HTMLButtonElement>, candidate: number) => {
+    if (event.metaKey) {
+      setCandidatesHighlightMask((prevMask) => updateMask(candidate, prevMask))
+    }
     setCandidatesMask((prevMask) => updateMask(candidate, prevMask))
   }
 
   // TODO: rmeove me
   console.log('%c[CELL RENDER]', 'color: cyan;', 'mask:', candidatesMask.toString(2))
+  console.log('%c[CELL RENDER]', 'color: cyan;', 'highlight mask:', candidatesHighlightMask.toString(2))
 
   return (
     <div className={`cell ${additionalClasses}`}>
       {CANDIDATES.map((candidate) => {
         const isActive = isCandidateActive(candidate, candidatesMask)
+        const isHighlightActive = isCandidateActive(candidate, candidatesHighlightMask)
+
+        const highlight = isHighlightActive ? 'highlight' : ''
 
         return (
           <button
             aria-label={`candidate-${candidate}`}
-            className="candidate"
+            className={`candidate ${highlight}`}
             key={candidate}
-            onClick={() => handleUpdate(candidate)}
+            onClick={(event: MouseEvent<HTMLButtonElement>) => handleUpdate(event, candidate)}
             type="button"
           >
             {isActive && <div>{candidate}</div>}
