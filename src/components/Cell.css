@@ -22,12 +22,12 @@
   font: inherit;
   background-color: inherit;
   outline: inherit;
-  /* background-color: lightgreen; */ /* for testing */
 }
 
 .cell .candidate.highlight {
   font-weight: 600;
   color: aqua;
+  /* color: #8383ef; << Nice purple but hard to see with dark mode*/
 }
 
 .light-bg {

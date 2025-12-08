@@ -18,6 +18,14 @@ const updateMask = (candidate: number, currentMask: number): number => {
   return currentMask | mask
 }
 
+const removeItemFromMask = (candidate: number, currentMask: number): number => {
+  const mask = 1 << (candidate - 1)
+  if (isCandidateActive(candidate, currentMask)) {
+    return currentMask ^ mask
+  }
+  return currentMask
+}
+
 const isCandidateActive = (candidate: number, currentMask: number): boolean => {
   const mask = 1 << (candidate - 1)
   return (currentMask & mask) !== 0
@@ -33,11 +41,22 @@ export default function Cell({ additionalClasses }: CellProps) {
   //  - isSelected
   //  - onClick - handles inital selection, highliting and striking
 
+  // TODO; how can we use stable function refs?
   const handleUpdate = (event: MouseEvent<HTMLButtonElement>, candidate: number) => {
     if (event.metaKey) {
+      // could also double click?`
       setCandidatesHighlightMask((prevMask) => updateMask(candidate, prevMask))
     }
     setCandidatesMask((prevMask) => updateMask(candidate, prevMask))
+  }
+
+  // TODO: merge functions
+  const handleCandidateRemoval = (event: MouseEvent<HTMLButtonElement>, candidate: number) => {
+    if (event.ctrlKey) {
+      event.preventDefault() // prevents opening right click menu
+      setCandidatesMask((prevMask) => removeItemFromMask(candidate, prevMask))
+      setCandidatesHighlightMask((prevMask) => removeItemFromMask(candidate, prevMask))
+    }
   }
 
   // TODO: rmeove me
@@ -47,6 +66,7 @@ export default function Cell({ additionalClasses }: CellProps) {
   return (
     <div className={`cell ${additionalClasses}`}>
       {CANDIDATES.map((candidate) => {
+        // TODO: nail down terminology for "Active", "highlighted" early so we don't have diff vocab
         const isActive = isCandidateActive(candidate, candidatesMask)
         const isHighlightActive = isCandidateActive(candidate, candidatesHighlightMask)
 
@@ -58,6 +78,7 @@ export default function Cell({ additionalClasses }: CellProps) {
             className={`candidate ${highlight}`}
             key={candidate}
             onClick={(event: MouseEvent<HTMLButtonElement>) => handleUpdate(event, candidate)}
+            onContextMenu={(event: MouseEvent<HTMLButtonElement>) => handleCandidateRemoval(event, candidate)}
             type="button"
           >
             {isActive && <div>{candidate}</div>}
