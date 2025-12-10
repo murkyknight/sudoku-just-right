@@ -35,6 +35,7 @@ export default function Cell({ additionalClasses }: CellProps) {
   const [candidatesMask, setCandidatesMask] = useState(0)
   const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   // TODO: Do we need CellCandidate component to avoid dupe onClick logic?
+  // Yes, will clena up return and also make it easier to test
   //  - number
   //  - isSelected
   //  - onClick - handles inital selection, highliting and striking
