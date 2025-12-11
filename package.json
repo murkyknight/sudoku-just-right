@@ -13,6 +13,7 @@
     "test:ui": "vitest --ui",
     "test:watch": "vitest --watch",
     "storybook": "storybook dev -p 6006",
+    "test-storybook": "vitest --project=storybook",
     "build-storybook": "storybook build"
   },
   "dependencies": {
