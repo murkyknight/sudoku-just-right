@@ -43,22 +43,24 @@ export default function Cell({ additionalClasses }: CellProps) {
 
   // TODO: create handleHighlight, handleStrike, handleSelection to DRY up handleUpdate
 
-  const handleUpdate = useCallback((event: MouseEvent<HTMLButtonElement>, candidate: number) => {
-    // TODO: DRY up
-    if (event.ctrlKey) {
-      // could also double click?`
-      event.preventDefault() // prevents opening right click menu
-      setCandidatesHighlightMask((prevMask) => addBitToMask(candidate, prevMask))
-      setCandidatesMask((prevMask) => addBitToMask(candidate, prevMask))
-    } else if (event.shiftKey && event.metaKey && isCandidateActive(candidate, candidatesMask)) {
-      setCandidatesStrikedMask((prevStrikedMask) => addBitToMask(candidate, prevStrikedMask))
-      setCandidatesHighlightMask((prevMask) => removeItemFromMask(candidate, prevMask))
-    } else if (event.metaKey) {
-      setCandidatesMask((prevMask) => removeItemFromMask(candidate, prevMask))
-      setCandidatesHighlightMask((prevMask) => removeItemFromMask(candidate, prevMask))
-      setCandidatesStrikedMask((prevStrikedMask) => removeItemFromMask(candidate, prevStrikedMask))
-    } else {
-      setCandidatesMask((prevMask) => addBitToMask(candidate, prevMask))
+  // TODO: DRY up
+  const handleUpdate = useCallback((candidate: number) => {
+    return (event: MouseEvent<HTMLButtonElement>) => {
+      if (event.ctrlKey) {
+        // could also double click?`
+        event.preventDefault() // prevents opening right click menu
+        setCandidatesHighlightMask((prevMask) => addBitToMask(candidate, prevMask))
+        setCandidatesMask((prevMask) => addBitToMask(candidate, prevMask))
+      } else if (event.shiftKey && event.metaKey && isCandidateActive(candidate, candidatesMask)) {
+        setCandidatesStrikedMask((prevStrikedMask) => addBitToMask(candidate, prevStrikedMask))
+        setCandidatesHighlightMask((prevMask) => removeItemFromMask(candidate, prevMask))
+      } else if (event.metaKey) {
+        setCandidatesMask((prevMask) => removeItemFromMask(candidate, prevMask))
+        setCandidatesHighlightMask((prevMask) => removeItemFromMask(candidate, prevMask))
+        setCandidatesStrikedMask((prevStrikedMask) => removeItemFromMask(candidate, prevStrikedMask))
+      } else {
+        setCandidatesMask((prevMask) => addBitToMask(candidate, prevMask))
+      }
     }
   }, [candidatesMask])
 
@@ -83,8 +85,8 @@ export default function Cell({ additionalClasses }: CellProps) {
             aria-label={`candidate-${candidate}`}
             className={`candidate ${styles}`}
             key={candidate}
-            onClick={(event: MouseEvent<HTMLButtonElement>) => handleUpdate(event, candidate)}
-            onContextMenu={(event: MouseEvent<HTMLButtonElement>) => handleUpdate(event, candidate)}
+            onClick={handleUpdate(candidate)}
+            onContextMenu={handleUpdate(candidate)}
             type="button"
           >
             <div>
