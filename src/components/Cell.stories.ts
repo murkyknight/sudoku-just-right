@@ -78,3 +78,46 @@ export const CanRemoveCellCandidates: Story = {
     await userEvent.keyboard('{/Meta}')
   },
 }
+
+export const CanStrikeCellCandidates: Story = {
+  play: async ({ canvasElement, userEvent }) => {
+    const canvas = within(canvasElement)
+
+    for (let candidate = 1; candidate <= 9; candidate++) {
+      const candidateBtn = getCandidateButton(canvas, candidate)
+      await userEvent.click(candidateBtn)
+
+      await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    }
+
+    await userEvent.keyboard('{Meta>}{Shift>}')
+    for (let candidate = 1; candidate <= 9; candidate++) {
+      const candidateBtn = getCandidateButton(canvas, candidate)
+      await userEvent.click(candidateBtn)
+
+      await expect(candidateBtn).toHaveTextContent(candidate.toString())
+      const strikedSvg = within(candidateBtn).getByTitle('striked')
+      await expect(strikedSvg).toBeInTheDocument()
+      await expect(candidateBtn).toHaveClass('muted')
+    }
+    await userEvent.keyboard('{/Meta}{/Shift}')
+  },
+}
+
+export const CanNotStrikeNonExistantCandidate: Story = {
+  play: async ({ canvasElement, userEvent }) => {
+    const canvas = within(canvasElement)
+    const candidate = 1
+
+    await userEvent.keyboard('{Meta>}{Shift>}')
+
+    const candidateBtn = getCandidateButton(canvas, candidate)
+    await userEvent.click(candidateBtn)
+
+    await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
+    const strikedSvg = within(candidateBtn).queryByTitle('striked')
+    await expect(strikedSvg).not.toBeInTheDocument()
+
+    await userEvent.keyboard('{/Meta}{/Shift}')
+  },
+}

@@ -15,7 +15,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #828282;
+  color: #929292;
+  position: relative;
   /* remove default button css */
   padding: 0;
   border: none;
@@ -28,6 +29,17 @@
   font-weight: 600;
   color: aqua;
   /* color: #8383ef; << Nice purple but hard to see with dark mode*/
+}
+
+.cell .candidate.muted {
+  color: #6f6f6f;
+}
+
+.cell .candidate .striked {
+  position: absolute;
+  right: 0px;
+  stroke-width: 2px;
+  stroke: rgb(143, 62, 89);
 }
 
 .light-bg {
