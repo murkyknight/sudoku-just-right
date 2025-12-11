@@ -1,4 +1,4 @@
-import { useCallback, useState, type MouseEvent } from 'react'
+import { useCallback, useState, type JSX, type MouseEvent } from 'react'
 import './Cell.css'
 
 // type CellProps = {
@@ -31,7 +31,7 @@ const isCandidateActive = (candidate: number, currentMask: number): boolean => {
 
 const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-export default function Cell({ additionalClasses }: CellProps) {
+export default function Cell({ additionalClasses }: CellProps): JSX.Element {
   const [candidatesMask, setCandidatesMask] = useState(0)
   const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   const [candidatesStrikedMask, setCandidatesStrikedMask] = useState(0)
@@ -90,20 +90,7 @@ export default function Cell({ additionalClasses }: CellProps) {
             type="button"
           >
             <div>
-              {isStrikedActive &&
-                <div className="striked">
-                  <svg height="100%" preserveAspectRatio="none" viewBox="0 0 100 100" width="70%">
-                    <title>striked</title>
-                    <line
-                      vector-effect="non-scaling-stroke"
-                      x1="0"
-                      x2="100"
-                      y1="100"
-                      y2="0"
-                    />
-                  </svg>
-                </div>
-              }
+              {isStrikedActive && <StrikedLine />}
               {isActive && <div>{candidate}</div>}
             </div>
           </button>
