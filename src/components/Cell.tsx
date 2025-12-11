@@ -56,6 +56,7 @@ export default function Cell({ additionalClasses }: CellProps) {
     } else if (event.metaKey) {
       setCandidatesMask((prevMask) => removeItemFromMask(candidate, prevMask))
       setCandidatesHighlightMask((prevMask) => removeItemFromMask(candidate, prevMask))
+      setCandidatesStrikedMask((prevStrikedMask) => removeItemFromMask(candidate, prevStrikedMask))
     } else {
       setCandidatesMask((prevMask) => addBitToMask(candidate, prevMask))
     }

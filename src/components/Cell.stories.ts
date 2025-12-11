@@ -121,3 +121,32 @@ export const CanNotStrikeNonExistantCandidate: Story = {
     await userEvent.keyboard('{/Meta}{/Shift}')
   },
 }
+
+export const CanRemoveStrikedCandidate: Story = {
+  play: async ({ canvasElement, userEvent }) => {
+    const canvas = within(canvasElement)
+    const candidate = 1
+
+    // Click candidate 1
+    const candidateBtn = getCandidateButton(canvas, candidate)
+    await userEvent.click(candidateBtn)
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+
+    // Strike candidate 1
+    await userEvent.keyboard('{Meta>}{Shift>}')
+    await userEvent.click(candidateBtn)
+    await userEvent.keyboard('{/Meta}{/Shift}')
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    const strikedSvg = within(candidateBtn).getByTitle('striked')
+    await expect(strikedSvg).toBeInTheDocument()
+    await expect(candidateBtn).toHaveClass('muted')
+
+    // remove candidate 1
+    await userEvent.keyboard('{Meta>}')
+    await userEvent.click(candidateBtn)
+    await userEvent.keyboard('{/Meta}')
+    await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
+    const maybeStrikedSvg = within(candidateBtn).queryByTitle('striked')
+    await expect(maybeStrikedSvg).not.toBeInTheDocument()
+  },
+}
