@@ -41,25 +41,31 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
   //  - isSelected
   //  - onClick - handles inital selection, highliting and striking
 
-  // TODO: create handleHighlight, handleStrike, handleSelection to DRY up handleUpdate
 
   // TODO: DRY up
   const handleUpdate = useCallback((candidate: number) => {
     return (event: MouseEvent<HTMLButtonElement>) => {
-      if (event.ctrlKey) {
+      const isHighlightKeyCombo = event.ctrlKey
+      const isStrikedKeyCombo = event.shiftKey && event.metaKey
+      const isRemoveKeyCombo = event.metaKey
+
+      if (isHighlightKeyCombo) {
         // could also double click?`
-        event.preventDefault() // prevents opening right click menu
-        setCandidatesHighlightMask((prevMask) => addBitToMask(candidate, prevMask))
-        setCandidatesMask((prevMask) => addBitToMask(candidate, prevMask))
-      } else if (event.shiftKey && event.metaKey && isCandidateActive(candidate, candidatesMask)) {
+        event.preventDefault() // prevent opening right click menu
+        setCandidatesHighlightMask((prevHighlightMask) => addBitToMask(candidate, prevHighlightMask))
+        setCandidatesMask((prevCandidatesMask) => addBitToMask(candidate, prevCandidatesMask))
+
+      } else if (isStrikedKeyCombo && isCandidateActive(candidate, candidatesMask)) {
         setCandidatesStrikedMask((prevStrikedMask) => addBitToMask(candidate, prevStrikedMask))
-        setCandidatesHighlightMask((prevMask) => removeItemFromMask(candidate, prevMask))
-      } else if (event.metaKey) {
-        setCandidatesMask((prevMask) => removeItemFromMask(candidate, prevMask))
-        setCandidatesHighlightMask((prevMask) => removeItemFromMask(candidate, prevMask))
+        setCandidatesHighlightMask((prevHighlightMask) => removeItemFromMask(candidate, prevHighlightMask))
+
+      } else if (isRemoveKeyCombo) {
+        setCandidatesMask((prevCandidatesMask) => removeItemFromMask(candidate, prevCandidatesMask))
+        setCandidatesHighlightMask((prevHighlightMask) => removeItemFromMask(candidate, prevHighlightMask))
         setCandidatesStrikedMask((prevStrikedMask) => removeItemFromMask(candidate, prevStrikedMask))
+
       } else {
-        setCandidatesMask((prevMask) => addBitToMask(candidate, prevMask))
+        setCandidatesMask((prevCandidatesMask) => addBitToMask(candidate, prevCandidatesMask))
       }
     }
   }, [candidatesMask])
