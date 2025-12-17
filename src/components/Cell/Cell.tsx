@@ -1,5 +1,6 @@
 import { useCallback, useState, type JSX, type MouseEvent } from 'react'
 import './Cell.css'
+import Candidate from './Candidate'
 
 // type CellProps = {
 //     position: [] // maybe like [[1,1], [1,2]] (2D array value)? Update: Na, we'll use static indexcies
@@ -35,14 +36,7 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
   const [candidatesMask, setCandidatesMask] = useState(0)
   const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   const [candidatesStrikedMask, setCandidatesStrikedMask] = useState(0)
-  // TODO: Do we need CellCandidate component to avoid dupe onClick logic?
-  // Yes, will clena up return and also make it easier to test
-  //  - number
-  //  - isSelected
-  //  - onClick - handles inital selection, highliting and striking
 
-
-  // TODO: DRY up
   const handleUpdate = useCallback((candidate: number) => {
     return (event: MouseEvent<HTMLButtonElement>) => {
       const isHighlightKeyCombo = event.ctrlKey
@@ -70,11 +64,6 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
     }
   }, [candidatesMask])
 
-  // TODO: rmeove me
-  console.log('%c[CELL RENDER]', 'color: blue;', 'mask:', candidatesMask.toString(2))
-  console.log('%c[CELL RENDER]', 'color: green;', 'highlight mask:', candidatesHighlightMask.toString(2))
-  console.log('%c[CELL RENDER]', 'color: green;', 'striked mask:', candidatesStrikedMask.toString(2))
-
   return (
     <div className={`cell ${additionalClasses}`}>
       {CANDIDATES.map((candidate) => {
@@ -82,41 +71,17 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
         const isHighlightActive = isCandidateActive(candidate, candidatesHighlightMask)
         const isStrikedActive = isCandidateActive(candidate, candidatesStrikedMask)
 
-        const highlight = isHighlightActive ? 'highlight ' : ''
-        const muted = isStrikedActive ? 'muted ' : ''
-        const styles = highlight.concat(muted)
-
         return (
-          <button
-            aria-label={`candidate-${candidate}`}
-            className={`candidate ${styles}`}
+          <Candidate
+            candidate={candidate}
+            isActive={isActive}
+            isHighlighted={isHighlightActive}
+            isStriked={isStrikedActive}
             key={candidate}
             onClick={handleUpdate(candidate)}
-            onContextMenu={handleUpdate(candidate)}
-            type="button"
-          >
-            <div>
-              {isStrikedActive && <StrikedLine />}
-              {isActive && <div>{candidate}</div>}
-            </div>
-          </button>
+          />
         )
       })}
     </div>
   )
 }
-
-function StrikedLine(): JSX.Element {
-  return <div className="striked">
-    <svg height="100%" preserveAspectRatio="none" viewBox="0 0 100 100" width="70%">
-      <title>striked</title>
-      <line
-        vector-effect="non-scaling-stroke"
-        x1="0"
-        x2="100"
-        y1="100"
-        y2="0" />
-    </svg>
-  </div>
-}
-
