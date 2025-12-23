@@ -1,4 +1,10 @@
 .cell {
+  /* remove default button css */
+  padding: 0;
+  border: none;
+  font: inherit;
+  outline: inherit;
+  /* remove default button css */
   width: 65px;
   height: 65px;
   display: grid;
