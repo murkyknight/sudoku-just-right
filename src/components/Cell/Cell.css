@@ -12,6 +12,7 @@
   grid-template-rows: repeat(3, 1fr);
   gap: 3px 5px;
   background-color: #414141; /* for testing, TODO: need to make dynamic through config */
+  position: relative;
 }
 
 .cell .candidate {

@@ -1,0 +1,50 @@
+.number-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  background-color: #9696f0;
+  overflow: hidden;
+  border-radius: 20px;
+  border-bottom-left-radius: 100px;
+  border-bottom-right-radius: 100px;
+  box-shadow: 2px 2px 25px #735df1;
+  opacity: 0.9;
+  position: absolute;
+  top: -43px;
+  left: -43px;
+  z-index: 99;
+  animation: scaleIn 150ms ease forwards;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.1) }
+  to   { transform: scale(1) }
+}
+
+.number-option {
+  width: 50px;
+  height: 50px;
+    /* remove default button css */
+  padding: 0;
+  border: none;
+  font: inherit;
+  outline: inherit;
+  /* button options */
+  font-size: 35px;
+  background-color: #9696f0;
+  color: white;
+  font-weight: 800;
+  transition: font-size 0.3s ease;
+}
+
+.number-selector .eraser {
+  grid-column: -3 / -2;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.number-option:hover {
+  text-shadow: #3d1df4 0 0 25px;
+  font-size: 44px;
+  color: #dad5f6;
+}
