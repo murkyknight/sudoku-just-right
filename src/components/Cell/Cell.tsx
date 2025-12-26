@@ -2,6 +2,7 @@ import { useCallback, useState, type JSX, type MouseEvent } from 'react'
 import { addBitToMask, hasDigit, removeItemFromMask } from '../utils/bitMaskHelper'
 import Candidate from './Candidate'
 import './Cell.css'
+import NumberSelector from './NumberSelector'
 
 // type CellProps = {
 //     position: [] // maybe like [[1,1], [1,2]] (2D array value)? Update: Na, we'll use static indexcies
@@ -11,13 +12,15 @@ type CellProps = {
   additionalClasses?: string
 }
 
-const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+// TODO: move this somewhere?
+export const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export default function Cell({ additionalClasses }: CellProps): JSX.Element {
   const [candidatesMask, setCandidatesMask] = useState(0)
   const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   const [candidatesStrikedMask, setCandidatesStrikedMask] = useState(0)
   const [shouldShowNumberSelectorMenu, setShouldShowNumberSelectorMenu] = useState(false)
+  const [cellNumber, setCellNumber] = useState<number | undefined>(undefined)
 
   const handleUpdate = useCallback(
     (candidate: number) => {
@@ -60,7 +63,12 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
 
   const handleSelectorMenu = (event: MouseEvent) => {
     const LEFT_CLICK = 0
-    const delay = 500
+    const delay = 250
+
+    // TODO: Another option could be to right click a cell to bring up the NumberSelector
+    //  Why? Right clicking would be more snappy - no delay when clicking
+    //       Also, if we find, through testing, that the menu is popping up when we don't want it to
+    //       by sinmplely playing the game and clicking candidates, then we might have to change to this
 
     if (event.button === LEFT_CLICK) {
       timerId = setTimeout(() => {
@@ -69,24 +77,30 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
     }
   }
 
-  const handleClose = () => {
+  const handleSelectorMenuClose = () => {
     if (timerId) {
       clearTimeout(timerId)
     }
     setShouldShowNumberSelectorMenu(false)
   }
 
+  const handleCellNumberSelection = useCallback((num?: number) => {
+    console.log('Setting Cell number: ', num)
+    setCellNumber(num)
+  }, [])
+
   return (
     <button
       className={`cell ${additionalClasses}`}
-      onBlur={handleClose}
+      onBlur={handleSelectorMenuClose}
       onMouseDown={handleSelectorMenu}
-      onMouseOut={handleClose}
-      onMouseUp={handleClose}
+      // onMouseOut={handleClose}
+      onMouseUp={handleSelectorMenuClose}
       type="button"
     >
-      {shouldShowNumberSelectorMenu
-        ? 'Number Selector Menu'
+      {shouldShowNumberSelectorMenu && <NumberSelector onSelect={handleCellNumberSelection} />}
+      {cellNumber
+        ? cellNumber
         : CANDIDATES.map((candidate) => {
           const isActive = hasDigit(candidate, candidatesMask)
           const isHighlightActive = hasDigit(candidate, candidatesHighlightMask)

@@ -11,12 +11,27 @@ import './NumberSelector.css'
  *  - NumberSelector accepts a prop that can update the cell number in the Cell
  *  - 10 buttons in total - 1- 9 & must include a delete/remove button
  */
-export default function NumberSelector(): JSX.Element {
+// TODO: add callback to set number
+//      Add storybook unit tests
+
+type NumberSelectorProps = {
+  onSelect: (num?: number) => void
+}
+
+export default function NumberSelector({ onSelect }: NumberSelectorProps): JSX.Element {
   return (
     <div className="number-selector">
       {CANDIDATES.map((candidate: number) => {
         return (
-          <button className="number-option" key={`selector-${candidate}`} type="button">
+          <button
+            className="number-option"
+            key={`selector-${candidate}`}
+            onMouseUp={() => {
+              console.log('Setting NumberSelector number: ', candidate)
+              onSelect(candidate)
+            }}
+            type="button"
+          >
             {candidate}
           </button>
         )
@@ -25,6 +40,7 @@ export default function NumberSelector(): JSX.Element {
         aria-label="cell-number-eraser"
         className="number-option eraser"
         key="selector-delete"
+        onMouseUp={() => onSelect(undefined)}
         type="button"
       >
         <PiEraserDuotone />
