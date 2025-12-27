@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, type JSX, type MouseEvent } from 'react'
-import { addDigit, hasDigit, removeItemFromMask } from '../utils/bitMaskHelper'
+import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 import Candidate from './Candidate'
 import './Cell.css'
 import NumberSelector from './NumberSelector'
@@ -45,18 +45,14 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
         } else if (isStrikedKeyCombo && hasDigit(candidatesMask, candidate)) {
           setCandidatesStrikedMask((prevStrikedMask) => addDigit(prevStrikedMask, candidate))
           setCandidatesHighlightMask((prevHighlightMask) =>
-            removeItemFromMask(candidate, prevHighlightMask),
+            removeDigit(prevHighlightMask, candidate),
           )
         } else if (isRemoveKeyCombo) {
-          setCandidatesMask((prevCandidatesMask) =>
-            removeItemFromMask(candidate, prevCandidatesMask),
-          )
+          setCandidatesMask((prevCandidatesMask) => removeDigit(prevCandidatesMask, candidate))
           setCandidatesHighlightMask((prevHighlightMask) =>
-            removeItemFromMask(candidate, prevHighlightMask),
+            removeDigit(prevHighlightMask, candidate),
           )
-          setCandidatesStrikedMask((prevStrikedMask) =>
-            removeItemFromMask(candidate, prevStrikedMask),
-          )
+          setCandidatesStrikedMask((prevStrikedMask) => removeDigit(prevStrikedMask, candidate))
         } else {
           setCandidatesMask((prevCandidatesMask) => addDigit(prevCandidatesMask, candidate))
         }

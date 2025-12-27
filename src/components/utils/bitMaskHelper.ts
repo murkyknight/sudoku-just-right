@@ -5,13 +5,13 @@ export const addDigit = (currentMask: number, candidate: number): number => {
   return currentMask | mask
 }
 
-export const removeItemFromMask = (candidate: number, currentMask: number): number => {
+export const removeDigit = (currentMask: number, candidate: number): number => {
   const mask = 1 << (candidate - 1)
   if (hasDigit(currentMask, candidate)) {
     return currentMask ^ mask
   }
   return currentMask
-};
+}
 
 export const hasDigit = (mask: number, digit: number): boolean => {
   const bitMask = digitToBitMask(digit)
@@ -19,9 +19,9 @@ export const hasDigit = (mask: number, digit: number): boolean => {
 }
 
 // TODO: generic refactor:
-// hasDigit(mask, digit)
-// addDigit(mask, digit)
-// removeDigit(mask, digit)
+// ✅ hasDigit(mask, digit)
+// ✅ addDigit(mask, digit)
+// ✅ removeDigit(mask, digit)
 // toggleDigit(mask, digit) ?? maybe - not sure we need it
 
 // TODO: for cleaner call sites
