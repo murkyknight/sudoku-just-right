@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 // import { expect, userEvent, within } from 'storybook/test'
+import { fireEvent, within } from '@testing-library/react'
+import { expect, waitFor } from 'storybook/test'
 import Cell from './Cell'
-import { within } from '@testing-library/react'
-import { expect } from 'storybook/test'
 
 const meta = {
   title: 'Board/Cell',
@@ -17,6 +17,9 @@ type Canvas = ReturnType<typeof within>
 
 const getCandidateButton = (canvas: Canvas, candidate: number) =>
   canvas.getByRole('button', { name: `candidate-${candidate}` })
+
+const getNumberSelector = (canvas: Canvas) =>
+  canvas.getByRole('dialog', { name: 'number selector menu' })
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -148,5 +151,53 @@ export const CanRemoveStrikedCandidate: Story = {
     await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
     const maybeStrikedSvg = within(candidateBtn).queryByTitle('striked')
     await expect(maybeStrikedSvg).not.toBeInTheDocument()
+  },
+}
+
+export const LongPressOpensNumberSelector: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    const cellBtn = canvas.getByRole('button', { name: 'Cell' })
+    fireEvent.mouseDown(cellBtn)
+
+    await waitFor(() => {
+      getNumberSelector(canvas)
+    })
+  },
+}
+
+export const CanUpdateCellNumber: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const candidate = 1
+
+    const candidateBtn = getCandidateButton(canvas, candidate) // could be any button
+    fireEvent.mouseDown(candidateBtn)
+    await waitFor(() => {
+      const numSelector = within(getNumberSelector(canvas))
+      const buttonOne = numSelector.getByRole('button', { name: '1' })
+      fireEvent.mouseUp(buttonOne)
+    })
+
+    const cellBtn = await canvas.findByRole('button', { name: 'Cell' })
+    await expect(cellBtn).toHaveTextContent(candidate.toString())
+  },
+}
+
+export const OpeningNumberSelectorThenClosingDoesNotMarkCellCandidate: Story = {
+  play: async ({ canvasElement, userEvent }) => {
+    const canvas = within(canvasElement)
+    const candidate = 5
+
+    const candidateBtn = getCandidateButton(canvas, candidate)
+    fireEvent.mouseDown(candidateBtn)
+    await userEvent.keyboard('{Escape}')
+    await expect(
+      canvas.queryByRole('dialog', { name: 'number selector menu' }),
+    ).not.toBeInTheDocument()
+    fireEvent.mouseUp(candidateBtn)
+
+    await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
   },
 }

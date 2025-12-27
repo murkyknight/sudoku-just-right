@@ -81,8 +81,6 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
       clearTimeout(numberSelectorTimer.current)
     }
 
-    // TODO: Another option could be to right click a cell to bring up the NumberSelector
-    //  Why? Right clicking would be more snappy - no delay when clicking
     if (event.button === LEFT_CLICK && noComboKeyPressed(event)) {
       numberSelectorTimer.current = setTimeout(() => {
         wasLongPressRef.current = true
