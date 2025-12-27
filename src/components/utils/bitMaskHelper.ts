@@ -1,5 +1,5 @@
 
-// TODO: move to own utility (also make more generic as we'll have more masks in the future)
+
 export const addDigit = (currentMask: number, candidate: number): number => {
   const mask = 1 << (candidate - 1)
   return currentMask | mask
@@ -18,13 +18,7 @@ export const hasDigit = (mask: number, digit: number): boolean => {
   return (mask & bitMask) !== 0
 }
 
-// TODO: generic refactor:
-// ✅ hasDigit(mask, digit)
-// ✅ addDigit(mask, digit)
-// ✅ removeDigit(mask, digit)
-// toggleDigit(mask, digit) ?? maybe - not sure we need it
-
-// TODO: for cleaner call sites
+// TODO: for cleaner call sites - when we move to Zustard
 // export const isHighlighted = (highlightMask: number, digit: number) =>
 //   hasDigit(highlightMask, digit)
 
