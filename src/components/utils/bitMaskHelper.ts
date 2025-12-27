@@ -7,15 +7,13 @@ export const addBitToMask = (candidate: number, currentMask: number): number => 
 
 export const removeItemFromMask = (candidate: number, currentMask: number): number => {
   const mask = 1 << (candidate - 1)
-  if (hasDigit(candidate, currentMask)) {
+  if (hasDigit(currentMask, candidate)) {
     return currentMask ^ mask
   }
   return currentMask
 };
 
-// TODO: swap digit and mask params
-// because the mask is the thing we'requerying. “Does this mask contain this digit?”
-export const hasDigit = (digit: number, mask: number): boolean => {
+export const hasDigit = (mask: number, digit: number): boolean => {
   const bitMask = digitToBitMask(digit)
   return (mask & bitMask) !== 0
 }

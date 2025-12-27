@@ -44,7 +44,7 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
             addBitToMask(candidate, prevHighlightMask),
           )
           setCandidatesMask((prevCandidatesMask) => addBitToMask(candidate, prevCandidatesMask))
-        } else if (isStrikedKeyCombo && hasDigit(candidate, candidatesMask)) {
+        } else if (isStrikedKeyCombo && hasDigit(candidatesMask, candidate)) {
           setCandidatesStrikedMask((prevStrikedMask) => addBitToMask(candidate, prevStrikedMask))
           setCandidatesHighlightMask((prevHighlightMask) =>
             removeItemFromMask(candidate, prevHighlightMask),
@@ -132,9 +132,9 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
         <div className="cell-number">{cellNumber}</div>
       ) : (
         CANDIDATES.map((candidate) => {
-          const isActive = hasDigit(candidate, candidatesMask)
-          const isHighlightActive = hasDigit(candidate, candidatesHighlightMask)
-          const isStrikedActive = hasDigit(candidate, candidatesStrikedMask)
+          const isActive = hasDigit(candidatesMask, candidate)
+          const isHighlightActive = hasDigit(candidatesHighlightMask, candidate)
+          const isStrikedActive = hasDigit(candidatesStrikedMask, candidate)
 
           return (
             <Candidate
