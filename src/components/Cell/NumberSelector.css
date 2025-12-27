@@ -17,8 +17,12 @@
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0.1) }
-  to   { transform: scale(1) }
+  from {
+    transform: scale(0.6);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 .number-option {
