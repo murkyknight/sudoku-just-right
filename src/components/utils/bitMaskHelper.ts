@@ -1,9 +1,9 @@
 
 // TODO: move to own utility (also make more generic as we'll have more masks in the future)
-export const addBitToMask = (candidate: number, currentMask: number): number => {
-  const mask = 1 << (candidate - 1);
-  return currentMask | mask;
-};
+export const addDigit = (currentMask: number, candidate: number): number => {
+  const mask = 1 << (candidate - 1)
+  return currentMask | mask
+}
 
 export const removeItemFromMask = (candidate: number, currentMask: number): number => {
   const mask = 1 << (candidate - 1)

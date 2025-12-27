@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, type JSX, type MouseEvent } from 'react'
-import { addBitToMask, hasDigit, removeItemFromMask } from '../utils/bitMaskHelper'
+import { addDigit, hasDigit, removeItemFromMask } from '../utils/bitMaskHelper'
 import Candidate from './Candidate'
 import './Cell.css'
 import NumberSelector from './NumberSelector'
@@ -40,12 +40,10 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
         if (isHighlightKeyCombo) {
           // could also double click?`
           event.preventDefault() // prevent opening right click menu
-          setCandidatesHighlightMask((prevHighlightMask) =>
-            addBitToMask(candidate, prevHighlightMask),
-          )
-          setCandidatesMask((prevCandidatesMask) => addBitToMask(candidate, prevCandidatesMask))
+          setCandidatesHighlightMask((prevHighlightMask) => addDigit(prevHighlightMask, candidate))
+          setCandidatesMask((prevCandidatesMask) => addDigit(prevCandidatesMask, candidate))
         } else if (isStrikedKeyCombo && hasDigit(candidatesMask, candidate)) {
-          setCandidatesStrikedMask((prevStrikedMask) => addBitToMask(candidate, prevStrikedMask))
+          setCandidatesStrikedMask((prevStrikedMask) => addDigit(prevStrikedMask, candidate))
           setCandidatesHighlightMask((prevHighlightMask) =>
             removeItemFromMask(candidate, prevHighlightMask),
           )
@@ -60,7 +58,7 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
             removeItemFromMask(candidate, prevStrikedMask),
           )
         } else {
-          setCandidatesMask((prevCandidatesMask) => addBitToMask(candidate, prevCandidatesMask))
+          setCandidatesMask((prevCandidatesMask) => addDigit(prevCandidatesMask, candidate))
         }
       }
     },
