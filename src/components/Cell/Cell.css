@@ -49,6 +49,14 @@
   stroke: rgb(143, 62, 89);
 }
 
+.cell-number {
+  font-size: 40px;
+  color: #b8b8ed;
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+
 .light-bg {
   background-color: #414141;
 }

@@ -1,4 +1,4 @@
-import { useCallback, useState, type JSX, type MouseEvent } from 'react'
+import { useCallback, useRef, useState, type JSX, type MouseEvent } from 'react'
 import { addBitToMask, hasDigit, removeItemFromMask } from '../utils/bitMaskHelper'
 import Candidate from './Candidate'
 import './Cell.css'
@@ -7,6 +7,10 @@ import NumberSelector from './NumberSelector'
 // type CellProps = {
 //     position: [] // maybe like [[1,1], [1,2]] (2D array value)? Update: Na, we'll use static indexcies
 // }
+
+const noComboKeyPressed = (event: MouseEvent) => {
+  return !(event.ctrlKey || event.shiftKey || event.metaKey)
+}
 
 type CellProps = {
   additionalClasses?: string
@@ -19,8 +23,10 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
   const [candidatesMask, setCandidatesMask] = useState(0)
   const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   const [candidatesStrikedMask, setCandidatesStrikedMask] = useState(0)
-  const [shouldShowNumberSelectorMenu, setShouldShowNumberSelectorMenu] = useState(false)
+  const [isNumberSelectorOpen, setIsNumberSelectorOpen] = useState(false)
   const [cellNumber, setCellNumber] = useState<number | undefined>(undefined)
+  const numberSelectorTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wasLongPressRef = useRef(false)
 
   const handleUpdate = useCallback(
     (candidate: number) => {
@@ -28,6 +34,8 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
         const isHighlightKeyCombo = event.ctrlKey
         const isStrikedKeyCombo = event.shiftKey && event.metaKey
         const isRemoveKeyCombo = event.metaKey
+
+        if (wasLongPressRef.current) { return } // user cancelled number selector menu, don't mark candidate
 
         if (isHighlightKeyCombo) {
           // could also double click?`
@@ -59,49 +67,64 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
     [candidatesMask],
   )
 
-  let timerId: ReturnType<typeof setTimeout>
+  const openNumberSelector = useCallback(() => { setIsNumberSelectorOpen(true) }, [])
+  const closeNumberSelector = useCallback(() => { setIsNumberSelectorOpen(false) }, [])
 
-  const handleSelectorMenu = (event: MouseEvent) => {
+  const handleNumberSelectorMenuOpen = (event: MouseEvent) => {
+    event.preventDefault()
     const LEFT_CLICK = 0
-    const delay = 250
+    const delay = 150
+
+    wasLongPressRef.current = false
+
+    if (numberSelectorTimer.current) {
+      clearTimeout(numberSelectorTimer.current)
+    }
 
     // TODO: Another option could be to right click a cell to bring up the NumberSelector
     //  Why? Right clicking would be more snappy - no delay when clicking
-    //       Also, if we find, through testing, that the menu is popping up when we don't want it to
-    //       by sinmplely playing the game and clicking candidates, then we might have to change to this
-
-    if (event.button === LEFT_CLICK) {
-      timerId = setTimeout(() => {
-        setShouldShowNumberSelectorMenu(true)
+    if (event.button === LEFT_CLICK && noComboKeyPressed(event)) {
+      numberSelectorTimer.current = setTimeout(() => {
+        wasLongPressRef.current = true
+        openNumberSelector()
       }, delay)
     }
   }
 
-  const handleSelectorMenuClose = () => {
-    if (timerId) {
-      clearTimeout(timerId)
+  const handleNumberSelectorMenuClose = useCallback(() => {
+    if (numberSelectorTimer.current) {
+      clearTimeout(numberSelectorTimer.current)
+      numberSelectorTimer.current = null
     }
-    setShouldShowNumberSelectorMenu(false)
-  }
+    closeNumberSelector()
+  }, [closeNumberSelector])
 
-  const handleCellNumberSelection = useCallback((num?: number) => {
-    console.log('Setting Cell number: ', num)
-    setCellNumber(num)
-  }, [])
+  const handleCellNumberSelection = useCallback((num?: number) => { setCellNumber(num) }, [])
 
   return (
-    <button
+    // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour. 
+    <div
+      aria-label="Cell"
       className={`cell ${additionalClasses}`}
-      onBlur={handleSelectorMenuClose}
-      onMouseDown={handleSelectorMenu}
-      // onMouseOut={handleClose}
-      onMouseUp={handleSelectorMenuClose}
-      type="button"
+      onBlur={handleNumberSelectorMenuClose}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          openNumberSelector()
+        } 
+      }}
+      onMouseDown={handleNumberSelectorMenuOpen}
+      onMouseUp={handleNumberSelectorMenuClose}
+      role="button"
+      tabIndex={0}
     >
-      {shouldShowNumberSelectorMenu && <NumberSelector onSelect={handleCellNumberSelection} />}
-      {cellNumber
-        ? cellNumber
-        : CANDIDATES.map((candidate) => {
+      {isNumberSelectorOpen && (
+        <NumberSelector onClose={handleNumberSelectorMenuClose} onSelect={handleCellNumberSelection} />
+      )}
+      {cellNumber ? (
+        <div className="cell-number">{cellNumber}</div>
+      ) : (
+        CANDIDATES.map((candidate) => {
           const isActive = hasDigit(candidate, candidatesMask)
           const isHighlightActive = hasDigit(candidate, candidatesHighlightMask)
           const isStrikedActive = hasDigit(candidate, candidatesStrikedMask)
@@ -116,7 +139,8 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
               onClick={handleUpdate(candidate)}
             />
           )
-        })}
-    </button>
+        })
+      )}
+    </div>
   )
 }
