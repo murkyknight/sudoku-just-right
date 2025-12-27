@@ -67,8 +67,12 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
     [candidatesMask],
   )
 
-  const openNumberSelector = useCallback(() => { setIsNumberSelectorOpen(true) }, [])
-  const closeNumberSelector = useCallback(() => { setIsNumberSelectorOpen(false) }, [])
+  const openNumberSelector = useCallback(() => {
+    setIsNumberSelectorOpen(true)
+  }, [])
+  const closeNumberSelector = useCallback(() => {
+    setIsNumberSelectorOpen(false)
+  }, [])
 
   const handleNumberSelectorMenuOpen = (event: MouseEvent) => {
     event.preventDefault()
@@ -97,10 +101,12 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
     closeNumberSelector()
   }, [closeNumberSelector])
 
-  const handleCellNumberSelection = useCallback((num?: number) => { setCellNumber(num) }, [])
+  const handleCellNumberSelection = useCallback((num?: number) => {
+    setCellNumber(num)
+  }, [])
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour. 
+    // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour.
     <div
       aria-label="Cell"
       className={`cell ${additionalClasses}`}
@@ -109,7 +115,7 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           openNumberSelector()
-        } 
+        }
       }}
       onMouseDown={handleNumberSelectorMenuOpen}
       onMouseUp={handleNumberSelectorMenuClose}
@@ -117,7 +123,10 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
       tabIndex={0}
     >
       {isNumberSelectorOpen && (
-        <NumberSelector onClose={handleNumberSelectorMenuClose} onSelect={handleCellNumberSelection} />
+        <NumberSelector
+          onClose={handleNumberSelectorMenuClose}
+          onSelect={handleCellNumberSelection}
+        />
       )}
       {cellNumber ? (
         <div className="cell-number">{cellNumber}</div>

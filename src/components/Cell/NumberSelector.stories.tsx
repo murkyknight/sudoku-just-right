@@ -13,7 +13,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div style={{position: 'relative'}}>
+      <div style={{ position: 'relative' }}>
         <div data-testid="outside">Outside area</div>
         <Story />
       </div>
@@ -37,7 +37,7 @@ type Story = StoryObj<typeof meta>
 export const Open: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const numberSelector = canvas.getByRole('dialog', {name: 'number selector menu'})
+    const numberSelector = canvas.getByRole('dialog', { name: 'number selector menu' })
 
     expect(numberSelector).toBeInTheDocument()
   },
@@ -51,7 +51,7 @@ export const SelectsNumber: Story = {
     for (let digit = 1; digit <= 9; digit++) {
       const digitBtn = getDigitButton(canvas, digit)
       await userEvent.click(digitBtn)
-      
+
       expect(onSelect).toHaveBeenCalledTimes(digit)
       expect(onSelect).toHaveBeenCalledWith(digit)
     }
