@@ -6,6 +6,8 @@ type HouseProps = {
   additionalClasses?: string
 }
 
+export const CELLS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 export default function House({ number, additionalClasses }: HouseProps) {
   // TODO: House should not directly style the cells - what can we do?
   // Idea: capture this as state in Zustard so we can manipulate cell colours freely
@@ -16,23 +18,9 @@ export default function House({ number, additionalClasses }: HouseProps) {
 
   return (
     <div className={`house-container ${additionalClasses}`}>
-      <div className="house-cell-container">
-        <Cell additionalClasses={cellBg1} />
-        <Cell additionalClasses={cellBg2} />
-        <Cell additionalClasses={cellBg1} />
-      </div>
-
-      <div className="house-cell-container">
-        <Cell additionalClasses={cellBg2} />
-        <Cell additionalClasses={cellBg1} />
-        <Cell additionalClasses={cellBg2} />
-      </div>
-
-      <div className="house-cell-container">
-        <Cell additionalClasses={cellBg1} />
-        <Cell additionalClasses={cellBg2} />
-        <Cell additionalClasses={cellBg1} />
-      </div>
+      {CELLS.map((cell) => {
+        return <Cell key={`house-${number}-cell-${cell}`} />
+      })}
     </div>
   )
 }
