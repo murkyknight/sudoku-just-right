@@ -6,11 +6,8 @@
 }
 
 .game-board-container {
-  max-width: 593px;
-  height: auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  border: 5px solid black;
-  /* box-sizing: border-box; */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  border: 1px solid #b8b8ed;
 }
