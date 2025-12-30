@@ -13,13 +13,14 @@ const noComboKeyPressed = (event: MouseEvent) => {
 }
 
 type CellProps = {
+  index: number
   additionalClasses?: string
 }
 
 // TODO: move this somewhere?
 export const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-export default function Cell({ additionalClasses }: CellProps): JSX.Element {
+export default function Cell({ index, additionalClasses }: CellProps): JSX.Element {
   const [candidatesMask, setCandidatesMask] = useState(0)
   const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   const [candidatesStrikedMask, setCandidatesStrikedMask] = useState(0)
@@ -35,7 +36,9 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
         const isStrikedKeyCombo = event.shiftKey && event.metaKey
         const isRemoveKeyCombo = event.metaKey
 
-        if (wasLongPressRef.current) { return } // user cancelled number selector menu, don't mark candidate
+        if (wasLongPressRef.current) {
+          return
+        } // user cancelled number selector menu, don't mark candidate
 
         if (isHighlightKeyCombo) {
           // could also double click?`
@@ -102,7 +105,7 @@ export default function Cell({ additionalClasses }: CellProps): JSX.Element {
   return (
     // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour.
     <div
-      aria-label="Cell"
+      aria-label={`cell-${index}`}
       className={`cell ${additionalClasses}`}
       onBlur={handleNumberSelectorMenuClose}
       onKeyDown={(e) => {

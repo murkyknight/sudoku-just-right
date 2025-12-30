@@ -8,7 +8,7 @@ const meta = {
   title: 'Board/House',
   component: House,
   args: {
-    number: 1
+    index: 1,
   },
   parameters: {
     layout: 'centered',
