@@ -9,7 +9,7 @@
     "lint": "biome check src",
     "format": "biome check --write src",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest --project=unit",
     "test:ui": "vitest --ui",
     "test:watch": "vitest --watch",
     "storybook": "storybook dev -p 6006",
