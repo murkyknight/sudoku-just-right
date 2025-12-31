@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { combine, devtools } from 'zustand/middleware'
+import { immer } from 'zustand/middleware/immer'
 
 type Cell = {
   value: number | null
@@ -15,38 +16,44 @@ type Actions = {
   removeValue: (index: number) => void
 }
 
+type StoreState = State & Actions
+
 const defaultSudokuNumbers = [
   0, 0, 0, 5, 0, 3, 6, 0, 8, 8, 0, 9, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 6, 3, 7, 0,
   2, 0, 0, 0, 8, 0, 0, 0, 0, 0, 5, 0, 0, 0, 7, 0, 9, 2, 4, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   2, 0, 0, 1, 0, 9, 2, 0, 3, 6, 0, 9, 0, 0, 0,
 ]
 
-const initalState = {
+const initialState = {
   board: Array.from({ length: 81 }, (_, i) => ({
     value: defaultSudokuNumbers[i] || null,
     candidates: 0,
   })),
 }
 
-const useGameStore = create<State & Actions>()(
+const useGameStore = create<StoreState>()(
   devtools(
-    combine(initalState, (set, get) => ({
-      placeValue: (index, value) => {
-        const board = structuredClone(get().board)
-        board[index].value = value
+    immer(
+      combine(initialState, (set, _get) => ({
+        placeValue: (index, value) =>
+          set((state) => {
+            const cell = state.board[index]
+            if (cell.value === value) {
+              return
+            }
+            cell.value = value
+          }),
 
-        set({ board })
-      },
-      removeValue: (index) => {
-        const board = structuredClone(get().board)
-        if (!board[index].value) {
-          return
-        }
-        board[index].value = null
-
-        set({ board })
-      },
-    })),
+        removeValue: (index) =>
+          set((state) => {
+            const cell = state.board[index]
+            if (cell.value === null) {
+              return
+            }
+            cell.value = null
+          }),
+      })),
+    ),
   ),
 )
 
