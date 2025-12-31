@@ -1,4 +1,6 @@
 import { useCallback, useRef, useState, type JSX, type MouseEvent } from 'react'
+import { useShallow } from 'zustand/shallow'
+import useGameStore from '../store/useGameStore'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 import Candidate from './Candidate'
 import './Cell.css'
@@ -21,6 +23,11 @@ type CellProps = {
 export const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export default function Cell({ index, additionalClasses }: CellProps): JSX.Element {
+  const cell = useGameStore((s) => s.board[index])
+  const { placeValue, removeValue } = useGameStore(
+    useShallow((s) => ({ placeValue: s.placeValue, removeValue: s.removeValue })),
+  )
+
   const [candidatesMask, setCandidatesMask] = useState(0)
   const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   const [candidatesStrikedMask, setCandidatesStrikedMask] = useState(0)
@@ -98,9 +105,17 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     closeNumberSelector()
   }, [closeNumberSelector])
 
-  const handleCellNumberSelection = useCallback((num?: number) => {
-    setCellNumber(num)
-  }, [])
+  const handleCellNumberSelection = useCallback(
+    (num?: number) => {
+      if (num) {
+        placeValue(index, num)
+      } else {
+        removeValue(index)
+      }
+      setCellNumber(num)
+    },
+    [index, placeValue, removeValue],
+  )
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour.
@@ -125,8 +140,8 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
           onSelect={handleCellNumberSelection}
         />
       )}
-      {cellNumber ? (
-        <div className="cell-number">{cellNumber}</div>
+      {cell.value ? (
+        <div className="cell-number">{cell.value}</div>
       ) : (
         CANDIDATES.map((candidate) => {
           const isActive = hasDigit(candidatesMask, candidate)

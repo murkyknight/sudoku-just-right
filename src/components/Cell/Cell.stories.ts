@@ -3,11 +3,25 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 // import { expect, userEvent, within } from 'storybook/test'
 import { fireEvent, within } from '@testing-library/react'
 import { expect, waitFor } from 'storybook/test'
+import useGameStore from '../store/useGameStore'
 import Cell from './Cell'
 
 const meta = {
   title: 'Board/Cell',
   component: Cell,
+  args: {
+    index: 0,
+  },
+  decorators: [
+    (Story, { parameters }) => {
+      // 👇 Make it configurable by reading from parameters
+      const { index } = parameters
+      useGameStore.setState({
+        board: [{ value: null, candidates: 0 }],
+      })
+      return Story()
+    },
+  ],
   parameters: {
     layout: 'centered',
   },
@@ -20,6 +34,9 @@ const getCandidateButton = (canvas: Canvas, candidate: number) =>
 
 const getNumberSelector = (canvas: Canvas) =>
   canvas.getByRole('dialog', { name: 'number selector menu' })
+
+const getCellButton = (canvas: Canvas, index: number) =>
+  canvas.getByRole('button', { name: `cell-${index}` })
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -155,10 +172,10 @@ export const CanRemoveStrikedCandidate: Story = {
 }
 
 export const LongPressOpensNumberSelector: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement)
 
-    const cellBtn = canvas.getByRole('button', { name: 'Cell' })
+    const cellBtn = getCellButton(canvas, args.index)
     fireEvent.mouseDown(cellBtn)
 
     await waitFor(() => {
@@ -168,7 +185,7 @@ export const LongPressOpensNumberSelector: Story = {
 }
 
 export const CanUpdateCellNumber: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement)
     const candidate = 1
 
@@ -180,7 +197,7 @@ export const CanUpdateCellNumber: Story = {
       fireEvent.mouseUp(buttonOne)
     })
 
-    const cellBtn = await canvas.findByRole('button', { name: 'Cell' })
+    const cellBtn = await canvas.findByRole('button', { name: `cell-${args.index}` })
     await expect(cellBtn).toHaveTextContent(candidate.toString())
   },
 }
