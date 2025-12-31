@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import { addDigit, removeDigit } from '../utils/bitMaskHelper'
+import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 
 type Cell = {
   value: number | null
   candidates: number
+  highlightedCandidates: number
 }
 
 type State = {
@@ -17,6 +18,8 @@ type Actions = {
   removeValue: (index: number) => void
   addCandidate: (index: number, value: number) => void
   removeCandidate: (index: number, value: number) => void
+  highlightCandidate: (index: number, value: number) => void
+  removeCandidateHighlight: (index: number, value: number) => void
 }
 
 type StoreState = State & Actions
@@ -31,6 +34,7 @@ const initialState = {
   board: Array.from({ length: 81 }, (_, i) => ({
     value: defaultSudokuNumbers[i] || null,
     candidates: 0,
+    highlightedCandidates: 0,
   })),
 }
 
@@ -68,6 +72,23 @@ const useGameStore = create<StoreState>()(
           set((state) => {
             const cell = state.board[index]
             cell.candidates = removeDigit(cell.candidates, candidate)
+            cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+            // todo: also remove striked candidate
+          }),
+
+        highlightCandidate: (index, candidate) =>
+          set((state) => {
+            const cell = state.board[index]
+            if (!hasDigit(cell.candidates, candidate)) {
+              cell.candidates = addDigit(cell.candidates, candidate)
+            }
+            cell.highlightedCandidates = addDigit(cell.highlightedCandidates, candidate)
+          }),
+
+        removeCandidateHighlight: (index, candidate) =>
+          set((state) => {
+            const cell = state.board[index]
+            cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
           }),
       })),
     ),
