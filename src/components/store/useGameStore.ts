@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
+import { addDigit, removeDigit } from '../utils/bitMaskHelper'
 
 type Cell = {
   value: number | null
@@ -14,6 +15,8 @@ type State = {
 type Actions = {
   placeValue: (index: number, value: number) => void
   removeValue: (index: number) => void
+  addCandidate: (index: number, value: number) => void
+  removeCandidate: (index: number, value: number) => void
 }
 
 type StoreState = State & Actions
@@ -39,8 +42,10 @@ const useGameStore = create<StoreState>()(
           set((state) => {
             const cell = state.board[index]
             if (cell.value === value) {
-              return
+              return // returning early tells immer and zustard there is nothing to do - no-op
             }
+            // with immer, we can just update what we wanted changed and immer takes care of the rest
+            // See: "Store implementation with Immer" in our notes.
             cell.value = value
           }),
 
@@ -51,6 +56,18 @@ const useGameStore = create<StoreState>()(
               return
             }
             cell.value = null
+          }),
+
+        addCandidate: (index, candidate) =>
+          set((state) => {
+            const cell = state.board[index]
+            cell.candidates = addDigit(cell.candidates, candidate)
+          }),
+
+        removeCandidate: (index, candidate) =>
+          set((state) => {
+            const cell = state.board[index]
+            cell.candidates = removeDigit(cell.candidates, candidate)
           }),
       })),
     ),

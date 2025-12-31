@@ -24,11 +24,15 @@ export const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export default function Cell({ index, additionalClasses }: CellProps): JSX.Element {
   const cell = useGameStore((s) => s.board[index])
-  const { placeValue, removeValue } = useGameStore(
-    useShallow((s) => ({ placeValue: s.placeValue, removeValue: s.removeValue })),
+  const { placeValue, removeValue, addCandidate, removeCandidate } = useGameStore(
+    useShallow((s) => ({
+      placeValue: s.placeValue,
+      removeValue: s.removeValue,
+      addCandidate: s.addCandidate,
+      removeCandidate: s.removeCandidate,
+    })),
   )
 
-  const [candidatesMask, setCandidatesMask] = useState(0)
   const [candidatesHighlightMask, setCandidatesHighlightMask] = useState(0)
   const [candidatesStrikedMask, setCandidatesStrikedMask] = useState(0)
   const [isNumberSelectorOpen, setIsNumberSelectorOpen] = useState(false)
@@ -51,24 +55,24 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
           // could also double click?`
           event.preventDefault() // prevent opening right click menu
           setCandidatesHighlightMask((prevHighlightMask) => addDigit(prevHighlightMask, candidate))
-          setCandidatesMask((prevCandidatesMask) => addDigit(prevCandidatesMask, candidate))
-        } else if (isStrikedKeyCombo && hasDigit(candidatesMask, candidate)) {
+          addCandidate(index, candidate)
+        } else if (isStrikedKeyCombo && hasDigit(cell.candidates, candidate)) {
           setCandidatesStrikedMask((prevStrikedMask) => addDigit(prevStrikedMask, candidate))
           setCandidatesHighlightMask((prevHighlightMask) =>
             removeDigit(prevHighlightMask, candidate),
           )
         } else if (isRemoveKeyCombo) {
-          setCandidatesMask((prevCandidatesMask) => removeDigit(prevCandidatesMask, candidate))
+          removeCandidate(index, candidate)
           setCandidatesHighlightMask((prevHighlightMask) =>
             removeDigit(prevHighlightMask, candidate),
           )
           setCandidatesStrikedMask((prevStrikedMask) => removeDigit(prevStrikedMask, candidate))
         } else {
-          setCandidatesMask((prevCandidatesMask) => addDigit(prevCandidatesMask, candidate))
+          addCandidate(index, candidate)
         }
       }
     },
-    [candidatesMask],
+    [addCandidate, index, cell.candidates, removeCandidate],
   )
 
   const openNumberSelector = useCallback(() => {
@@ -144,7 +148,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         <div className="cell-number">{cell.value}</div>
       ) : (
         CANDIDATES.map((candidate) => {
-          const isActive = hasDigit(candidatesMask, candidate)
+          const isActive = hasDigit(cell.candidates, candidate)
           const isHighlightActive = hasDigit(candidatesHighlightMask, candidate)
           const isStrikedActive = hasDigit(candidatesStrikedMask, candidate)
 
