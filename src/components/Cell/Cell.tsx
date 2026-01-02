@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState, type JSX, type MouseEvent } from 'react'
 import { useShallow } from 'zustand/shallow'
 import useGameStore from '../store/useGameStore'
-import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
+import { hasDigit } from '../utils/bitMaskHelper'
 import Candidate from './Candidate'
 import './Cell.css'
 import NumberSelector from './NumberSelector'
@@ -31,6 +31,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     removeCandidate,
     highlightCandidate,
     removeCandidateHighlight,
+    strikeCandidate,
   } = useGameStore(
     useShallow((s) => ({
       placeValue: s.placeValue,
@@ -39,14 +40,20 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
       removeCandidate: s.removeCandidate,
       highlightCandidate: s.highlightCandidate,
       removeCandidateHighlight: s.removeCandidateHighlight,
+      strikeCandidate: s.strikeCandidate,
     })),
   )
 
-  const [candidatesStrikedMask, setCandidatesStrikedMask] = useState(0)
   const [isNumberSelectorOpen, setIsNumberSelectorOpen] = useState(false)
   const numberSelectorTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wasLongPressRef = useRef(false)
 
+  // TODO: think about making high lighting / striking togglable
+  //    eg, if the user click the same cell with highlight combo, it should highlight then remove.
+  //    why? Maybe they mistakely highlighted - right now they would need to remove candidate then add
+  //         back with highlight.
+  //        Striked is worse since we don't allow a candidate to be striked unless it it has been selected.
+  //        So flow is - Click candidate, Strike, remove candidate, add candidate, strike candidate
   const handleUpdate = useCallback(
     (candidate: number) => {
       return (event: MouseEvent<HTMLButtonElement>) => {
@@ -63,25 +70,16 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
           // could also double click?`
           event.preventDefault() // prevent opening right click menu
           highlightCandidate(index, candidate)
-        } else if (isStrikedKeyCombo && hasDigit(cell.candidates, candidate)) {
-          setCandidatesStrikedMask((prevStrikedMask) => addDigit(prevStrikedMask, candidate))
-          removeCandidateHighlight(index, candidate)
+        } else if (isStrikedKeyCombo) {
+          strikeCandidate(index, candidate)
         } else if (isRemoveKeyCombo) {
           removeCandidate(index, candidate)
-          setCandidatesStrikedMask((prevStrikedMask) => removeDigit(prevStrikedMask, candidate))
         } else {
           addCandidate(index, candidate)
         }
       }
     },
-    [
-      addCandidate,
-      index,
-      cell.candidates,
-      removeCandidate,
-      removeCandidateHighlight,
-      highlightCandidate,
-    ],
+    [addCandidate, index, removeCandidate, highlightCandidate, strikeCandidate],
   )
 
   const openNumberSelector = useCallback(() => {
@@ -158,7 +156,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         CANDIDATES.map((candidate) => {
           const isActive = hasDigit(cell.candidates, candidate)
           const isHighlightActive = hasDigit(cell.highlightedCandidates, candidate)
-          const isStrikedActive = hasDigit(candidatesStrikedMask, candidate)
+          const isStrikedActive = hasDigit(cell.strikedCandidates, candidate)
 
           return (
             <Candidate

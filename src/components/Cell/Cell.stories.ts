@@ -17,7 +17,7 @@ const meta = {
       // 👇 Make it configurable by reading from parameters
       const { index } = parameters
       useGameStore.setState({
-        board: [{ value: null, candidates: 0 }],
+        board: [{ value: null, candidates: 0, highlightedCandidates: 0, strikedCandidates: 0 }],
       })
       return Story()
     },

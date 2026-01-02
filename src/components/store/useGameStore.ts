@@ -3,10 +3,14 @@ import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 
+// We could also add helper functions like:
+//  hasCandidate(value:number)
+//  isHighlighted, isStriked
 type Cell = {
   value: number | null
   candidates: number
   highlightedCandidates: number
+  strikedCandidates: number
 }
 
 type State = {
@@ -20,6 +24,8 @@ type Actions = {
   removeCandidate: (index: number, value: number) => void
   highlightCandidate: (index: number, value: number) => void
   removeCandidateHighlight: (index: number, value: number) => void
+  strikeCandidate: (index: number, value: number) => void
+  removeCandidateStrike: (index: number, value: number) => void // currently unused, maybe change to toggle?
 }
 
 type StoreState = State & Actions
@@ -35,6 +41,7 @@ const initialState = {
     value: defaultSudokuNumbers[i] || null,
     candidates: 0,
     highlightedCandidates: 0,
+    strikedCandidates: 0,
   })),
 }
 
@@ -71,9 +78,9 @@ const useGameStore = create<StoreState>()(
         removeCandidate: (index, candidate) =>
           set((state) => {
             const cell = state.board[index]
-            cell.candidates = removeDigit(cell.candidates, candidate)
+            cell.strikedCandidates = removeDigit(cell.strikedCandidates, candidate)
             cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-            // todo: also remove striked candidate
+            cell.candidates = removeDigit(cell.candidates, candidate)
           }),
 
         highlightCandidate: (index, candidate) =>
@@ -86,6 +93,22 @@ const useGameStore = create<StoreState>()(
           }),
 
         removeCandidateHighlight: (index, candidate) =>
+          set((state) => {
+            const cell = state.board[index]
+            cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+          }),
+
+        strikeCandidate: (index, candidate) =>
+          set((state) => {
+            const cell = state.board[index]
+            if (!hasDigit(cell.candidates, candidate)) {
+              return
+            }
+            cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+            cell.strikedCandidates = addDigit(cell.strikedCandidates, candidate)
+          }),
+
+        removeCandidateStrike: (index, candidate) =>
           set((state) => {
             const cell = state.board[index]
             cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
