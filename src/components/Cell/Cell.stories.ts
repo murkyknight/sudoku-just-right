@@ -6,6 +6,8 @@ import { expect, waitFor } from 'storybook/test'
 import useGameStore from '../store/useGameStore'
 import Cell from './Cell'
 
+// TODO: refactor these tests by setting up state needed for each test with
+// custom decorator and test util helpers
 const meta = {
   title: 'Board/Cell',
   component: Cell,
@@ -168,6 +170,72 @@ export const CanRemoveStrikedCandidate: Story = {
     await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
     const maybeStrikedSvg = within(candidateBtn).queryByTitle('striked')
     await expect(maybeStrikedSvg).not.toBeInTheDocument()
+  },
+}
+
+export const ReAddingACandidateClearsHighlightState: Story = {
+  play: async ({ canvasElement, userEvent }) => {
+    const canvas = within(canvasElement)
+    const candidate = 1
+
+    // Select candidate 1
+    const candidateBtn = getCandidateButton(canvas, candidate)
+    await userEvent.click(candidateBtn)
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+
+    // Strike candidate 1
+    await userEvent.keyboard('{Meta>}{Shift>}')
+    await userEvent.click(candidateBtn)
+    await userEvent.keyboard('{/Meta}{/Shift}')
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    const strikedSvg = within(candidateBtn).getByTitle('striked')
+    await expect(strikedSvg).toBeInTheDocument()
+    await expect(candidateBtn).toHaveClass('muted')
+
+    // remove candidate 1
+    await userEvent.keyboard('{Meta>}')
+    await userEvent.click(candidateBtn)
+    await userEvent.keyboard('{/Meta}')
+    await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
+    let maybeStrikedSvg = within(candidateBtn).queryByTitle('striked')
+    await expect(maybeStrikedSvg).not.toBeInTheDocument()
+
+    // Select candidate 1 again
+    await userEvent.click(candidateBtn)
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    maybeStrikedSvg = within(candidateBtn).queryByTitle('striked')
+    await expect(maybeStrikedSvg).not.toBeInTheDocument()
+  },
+}
+
+export const ReAddingACandidateClearsStrikeState: Story = {
+  play: async ({ canvasElement, userEvent }) => {
+    const canvas = within(canvasElement)
+    const candidate = 1
+
+    // Select candidate 1
+    const candidateBtn = getCandidateButton(canvas, candidate)
+    await userEvent.click(candidateBtn)
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+
+    // highlight candidate 1
+    await userEvent.keyboard('{Control>}')
+    await userEvent.click(candidateBtn)
+    await userEvent.keyboard('{/Control}')
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    await expect(candidateBtn).toHaveClass('highlight')
+
+    // remove candidate 1
+    await userEvent.keyboard('{Meta>}')
+    await userEvent.click(candidateBtn)
+    await userEvent.keyboard('{/Meta}')
+    await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
+    await expect(candidateBtn).not.toHaveClass('highlight')
+
+    // Select candidate 1 again
+    await userEvent.click(candidateBtn)
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    await expect(candidateBtn).not.toHaveClass('highlight')
   },
 }
 
