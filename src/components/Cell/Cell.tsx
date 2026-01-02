@@ -30,7 +30,6 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     addCandidate,
     removeCandidate,
     highlightCandidate,
-    removeCandidateHighlight,
     strikeCandidate,
   } = useGameStore(
     useShallow((s) => ({
@@ -39,11 +38,11 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
       addCandidate: s.addCandidate,
       removeCandidate: s.removeCandidate,
       highlightCandidate: s.highlightCandidate,
-      removeCandidateHighlight: s.removeCandidateHighlight,
       strikeCandidate: s.strikeCandidate,
     })),
   )
 
+  // Move to custom hook to encapsulate number selector imp
   const [isNumberSelectorOpen, setIsNumberSelectorOpen] = useState(false)
   const numberSelectorTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wasLongPressRef = useRef(false)
