@@ -1,7 +1,6 @@
 .cell {
   /* remove default button css */
   padding: 0;
-  /* border: none; */
   font: inherit;
   outline: inherit;
   /* remove default button css */
@@ -10,7 +9,6 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 3px 5px;
   background-color: #414141; /* for testing, TODO: need to make dynamic through config */
   position: relative;
   border: 1px solid #b8b8ed;
@@ -31,6 +29,7 @@
   font: inherit;
   background-color: inherit;
   outline: inherit;
+  font-size: 18px;
 }
 
 .cell .candidate.highlight {
@@ -51,7 +50,8 @@
 }
 
 .cell-number {
-  font-size: 40px;
+  font-size: 50px;
+  font-weight: 550;
   color: #b8b8ed;
   grid-column: 2 / 3;
   grid-row: 2 / 3;
