@@ -319,3 +319,38 @@ export const OpeningNumberSelectorThenClosingDoesNotMarkCellCandidate: Story = {
     await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
   },
 }
+
+export const CanOpenNumberSelectorFromSelectedCellOnUndiscoveredCandidate: Story = {
+  play: async ({ canvasElement, userEvent, args }) => {
+    const canvas = within(canvasElement)
+
+    // Select candidate 1
+    const candidateBtn = getCandidateButton(canvas, 1)
+    await userEvent.click(candidateBtn)
+    await expect(candidateBtn).toHaveTextContent('1')
+    const cell = getCellButton(canvas, args.index)
+    await expect(cell).toHaveClass('selected')
+
+    // long press 5 for number selector
+    getCandidateButton(canvas, 5)
+    fireEvent.mouseDown(candidateBtn)
+    const numberSelector = await screen.findByRole('dialog', { name: 'number selector menu' })
+    await expect(numberSelector).toBeInTheDocument()
+  },
+}
+
+// export const ClickingOutsideCellDeselectsIt: Story = {
+//   play: async ({ canvasElement, userEvent, args }) => {
+//     const canvas = within(canvasElement)
+//     const candidate = 5
+//     const candidateBtn = getCandidateButton(canvas, candidate)
+//     await userEvent.click(candidateBtn)
+//     const cell = getCellButton(canvas, args.index)
+//     await expect(cell).toHaveClass('selected')
+
+//     const outsideComp = canvas.getByTestId('outside')
+//     await userEvent.click(outsideComp)
+
+//     await expect(cell).not.toHaveClass('selected')
+//   },
+// }

@@ -26,8 +26,34 @@ export default function NumberSelector({
   useClickOutside({ ref: selectorRef, onClickOutside: onClose })
 
   useEffect(() => {
+    const selectorEl = selectorRef.current
+    if (!selectorEl) {
+      return
+    }
+
+    requestAnimationFrame(() => {
+      try {
+        selectorEl.focus()
+      } catch {
+        // no-op
+      }
+    })
+
+    return () => {
+      if (restoreFocusTo && document.contains(restoreFocusTo)) {
+        try {
+          restoreFocusTo.focus()
+        } catch {
+          // no-op
+        }
+      }
+    }
+  }, [restoreFocusTo])
+
+  useEffect(() => {
     const handleClose = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.stopPropagation()
         onClose()
       }
     }
