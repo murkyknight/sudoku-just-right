@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fireEvent, within } from '@testing-library/react'
 import { useEffect } from 'react'
-import { expect, waitFor } from 'storybook/test'
+import { expect, screen, waitFor } from 'storybook/test'
 import useGameStore from '../store/useGameStore'
 import Cell from './Cell'
 
@@ -62,13 +62,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Empty: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement)
 
     for (let candidate = 1; candidate <= 9; candidate++) {
       const candidateBtn = getCandidateButton(canvas, candidate)
       await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
     }
+
+    const cell = getCellButton(canvas, args.index)
+    await expect(cell).not.toHaveClass('selected')
   },
 }
 
@@ -81,6 +84,18 @@ export const CanSelectCellCandidates: Story = {
       await userEvent.click(candidateBtn)
       await expect(candidateBtn).toHaveTextContent(candidate.toString())
     }
+  },
+}
+
+export const ClickingCandidateSelectsCell: Story = {
+  play: async ({ canvasElement, userEvent, args }) => {
+    const canvas = within(canvasElement)
+    const candidate = 5
+    const candidateBtn = getCandidateButton(canvas, candidate)
+    await userEvent.click(candidateBtn)
+
+    const cell = getCellButton(canvas, args.index)
+    await expect(cell).toHaveClass('selected')
   },
 }
 
@@ -265,7 +280,7 @@ export const LongPressOpensNumberSelector: Story = {
     fireEvent.mouseDown(cellBtn)
 
     await waitFor(() => {
-      getNumberSelector(canvas)
+      getNumberSelector(screen)
     })
   },
 }
@@ -278,7 +293,7 @@ export const CanUpdateCellNumber: Story = {
     const candidateBtn = getCandidateButton(canvas, candidate) // could be any button
     fireEvent.mouseDown(candidateBtn)
     await waitFor(() => {
-      const numSelector = within(getNumberSelector(canvas))
+      const numSelector = within(getNumberSelector(screen))
       const buttonOne = numSelector.getByRole('button', { name: '1' })
       fireEvent.mouseUp(buttonOne)
     })

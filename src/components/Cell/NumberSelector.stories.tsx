@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { within } from '@testing-library/react'
-import { expect, fn } from 'storybook/test'
+import { expect, fn, screen } from 'storybook/test'
 import NumberSelector from './NumberSelector'
 
 const meta = {
@@ -10,6 +10,7 @@ const meta = {
   args: {
     onSelect: fn(),
     onClose: fn(),
+    restoreFocusTo: null,
   },
   decorators: [
     (Story) => (
@@ -29,27 +30,20 @@ type Canvas = ReturnType<typeof within>
 const getDigitButton = (canvas: Canvas, digit: number | string) =>
   canvas.getByRole('button', { name: digit })
 
-const buttonNumberOne = 1
-
 export default meta
 type Story = StoryObj<typeof meta>
 
 export const Open: Story = {
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const numberSelector = canvas.getByRole('dialog', { name: 'number selector menu' })
-
-    expect(numberSelector).toBeInTheDocument()
+  play: async () => {
+    expect(screen.getByRole('dialog', { name: 'number selector menu' })).toBeInTheDocument()
   },
 }
 
 export const SelectsNumber: Story = {
-  play: async ({ canvasElement, userEvent, args }) => {
-    const canvas = within(canvasElement)
-
+  play: async ({ userEvent, args }) => {
     const { onSelect } = args
     for (let digit = 1; digit <= 9; digit++) {
-      const digitBtn = getDigitButton(canvas, digit)
+      const digitBtn = getDigitButton(screen, digit)
       await userEvent.click(digitBtn)
 
       expect(onSelect).toHaveBeenCalledTimes(digit)
@@ -59,9 +53,8 @@ export const SelectsNumber: Story = {
 }
 
 export const SelectsEraser: Story = {
-  play: async ({ canvasElement, userEvent, args }) => {
-    const canvas = within(canvasElement)
-    const digitBtn = getDigitButton(canvas, 'cell number eraser')
+  play: async ({ userEvent, args }) => {
+    const digitBtn = getDigitButton(screen, 'cell number eraser')
     await userEvent.click(digitBtn)
 
     const { onSelect } = args
@@ -71,8 +64,7 @@ export const SelectsEraser: Story = {
 }
 
 export const ClickOutsideClosesMenu: Story = {
-  play: async ({ canvasElement, userEvent, args }) => {
-    within(canvasElement)
+  play: async ({ userEvent, args }) => {
     await userEvent.keyboard('{Escape}')
 
     const { onClose } = args

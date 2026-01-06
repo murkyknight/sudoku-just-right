@@ -45,6 +45,8 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     })),
   )
 
+  const cellRef = useRef<HTMLDivElement>(null)
+
   // Move to custom hook to encapsulate number selector imp
   const [isNumberSelectorOpen, setIsNumberSelectorOpen] = useState(false)
   const numberSelectorTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -182,6 +184,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
       }}
       onMouseDown={handleNumberSelectorMenuOpen}
       onMouseUp={handleNumberSelectorMenuClose}
+      ref={cellRef}
       role="button"
       tabIndex={0}
     >
@@ -189,6 +192,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         <NumberSelector
           onClose={handleNumberSelectorMenuClose}
           onSelect={handleCellNumberSelection}
+          restoreFocusTo={cellRef.current}
         />
       )}
       {cell.value ? (

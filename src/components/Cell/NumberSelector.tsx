@@ -1,4 +1,5 @@
 import { useEffect, useRef, type JSX } from 'react'
+import { createPortal } from 'react-dom'
 import { PiEraserDuotone } from 'react-icons/pi'
 import { CANDIDATES } from './Cell'
 import './NumberSelector.css'
@@ -13,10 +14,14 @@ import useClickOutside from './hooks/useClickOutside'
 type NumberSelectorProps = {
   onSelect: (num?: number) => void
   onClose: () => void
+  restoreFocusTo: HTMLElement | null
 }
 
-// TODO: accept a ref prop that we focus back to after we close
-export default function NumberSelector({ onSelect, onClose }: NumberSelectorProps): JSX.Element {
+export default function NumberSelector({
+  onSelect,
+  onClose,
+  restoreFocusTo,
+}: NumberSelectorProps): JSX.Element {
   const selectorRef = useRef<HTMLDivElement>(null)
   useClickOutside({ ref: selectorRef, onClickOutside: onClose })
 
@@ -34,13 +39,25 @@ export default function NumberSelector({ onSelect, onClose }: NumberSelectorProp
     }
   }, [onClose])
 
-  return (
+  const positionStyles = () => {
+    const coords = restoreFocusTo?.getBoundingClientRect()
+    const offset = 43
+    if (coords) {
+      return {
+        left: coords.x - offset,
+        top: coords.y - offset,
+      }
+    }
+  }
+
+  const content = (
     <div
       aria-label="number selector menu"
       aria-modal="true"
       className="number-selector"
       ref={selectorRef}
       role="dialog"
+      style={positionStyles()}
     >
       {CANDIDATES.map((candidate: number) => {
         return (
@@ -67,4 +84,6 @@ export default function NumberSelector({ onSelect, onClose }: NumberSelectorProp
       </button>
     </div>
   )
+
+  return createPortal(content, document.body)
 }
