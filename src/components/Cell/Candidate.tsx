@@ -45,7 +45,7 @@ function StrikedLine(): JSX.Element {
     <div className="striked">
       <svg height="100%" preserveAspectRatio="none" viewBox="0 0 100 100" width="70%">
         <title>striked</title>
-        <line vector-effect="non-scaling-stroke" x1="0" x2="100" y1="100" y2="0" />
+        <line vectorEffect="non-scaling-stroke" x1="0" x2="100" y1="100" y2="0" />
       </svg>
     </div>
   )
