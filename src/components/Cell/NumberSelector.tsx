@@ -15,6 +15,7 @@ type NumberSelectorProps = {
   onClose: () => void
 }
 
+// TODO: accept a ref prop that we focus back to after we close
 export default function NumberSelector({ onSelect, onClose }: NumberSelectorProps): JSX.Element {
   const selectorRef = useRef<HTMLDivElement>(null)
   useClickOutside({ ref: selectorRef, onClickOutside: onClose })

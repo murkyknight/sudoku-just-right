@@ -15,11 +15,16 @@ type Cell = {
 
 type State = {
   board: Array<Cell>
+  selectedCellIndex: number | null
 }
 
 type Actions = {
+  selectCell: (index: number | null) => void
+  removeSelectedCell: () => void
+
   placeValue: (index: number, value: number) => void
   removeValue: (index: number) => void
+
   addCandidate: (index: number, value: number) => void
   removeCandidate: (index: number, value: number) => void
   highlightCandidate: (index: number, value: number) => void
@@ -36,19 +41,30 @@ const defaultSudokuNumbers = [
   2, 0, 0, 1, 0, 9, 2, 0, 3, 6, 0, 9, 0, 0, 0,
 ]
 
-const initialState = {
+const initialState: State = {
   board: Array.from({ length: 81 }, (_, i) => ({
     value: defaultSudokuNumbers[i] || null,
     candidates: 0,
     highlightedCandidates: 0,
     strikedCandidates: 0,
   })),
+  selectedCellIndex: null,
 }
 
 const useGameStore = create<StoreState>()(
   devtools(
     immer(
       combine(initialState, (set, _get) => ({
+        selectCell: (index) =>
+          set((state) => {
+            state.selectedCellIndex = index
+          }),
+
+        removeSelectedCell: () =>
+          set((state) => {
+            state.selectedCellIndex = null
+          }),
+
         placeValue: (index, value) =>
           set((state) => {
             const cell = state.board[index]

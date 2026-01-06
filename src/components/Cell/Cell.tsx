@@ -24,6 +24,7 @@ export const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export default function Cell({ index, additionalClasses }: CellProps): JSX.Element {
   const cell = useGameStore((s) => s.board[index])
+  const selectedCellIndex = useGameStore((s) => s.selectedCellIndex)
   const {
     placeValue,
     removeValue,
@@ -31,6 +32,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     removeCandidate,
     highlightCandidate,
     strikeCandidate,
+    selectCell,
   } = useGameStore(
     useShallow((s) => ({
       placeValue: s.placeValue,
@@ -39,6 +41,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
       removeCandidate: s.removeCandidate,
       highlightCandidate: s.highlightCandidate,
       strikeCandidate: s.strikeCandidate,
+      selectCell: s.selectCell,
     })),
   )
 
@@ -62,6 +65,8 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
 
         if (wasLongPressRef.current) {
           // user cancelled number selector menu, don't mark candidate
+          event.stopPropagation()
+          event.preventDefault()
           return
         }
 
@@ -89,6 +94,12 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
   }, [])
 
   const handleNumberSelectorMenuOpen = (event: MouseEvent) => {
+    if (selectedCellIndex !== index) {
+      selectCell(index)
+    }
+
+    // if we don't do this with current imp, we can't open number selector when clicking on an undiscovered candidate
+    // the only issue is now onBlur doesn't fire which means clicking outside gameboard does not deselcet. Everything else works though.
     event.preventDefault()
     const LEFT_CLICK = 0
     const delay = 150
@@ -126,12 +137,43 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     [index, placeValue, removeValue],
   )
 
+  // Currently not called due to handleNumberSelectorMenuOpen - event.preventDefault()
+  const handleFocus = () => {
+    console.log(
+      'handle focus: index !== Number(selectedCellIndex), ',
+      index !== Number(selectedCellIndex),
+    )
+    if (index !== selectedCellIndex) {
+      console.log('actual focus + selecting')
+      selectCell(index)
+    }
+  }
+
+  // Currently not called due to handleNumberSelectorMenuOpen - event.preventDefault()
+  const handleBlur = (e) => {
+    const nextElement = document.activeElement as HTMLElement | null
+    const isFocusedInsideParent = nextElement ? e.currentTarget.contains(nextElement) : false
+    if (isFocusedInsideParent) {
+      console.log('skipping blur')
+      return
+    }
+
+    console.log('actual blur')
+    if (index === selectedCellIndex) {
+      selectCell(null)
+    }
+    handleNumberSelectorMenuClose()
+  }
+
+  const selectedStyle = index === selectedCellIndex ? 'selected ' : ''
+
   return (
     // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour.
     <div
       aria-label={`cell-${index}`}
-      className={`cell ${additionalClasses}`}
-      onBlur={handleNumberSelectorMenuClose}
+      className={`cell ${selectedStyle} ${additionalClasses}`}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
