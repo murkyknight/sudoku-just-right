@@ -1,10 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-
-// import { expect, userEvent, within } from 'storybook/test'
 import { fireEvent, within } from '@testing-library/react'
+import { useEffect } from 'react'
 import { expect, waitFor } from 'storybook/test'
 import useGameStore from '../store/useGameStore'
 import Cell from './Cell'
+
+// TODO: pull out make more generic so we can pass in state
+const StoreWrapper = ({ children }: { children: React.ReactNode }) => {
+  useEffect(() => {
+    useGameStore.setState({
+      board: [
+        {
+          value: null,
+          candidates: 0,
+          highlightedCandidates: 0,
+          strikedCandidates: 0,
+        },
+      ],
+      selectedCellIndex: null,
+    })
+  }, [])
+
+  return <>{children}</>
+}
 
 // TODO: refactor these tests by setting up state needed for each test with
 // custom decorator and test util helpers
@@ -15,14 +33,14 @@ const meta = {
     index: 0,
   },
   decorators: [
-    (Story, { parameters }) => {
-      // 👇 Make it configurable by reading from parameters
-      const { index } = parameters
-      useGameStore.setState({
-        board: [{ value: null, candidates: 0, highlightedCandidates: 0, strikedCandidates: 0 }],
-      })
-      return Story()
-    },
+    (Story) => (
+      <StoreWrapper>
+        <div>
+          <div data-testid="outside" />
+          <Story />
+        </div>
+      </StoreWrapper>
+    ),
   ],
   parameters: {
     layout: 'centered',
