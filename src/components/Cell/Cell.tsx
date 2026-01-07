@@ -65,16 +65,6 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
   )
 
   const longClickPointerHandlers = useLongPress(handleNumberSelectorMenuOpenNew, {
-    onStart: (_event, meta) => {
-      console.log('Press started', meta)
-    },
-    onFinish: (_event, meta) => {
-      console.log('Long press finished', meta)
-    },
-    onCancel: (_event, meta) => {
-      console.log('Press cancelled', meta)
-      closeNumberSelector()
-    },
     filterEvents: (event) => {
       const LEFT_CLICK = 0
       const isLeftClick = 'button' in event && event.button === LEFT_CLICK
@@ -132,6 +122,18 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     [index, placeValue, removeValue],
   )
 
+  const handleBlur = () => {
+    if (index === selectedCellIndex) {
+      selectCell(null)
+    }
+  }
+
+  const handleFocus = () => {
+    if (index !== selectedCellIndex) {
+      selectCell(index)
+    }
+  }
+  
   const selectedStyle = index === selectedCellIndex ? 'selected ' : ''
 
   return (
@@ -139,8 +141,8 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     <div
       aria-label={`cell-${index}`}
       className={`cell ${selectedStyle} ${additionalClasses}`}
-      onBlur={() => index === selectedCellIndex && selectCell(null)}
-      onFocus={() => index !== selectedCellIndex && selectCell(index)}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
