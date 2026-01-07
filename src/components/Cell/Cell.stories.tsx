@@ -339,18 +339,18 @@ export const CanOpenNumberSelectorFromSelectedCellOnUndiscoveredCandidate: Story
   },
 }
 
-// export const ClickingOutsideCellDeselectsIt: Story = {
-//   play: async ({ canvasElement, userEvent, args }) => {
-//     const canvas = within(canvasElement)
-//     const candidate = 5
-//     const candidateBtn = getCandidateButton(canvas, candidate)
-//     await userEvent.click(candidateBtn)
-//     const cell = getCellButton(canvas, args.index)
-//     await expect(cell).toHaveClass('selected')
+export const ClickingOutsideCellDeselectsIt: Story = {
+  play: async ({ canvasElement, userEvent, args }) => {
+    const canvas = within(canvasElement)
+    const candidate = 5
+    const candidateBtn = getCandidateButton(canvas, candidate)
+    await userEvent.click(candidateBtn)
+    const cell = getCellButton(canvas, args.index)
+    await expect(cell).toHaveClass('selected')
 
-//     const outsideComp = canvas.getByTestId('outside')
-//     await userEvent.click(outsideComp)
+    const outsideComp = canvas.getByTestId('outside')
+    await userEvent.click(outsideComp)
 
-//     await expect(cell).not.toHaveClass('selected')
-//   },
-// }
+    await expect(cell).not.toHaveClass('selected')
+  },
+}

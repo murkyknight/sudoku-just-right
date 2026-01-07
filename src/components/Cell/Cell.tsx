@@ -6,10 +6,6 @@ import Candidate from './Candidate'
 import './Cell.css'
 import NumberSelector from './NumberSelector'
 
-// type CellProps = {
-//     position: [] // maybe like [[1,1], [1,2]] (2D array value)? Update: Na, we'll use static indexcies
-// }
-
 const noComboKeyPressed = (event: MouseEvent) => {
   return !(event.ctrlKey || event.shiftKey || event.metaKey)
 }
@@ -83,6 +79,8 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         } else {
           addCandidate(index, candidate)
         }
+        // Hacky!! need this until we solve `event.preventDefault()` in handleNumberSelectorMenuOpen
+        cellRef.current?.focus()
       }
     },
     [addCandidate, index, removeCandidate, highlightCandidate, strikeCandidate],
@@ -140,6 +138,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
   )
 
   // Currently not called due to handleNumberSelectorMenuOpen - event.preventDefault()
+  // Update: we now handle this focus by passing the cell ref to NumberSelctor and manually focusing Cell after we close it
   const handleFocus = () => {
     console.log(
       'handle focus: index !== Number(selectedCellIndex), ',
@@ -152,6 +151,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
   }
 
   // Currently not called due to handleNumberSelectorMenuOpen - event.preventDefault()
+  // Update: we now handle this blur by passing the cell ref to NumberSelctor and manually focusing Cell after we close it
   const handleBlur = (e) => {
     const nextElement = document.activeElement as HTMLElement | null
     const isFocusedInsideParent = nextElement ? e.currentTarget.contains(nextElement) : false
