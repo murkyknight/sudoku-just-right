@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { within } from '@testing-library/react'
 import { expect, fn, screen } from 'storybook/test'
+import { withOutsideDiv } from '../testLib/storybook/decorators'
 import NumberSelector from './NumberSelector'
 
 const meta = {
@@ -12,14 +13,7 @@ const meta = {
     onClose: fn(),
     restoreFocusTo: null,
   },
-  decorators: [
-    (Story) => (
-      <div style={{ position: 'relative' }}>
-        <div data-testid="outside">Outside area</div>
-        <Story />
-      </div>
-    ),
-  ],
+  decorators: [withOutsideDiv],
   parameters: {
     layout: 'centered',
   },

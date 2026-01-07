@@ -1,28 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fireEvent, within } from '@testing-library/react'
-import { useEffect } from 'react'
 import { expect, screen, waitFor } from 'storybook/test'
-import useGameStore from '../store/useGameStore'
+import { withGameStore, withOutsideDiv } from '../testLib/storybook/decorators'
 import Cell from './Cell'
-
-// TODO: pull out make more generic so we can pass in state
-const StoreWrapper = ({ children }: { children: React.ReactNode }) => {
-  useEffect(() => {
-    useGameStore.setState({
-      board: [
-        {
-          value: null,
-          candidates: 0,
-          highlightedCandidates: 0,
-          strikedCandidates: 0,
-        },
-      ],
-      selectedCellIndex: null,
-    })
-  }, [])
-
-  return <>{children}</>
-}
 
 // TODO: refactor these tests by setting up state needed for each test with
 // custom decorator and test util helpers
@@ -32,22 +12,16 @@ const meta = {
   args: {
     index: 0,
   },
-  decorators: [
-    (Story) => (
-      <StoreWrapper>
-        <div>
-          <div data-testid="outside" />
-          <Story />
-        </div>
-      </StoreWrapper>
-    ),
-  ],
+  decorators: [withGameStore, withOutsideDiv],
   parameters: {
     layout: 'centered',
   },
 } satisfies Meta<typeof Cell>
 
 type Canvas = ReturnType<typeof within>
+
+// TODO: add some common actions
+// eg LongPress(digit: number), clickCandidate(digit: number)
 
 const getCandidateButton = (canvas: Canvas, candidate: number) =>
   canvas.getByRole('button', { name: `candidate-${candidate}` })

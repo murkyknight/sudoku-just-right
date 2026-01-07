@@ -33,7 +33,7 @@ type Actions = {
   removeCandidateStrike: (index: number, value: number) => void // currently unused, maybe change to toggle?
 }
 
-type StoreState = State & Actions
+export type StoreState = State & Actions
 
 const defaultSudokuNumbers = [
   0, 0, 0, 5, 0, 3, 6, 0, 8, 8, 0, 9, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 6, 3, 7, 0,
