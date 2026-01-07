@@ -52,7 +52,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     setIsNumberSelectorOpen(false)
   }, [])
 
-  const handleNumberSelectorMenuOpenNew: LongPressCallback<Element> = useCallback(
+  const handleOpenNumberSelector: LongPressCallback<Element> = useCallback(
     (_event: React.MouseEvent | React.TouchEvent | React.PointerEvent) => {
       if (selectedCellIndex !== index) {
         selectCell(index)
@@ -64,7 +64,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     [index, selectedCellIndex, selectCell, openNumberSelector],
   )
 
-  const longClickPointerHandlers = useLongPress(handleNumberSelectorMenuOpenNew, {
+  const longClickPointerHandlers = useLongPress(handleOpenNumberSelector, {
     filterEvents: (event) => {
       const LEFT_CLICK = 0
       const isLeftClick = 'button' in event && event.button === LEFT_CLICK
