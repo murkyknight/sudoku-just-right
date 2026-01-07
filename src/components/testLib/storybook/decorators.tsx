@@ -1,28 +1,15 @@
 import type { Decorator } from '@storybook/react-vite'
 import { useEffect } from 'react'
 import useGameStore, { type StoreState } from '../../store/useGameStore'
+import { createStoreState } from '../helpers'
 
-export const withGameStore: Decorator = (Story, context) => {
-  const state: Partial<StoreState> = context.parameters.state ?? {}
-
+export const withGameStore: Decorator = (Story, { parameters }) => {
+  const state: Partial<StoreState> = parameters.state ?? {}
   useEffect(() => {
-    useGameStore.setState({
-      board: [
-        {
-          value: null,
-          candidates: 0,
-          highlightedCandidates: 0,
-          strikedCandidates: 0,
-        },
-      ],
-      selectedCellIndex: null,
-      ...state,
-    })
+    useGameStore.setState(createStoreState(state))
   }, [state])
 
-  return (
-    <Story />
-  )
+  return <Story />
 }
 
 export const withOutsideDiv: Decorator = (Story, _context) => {

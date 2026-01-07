@@ -6,14 +6,14 @@ import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 // We could also add helper functions like:
 //  hasCandidate(value:number)
 //  isHighlighted, isStriked
-type Cell = {
+export type Cell = {
   value: number | null
   candidates: number
   highlightedCandidates: number
   strikedCandidates: number
 }
 
-type State = {
+export type State = {
   board: Array<Cell>
   selectedCellIndex: number | null
 }
