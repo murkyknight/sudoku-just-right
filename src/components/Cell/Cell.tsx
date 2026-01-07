@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState, type JSX, type MouseEvent } from 'react'
+import { useLongPress, type LongPressCallback } from 'use-long-press'
 import { useShallow } from 'zustand/shallow'
 import useGameStore from '../store/useGameStore'
 import { hasDigit } from '../utils/bitMaskHelper'
@@ -6,7 +7,7 @@ import Candidate from './Candidate'
 import './Cell.css'
 import NumberSelector from './NumberSelector'
 
-const noComboKeyPressed = (event: MouseEvent) => {
+const noComboKeyPressed = (event: React.MouseEvent | React.TouchEvent | React.PointerEvent) => {
   return !(event.ctrlKey || event.shiftKey || event.metaKey)
 }
 
@@ -42,11 +43,50 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
   )
 
   const cellRef = useRef<HTMLDivElement>(null)
-
+  
   // Move to custom hook to encapsulate number selector imp
   const [isNumberSelectorOpen, setIsNumberSelectorOpen] = useState(false)
   const numberSelectorTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wasLongPressRef = useRef(false)
+
+  const openNumberSelector = useCallback(() => {
+    setIsNumberSelectorOpen(true)
+  }, [])
+  const closeNumberSelector = useCallback(() => {
+    setIsNumberSelectorOpen(false)
+  }, [])
+
+  const handleNumberSelectorMenuOpenNew: LongPressCallback<Element> = useCallback(
+    (_event: React.MouseEvent | React.TouchEvent | React.PointerEvent) => {
+      if (selectedCellIndex !== index) {
+        selectCell(index)
+      }
+
+      openNumberSelector()
+      wasLongPressRef.current = true
+    },
+    [index, selectedCellIndex, selectCell, openNumberSelector],
+  )
+
+  const longClickPointerHandlers = useLongPress(handleNumberSelectorMenuOpenNew, {
+    onStart: (_event, meta) => {
+      console.log('Press started', meta)
+    },
+    onFinish: (_event, meta) => {
+      console.log('Long press finished', meta)
+    },
+    onCancel: (_event, meta) => {
+      console.log('Press cancelled', meta)
+      closeNumberSelector()
+    },
+    filterEvents: (event) => {
+      const LEFT_CLICK = 0
+      const isLeftClick = 'button' in event && event.button === LEFT_CLICK
+      return isLeftClick && noComboKeyPressed(event)
+    },
+    threshold: 150,
+    cancelOutsideElement: true,
+  })
 
   // TODO: think about making high lighting / striking togglable
   //    eg, if the user click the same cell with highlight combo, it should highlight then remove.
@@ -65,6 +105,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
           // user cancelled number selector menu, don't mark candidate
           event.stopPropagation()
           event.preventDefault()
+          wasLongPressRef.current = false
           return
         }
 
@@ -79,19 +120,10 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         } else {
           addCandidate(index, candidate)
         }
-        // Hacky!! need this until we solve `event.preventDefault()` in handleNumberSelectorMenuOpen
-        cellRef.current?.focus()
       }
     },
     [addCandidate, index, removeCandidate, highlightCandidate, strikeCandidate],
   )
-
-  const openNumberSelector = useCallback(() => {
-    setIsNumberSelectorOpen(true)
-  }, [])
-  const closeNumberSelector = useCallback(() => {
-    setIsNumberSelectorOpen(false)
-  }, [])
 
   const handleNumberSelectorMenuOpen = (event: MouseEvent) => {
     if (selectedCellIndex !== index) {
@@ -182,11 +214,10 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
           openNumberSelector()
         }
       }}
-      onMouseDown={handleNumberSelectorMenuOpen}
-      onMouseUp={handleNumberSelectorMenuClose}
       ref={cellRef}
       role="button"
       tabIndex={0}
+      {...longClickPointerHandlers()}
     >
       {isNumberSelectorOpen && (
         <NumberSelector

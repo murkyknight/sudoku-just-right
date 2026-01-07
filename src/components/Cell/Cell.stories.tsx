@@ -277,7 +277,7 @@ export const LongPressOpensNumberSelector: Story = {
     const canvas = within(canvasElement)
 
     const cellBtn = getCellButton(canvas, args.index)
-    fireEvent.mouseDown(cellBtn)
+    fireEvent.pointerDown(cellBtn)
 
     await waitFor(() => {
       getNumberSelector(screen)
@@ -291,7 +291,7 @@ export const CanUpdateCellNumber: Story = {
     const candidate = 1
 
     const candidateBtn = getCandidateButton(canvas, candidate) // could be any button
-    fireEvent.mouseDown(candidateBtn)
+    fireEvent.pointerDown(candidateBtn)
     await waitFor(() => {
       const numSelector = within(getNumberSelector(screen))
       const buttonOne = numSelector.getByRole('button', { name: '1' })
@@ -309,12 +309,12 @@ export const OpeningNumberSelectorThenClosingDoesNotMarkCellCandidate: Story = {
     const candidate = 5
 
     const candidateBtn = getCandidateButton(canvas, candidate)
-    fireEvent.mouseDown(candidateBtn)
+    fireEvent.pointerDown(candidateBtn)
     await userEvent.keyboard('{Escape}')
     await expect(
       canvas.queryByRole('dialog', { name: 'number selector menu' }),
     ).not.toBeInTheDocument()
-    fireEvent.mouseUp(candidateBtn)
+    fireEvent.pointerUp(candidateBtn)
 
     await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
   },
@@ -333,7 +333,7 @@ export const CanOpenNumberSelectorFromSelectedCellOnUndiscoveredCandidate: Story
 
     // long press 5 for number selector
     getCandidateButton(canvas, 5)
-    fireEvent.mouseDown(candidateBtn)
+    fireEvent.pointerDown(candidateBtn)
     const numberSelector = await screen.findByRole('dialog', { name: 'number selector menu' })
     await expect(numberSelector).toBeInTheDocument()
   },

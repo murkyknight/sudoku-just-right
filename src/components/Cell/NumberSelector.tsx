@@ -43,7 +43,6 @@ export default function NumberSelector({
   useEffect(() => {
     const handleClose = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        e.stopPropagation()
         onClose()
       }
     }
@@ -66,8 +65,7 @@ export default function NumberSelector({
     }
   }
 
-  const handlePointerUp = (digit?: number) => (e: React.PointerEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
+  const handlePointerUp = (digit?: number) => () => {
     onSelect(digit)
     onClose()
   }
@@ -86,9 +84,6 @@ export default function NumberSelector({
           <button
             className="number-option"
             key={`selector-${digit}`}
-            onClick={(e) => {
-              e.stopPropagation()
-            }}
             onPointerUp={handlePointerUp(digit)}
             type="button"
           >
