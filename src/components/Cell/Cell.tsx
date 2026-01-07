@@ -132,36 +132,6 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     [index, placeValue, removeValue],
   )
 
-  // Currently not called due to handleNumberSelectorMenuOpen - event.preventDefault()
-  // Update: we now handle this focus by passing the cell ref to NumberSelctor and manually focusing Cell after we close it
-  const handleFocus = () => {
-    console.log(
-      'handle focus: index !== Number(selectedCellIndex), ',
-      index !== Number(selectedCellIndex),
-    )
-    if (index !== selectedCellIndex) {
-      console.log('actual focus + selecting')
-      selectCell(index)
-    }
-  }
-
-  // Currently not called due to handleNumberSelectorMenuOpen - event.preventDefault()
-  // Update: we now handle this blur by passing the cell ref to NumberSelctor and manually focusing Cell after we close it
-  const handleBlur = (e) => {
-    const nextElement = document.activeElement as HTMLElement | null
-    const isFocusedInsideParent = nextElement ? e.currentTarget.contains(nextElement) : false
-    if (isFocusedInsideParent) {
-      console.log('skipping blur')
-      return
-    }
-
-    console.log('actual blur')
-    if (index === selectedCellIndex) {
-      selectCell(null)
-    }
-    handleNumberSelectorMenuClose()
-  }
-
   const selectedStyle = index === selectedCellIndex ? 'selected ' : ''
 
   return (
@@ -169,8 +139,8 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     <div
       aria-label={`cell-${index}`}
       className={`cell ${selectedStyle} ${additionalClasses}`}
-      onBlur={handleBlur}
-      onFocus={handleFocus}
+      onBlur={() => index === selectedCellIndex && selectCell(null)}
+      onFocus={() => index !== selectedCellIndex && selectCell(index)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()

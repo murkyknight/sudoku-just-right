@@ -52,8 +52,7 @@ type Canvas = ReturnType<typeof within>
 const getCandidateButton = (canvas: Canvas, candidate: number) =>
   canvas.getByRole('button', { name: `candidate-${candidate}` })
 
-const getNumberSelector = (canvas: Canvas) =>
-  canvas.getByRole('dialog', { name: 'number selector menu' })
+const getNumberSelector = () => screen.getByRole('dialog', { name: 'number selector menu' })
 
 const getCellButton = (canvas: Canvas, index: number) =>
   canvas.getByRole('button', { name: `cell-${index}` })
@@ -280,7 +279,7 @@ export const LongPressOpensNumberSelector: Story = {
     fireEvent.pointerDown(cellBtn)
 
     await waitFor(() => {
-      getNumberSelector(screen)
+      getNumberSelector()
     })
   },
 }
@@ -293,7 +292,7 @@ export const CanUpdateCellNumber: Story = {
     const candidateBtn = getCandidateButton(canvas, candidate) // could be any button
     fireEvent.pointerDown(candidateBtn)
     await waitFor(() => {
-      const numSelector = within(getNumberSelector(screen))
+      const numSelector = within(getNumberSelector())
       const buttonOne = numSelector.getByRole('button', { name: '1' })
       fireEvent.pointerUp(buttonOne)
     })
@@ -310,9 +309,10 @@ export const OpeningNumberSelectorThenClosingDoesNotMarkCellCandidate: Story = {
 
     const candidateBtn = getCandidateButton(canvas, candidate)
     fireEvent.pointerDown(candidateBtn)
+    await screen.findByRole('dialog', { name: 'number selector menu' })
     await userEvent.keyboard('{Escape}')
     await expect(
-      canvas.queryByRole('dialog', { name: 'number selector menu' }),
+      screen.queryByRole('dialog', { name: 'number selector menu' }),
     ).not.toBeInTheDocument()
     fireEvent.pointerUp(candidateBtn)
 
