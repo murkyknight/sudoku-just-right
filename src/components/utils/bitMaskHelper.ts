@@ -18,6 +18,16 @@ export const hasDigit = (mask: number, digit: number): boolean => {
   return (mask & bitMask) !== 0
 }
 
+export const addDigits = (currentMask: number, digits: number[]): number => {
+  let mask = currentMask
+
+  for (const digit of digits) {
+    mask |= 1 << (digit - 1)
+  }
+
+  return mask
+}
+
 // TODO: for cleaner call sites - when we move to Zustard
 // export const isHighlighted = (highlightMask: number, digit: number) =>
 //   hasDigit(highlightMask, digit)

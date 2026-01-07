@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fireEvent, within } from '@testing-library/react'
 import { expect, screen, waitFor } from 'storybook/test'
+import { createCell, setMaskDigits } from '../testLib/helpers'
 import { withGameStore, withOutsideDiv } from '../testLib/storybook/decorators'
+import { addDigit } from '../utils/bitMaskHelper'
 import Cell from './Cell'
 
-// TODO: refactor these tests by setting up state needed for each test with
-// custom decorator and test util helpers
 const meta = {
   title: 'Board/Cell',
   component: Cell,
@@ -22,6 +22,8 @@ type Canvas = ReturnType<typeof within>
 
 // TODO: add some common actions
 // eg LongPress(digit: number), clickCandidate(digit: number)
+
+const EMPTY_MASK = 0
 
 const getCandidateButton = (canvas: Canvas, candidate: number) =>
   canvas.getByRole('button', { name: `candidate-${candidate}` })
@@ -88,12 +90,20 @@ export const CanHighlightCellCandidates: Story = {
 }
 
 export const CanRemoveCellCandidates: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: setMaskDigits(),
+        }),
+      ],
+    },
+  },
   play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement)
 
     for (let candidate = 1; candidate <= 9; candidate++) {
       const candidateBtn = getCandidateButton(canvas, candidate)
-      await userEvent.click(candidateBtn)
       await expect(candidateBtn).toHaveTextContent(candidate.toString())
     }
 
@@ -108,13 +118,20 @@ export const CanRemoveCellCandidates: Story = {
 }
 
 export const CanStrikeCellCandidates: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: setMaskDigits(),
+        }),
+      ],
+    },
+  },
   play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement)
 
     for (let candidate = 1; candidate <= 9; candidate++) {
       const candidateBtn = getCandidateButton(canvas, candidate)
-      await userEvent.click(candidateBtn)
-
       await expect(candidateBtn).toHaveTextContent(candidate.toString())
     }
 
@@ -151,25 +168,21 @@ export const CanNotStrikeNonExistantCandidate: Story = {
 }
 
 export const CanRemoveStrikedCandidate: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: addDigit(EMPTY_MASK, 1),
+          strikedCandidates: addDigit(EMPTY_MASK, 1),
+        }),
+      ],
+    },
+  },
   play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement)
     const candidate = 1
 
-    // Click candidate 1
     const candidateBtn = getCandidateButton(canvas, candidate)
-    await userEvent.click(candidateBtn)
-    await expect(candidateBtn).toHaveTextContent(candidate.toString())
-
-    // Strike candidate 1
-    await userEvent.keyboard('{Meta>}{Shift>}')
-    await userEvent.click(candidateBtn)
-    await userEvent.keyboard('{/Meta}{/Shift}')
-    await expect(candidateBtn).toHaveTextContent(candidate.toString())
-    const strikedSvg = within(candidateBtn).getByTitle('striked')
-    await expect(strikedSvg).toBeInTheDocument()
-    await expect(candidateBtn).toHaveClass('muted')
-
-    // remove candidate 1
     await userEvent.keyboard('{Meta>}')
     await userEvent.click(candidateBtn)
     await userEvent.keyboard('{/Meta}')
@@ -180,19 +193,54 @@ export const CanRemoveStrikedCandidate: Story = {
 }
 
 export const ReAddingACandidateClearsHighlightState: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: addDigit(EMPTY_MASK, 1),
+          highlightedCandidates: addDigit(EMPTY_MASK, 1),
+        }),
+      ],
+    },
+  },
   play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement)
     const candidate = 1
 
-    // Select candidate 1
     const candidateBtn = getCandidateButton(canvas, candidate)
+    await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    await expect(candidateBtn).toHaveClass('highlight')
+
+    // remove candidate 1
+    await userEvent.keyboard('{Meta>}')
+    await userEvent.click(candidateBtn)
+    await userEvent.keyboard('{/Meta}')
+    await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
+    await expect(candidateBtn).not.toHaveClass('highlight')
+
+    // Select candidate 1 again
     await userEvent.click(candidateBtn)
     await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    await expect(candidateBtn).not.toHaveClass('highlight')
+  },
+}
 
-    // Strike candidate 1
-    await userEvent.keyboard('{Meta>}{Shift>}')
-    await userEvent.click(candidateBtn)
-    await userEvent.keyboard('{/Meta}{/Shift}')
+export const ReAddingACandidateClearsStrikeState: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: addDigit(EMPTY_MASK, 1),
+          strikedCandidates: addDigit(EMPTY_MASK, 1),
+        }),
+      ],
+    },
+  },
+  play: async ({ canvasElement, userEvent }) => {
+    const canvas = within(canvasElement)
+    const candidate = 1
+
+    const candidateBtn = getCandidateButton(canvas, candidate)
     await expect(candidateBtn).toHaveTextContent(candidate.toString())
     const strikedSvg = within(candidateBtn).getByTitle('striked')
     await expect(strikedSvg).toBeInTheDocument()
@@ -211,37 +259,6 @@ export const ReAddingACandidateClearsHighlightState: Story = {
     await expect(candidateBtn).toHaveTextContent(candidate.toString())
     maybeStrikedSvg = within(candidateBtn).queryByTitle('striked')
     await expect(maybeStrikedSvg).not.toBeInTheDocument()
-  },
-}
-
-export const ReAddingACandidateClearsStrikeState: Story = {
-  play: async ({ canvasElement, userEvent }) => {
-    const canvas = within(canvasElement)
-    const candidate = 1
-
-    // Select candidate 1
-    const candidateBtn = getCandidateButton(canvas, candidate)
-    await userEvent.click(candidateBtn)
-    await expect(candidateBtn).toHaveTextContent(candidate.toString())
-
-    // highlight candidate 1
-    await userEvent.keyboard('{Control>}')
-    await userEvent.click(candidateBtn)
-    await userEvent.keyboard('{/Control}')
-    await expect(candidateBtn).toHaveTextContent(candidate.toString())
-    await expect(candidateBtn).toHaveClass('highlight')
-
-    // remove candidate 1
-    await userEvent.keyboard('{Meta>}')
-    await userEvent.click(candidateBtn)
-    await userEvent.keyboard('{/Meta}')
-    await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
-    await expect(candidateBtn).not.toHaveClass('highlight')
-
-    // Select candidate 1 again
-    await userEvent.click(candidateBtn)
-    await expect(candidateBtn).toHaveTextContent(candidate.toString())
-    await expect(candidateBtn).not.toHaveClass('highlight')
   },
 }
 
@@ -276,7 +293,7 @@ export const CanUpdateCellNumber: Story = {
   },
 }
 
-export const OpeningNumberSelectorThenClosingDoesNotMarkCellCandidate: Story = {
+export const OpeningNumberSelectorThenClosingViaESCDoesNotMarkCellCandidate: Story = {
   play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement)
     const candidate = 5
@@ -295,31 +312,50 @@ export const OpeningNumberSelectorThenClosingDoesNotMarkCellCandidate: Story = {
 }
 
 export const CanOpenNumberSelectorFromSelectedCellOnUndiscoveredCandidate: Story = {
-  play: async ({ canvasElement, userEvent, args }) => {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: addDigit(EMPTY_MASK, 1),
+        }),
+      ],
+      selectedCellIndex: 0,
+    },
+  },
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement)
 
     // Select candidate 1
     const candidateBtn = getCandidateButton(canvas, 1)
-    await userEvent.click(candidateBtn)
     await expect(candidateBtn).toHaveTextContent('1')
     const cell = getCellButton(canvas, args.index)
     await expect(cell).toHaveClass('selected')
 
     // long press 5 for number selector
-    getCandidateButton(canvas, 5)
-    fireEvent.pointerDown(candidateBtn)
+    const candidateFiveBtn = getCandidateButton(canvas, 5)
+    fireEvent.pointerDown(candidateFiveBtn)
     const numberSelector = await screen.findByRole('dialog', { name: 'number selector menu' })
     await expect(numberSelector).toBeInTheDocument()
   },
 }
 
 export const ClickingOutsideCellDeselectsIt: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: addDigit(EMPTY_MASK, 5),
+        }),
+      ],
+      selectedCellIndex: 0,
+    },
+  },
   play: async ({ canvasElement, userEvent, args }) => {
     const canvas = within(canvasElement)
     const candidate = 5
-    const candidateBtn = getCandidateButton(canvas, candidate)
-    await userEvent.click(candidateBtn)
-    const cell = getCellButton(canvas, args.index)
+    getCandidateButton(canvas, candidate)
+    const cell: HTMLElement = getCellButton(canvas, args.index)
+    cell.focus()
     await expect(cell).toHaveClass('selected')
 
     const outsideComp = canvas.getByTestId('outside')
