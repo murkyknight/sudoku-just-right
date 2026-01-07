@@ -41,12 +41,8 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
       selectCell: s.selectCell,
     })),
   )
-
-  const cellRef = useRef<HTMLDivElement>(null)
-  
-  // Move to custom hook to encapsulate number selector imp
   const [isNumberSelectorOpen, setIsNumberSelectorOpen] = useState(false)
-  const numberSelectorTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const cellRef = useRef<HTMLDivElement>(null)
   const wasLongPressRef = useRef(false)
 
   const openNumberSelector = useCallback(() => {
@@ -125,39 +121,6 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     [addCandidate, index, removeCandidate, highlightCandidate, strikeCandidate],
   )
 
-  const handleNumberSelectorMenuOpen = (event: MouseEvent) => {
-    if (selectedCellIndex !== index) {
-      selectCell(index)
-    }
-
-    // if we don't do this with current imp, we can't open number selector when clicking on an undiscovered candidate
-    // the only issue is now onBlur doesn't fire which means clicking outside gameboard does not deselcet. Everything else works though.
-    event.preventDefault()
-    const LEFT_CLICK = 0
-    const delay = 150
-
-    wasLongPressRef.current = false
-
-    if (numberSelectorTimer.current) {
-      clearTimeout(numberSelectorTimer.current)
-    }
-
-    if (event.button === LEFT_CLICK && noComboKeyPressed(event)) {
-      numberSelectorTimer.current = setTimeout(() => {
-        wasLongPressRef.current = true
-        openNumberSelector()
-      }, delay)
-    }
-  }
-
-  const handleNumberSelectorMenuClose = useCallback(() => {
-    if (numberSelectorTimer.current) {
-      clearTimeout(numberSelectorTimer.current)
-      numberSelectorTimer.current = null
-    }
-    closeNumberSelector()
-  }, [closeNumberSelector])
-
   const handleCellNumberSelection = useCallback(
     (num?: number) => {
       if (num) {
@@ -221,7 +184,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     >
       {isNumberSelectorOpen && (
         <NumberSelector
-          onClose={handleNumberSelectorMenuClose}
+          onClose={closeNumberSelector}
           onSelect={handleCellNumberSelection}
           restoreFocusTo={cellRef.current}
         />
