@@ -5,8 +5,6 @@ import { CANDIDATES } from './Cell'
 import './NumberSelector.css'
 import useClickOutside from './hooks/useClickOutside'
 
-// TODO: - add storybook unit tests
-//       - Maybe add right click on cell opens NumberSelector
 
 // Design thoughts:
 //  - Do we need an X close button?
@@ -32,20 +30,12 @@ export default function NumberSelector({
     }
 
     requestAnimationFrame(() => {
-      try {
-        selectorEl.focus()
-      } catch {
-        // no-op
-      }
+      selectorEl.focus()
     })
 
     return () => {
       if (restoreFocusTo && document.contains(restoreFocusTo)) {
-        try {
-          restoreFocusTo.focus()
-        } catch {
-          // no-op
-        }
+        restoreFocusTo.focus()
       }
     }
   }, [restoreFocusTo])
@@ -76,6 +66,12 @@ export default function NumberSelector({
     }
   }
 
+  const handlePointerUp = (digit?: number) => (e: React.PointerEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    onSelect(digit)
+    onClose()
+  }
+
   const content = (
     <div
       aria-label="number selector menu"
@@ -85,17 +81,18 @@ export default function NumberSelector({
       role="dialog"
       style={positionStyles()}
     >
-      {CANDIDATES.map((candidate: number) => {
+      {CANDIDATES.map((digit: number) => {
         return (
           <button
             className="number-option"
-            key={`selector-${candidate}`}
-            onMouseUp={() => {
-              onSelect(candidate)
+            key={`selector-${digit}`}
+            onClick={(e) => {
+              e.stopPropagation()
             }}
+            onPointerUp={handlePointerUp(digit)}
             type="button"
           >
-            {candidate}
+            {digit}
           </button>
         )
       })}
@@ -103,7 +100,7 @@ export default function NumberSelector({
         aria-label="cell number eraser"
         className="number-option eraser"
         key="selector-delete"
-        onMouseUp={() => onSelect(undefined)}
+        onPointerUp={handlePointerUp(undefined)}
         type="button"
       >
         <PiEraserDuotone />

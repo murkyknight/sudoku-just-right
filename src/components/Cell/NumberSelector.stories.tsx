@@ -63,7 +63,7 @@ export const SelectsEraser: Story = {
   },
 }
 
-export const ClickOutsideClosesMenu: Story = {
+export const EscapeClosesMenu: Story = {
   play: async ({ userEvent, args }) => {
     await userEvent.keyboard('{Escape}')
 
@@ -72,7 +72,7 @@ export const ClickOutsideClosesMenu: Story = {
   },
 }
 
-export const EscapeClosesMenu: Story = {
+export const ClickOutsideClosesMenu: Story = {
   play: async ({ canvasElement, userEvent, args }) => {
     const canvas = within(canvasElement)
     const outsideComp = canvas.getByTestId('outside')

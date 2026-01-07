@@ -295,7 +295,7 @@ export const CanUpdateCellNumber: Story = {
     await waitFor(() => {
       const numSelector = within(getNumberSelector(screen))
       const buttonOne = numSelector.getByRole('button', { name: '1' })
-      fireEvent.mouseUp(buttonOne)
+      fireEvent.pointerUp(buttonOne)
     })
 
     const cellBtn = await canvas.findByRole('button', { name: `cell-${args.index}` })
