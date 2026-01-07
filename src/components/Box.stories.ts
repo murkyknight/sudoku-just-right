@@ -2,18 +2,18 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 
 // import { expect, userEvent, within } from 'storybook/test'
 import { within } from '@testing-library/react'
-import House from './House'
+import Box from './Box'
 
 const meta = {
-  title: 'Board/House',
-  component: House,
+  title: 'Board/Box',
+  component: Box,
   args: {
     index: 1,
   },
   parameters: {
     layout: 'centered',
   },
-} satisfies Meta<typeof House>
+} satisfies Meta<typeof Box>
 
 type Canvas = ReturnType<typeof within>
 

@@ -1,12 +1,8 @@
-.house-container {
+.box-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   border: 1px solid #b8b8ed;
-}
-
-.house-cell-container {
-  display: flex;
 }
 
 .border-left-thick-1 {

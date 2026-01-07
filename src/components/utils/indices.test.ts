@@ -1,7 +1,7 @@
-import { cellCol, cellHouse, cellRow, cols, houses, peers, rows } from './indices'
+import { boxes, cellBox, cellCol, cellRow, cols, peers, rows } from './indices'
 
 describe('static indices', () => {
-  describe('houses', () => {
+  describe('boxes', () => {
     describe('indices', () => {
       it.each([
         [0, [0, 1, 2, 9, 10, 11, 18, 19, 20]],
@@ -13,8 +13,8 @@ describe('static indices', () => {
         [6, [54, 55, 56, 63, 64, 65, 72, 73, 74]],
         [7, [57, 58, 59, 66, 67, 68, 75, 76, 77]],
         [8, [60, 61, 62, 69, 70, 71, 78, 79, 80]],
-      ])('house index %i contains cell indices %j', (houseIndex, expectedCellIndices) => {
-        const actualIndices = houses[houseIndex]
+      ])('box index %i contains cell indices %j', (boxIndex, expectedCellIndices) => {
+        const actualIndices = boxes[boxIndex]
 
         expect(actualIndices).toStrictEqual(expectedCellIndices)
       })
@@ -62,15 +62,15 @@ describe('static indices', () => {
   })
 
   describe('static cell index arrays', () => {
-    describe('cell >> house', () => {
-      it('contains correct house index for each cell', () => {
-        const expectedCellHouseIndices = [
+    describe('cell >> box', () => {
+      it('contains correct box index for each cell', () => {
+        const expectedCellBoxIndices = [
           0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3,
           4, 4, 4, 5, 5, 5, 3, 3, 3, 4, 4, 4, 5, 5, 5, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7,
           8, 8, 8, 6, 6, 6, 7, 7, 7, 8, 8, 8, 6, 6, 6, 7, 7, 7, 8, 8, 8,
         ]
 
-        expect(cellHouse).toStrictEqual(expectedCellHouseIndices)
+        expect(cellBox).toStrictEqual(expectedCellBoxIndices)
       })
     })
 

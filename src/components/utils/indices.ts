@@ -33,7 +33,7 @@ export const cols: number[][] = Array.from({ length: 9 }, (_, c) =>
 )
 
 /**
- * A static array of each house index and its array of all associated cell indices within the house.
+ * A static array of each box index and its array of all associated cell indices within the box.
  * 
  *0: [0, 1, 2, 9, 10, 11, 18, 19, 20]
 	1: [3, 4, 5, 12, 13, 14, 21, 22, 23]
@@ -45,7 +45,7 @@ export const cols: number[][] = Array.from({ length: 9 }, (_, c) =>
 	7: [57, 58, 59, 66, 67, 68, 75, 76, 77]
 	8: [60, 61, 62, 69, 70, 71, 78, 79, 80]
  */
-export const houses: number[][] = Array.from({ length: 9 }, (_, b) => {
+export const boxes: number[][] = Array.from({ length: 9 }, (_, b) => {
   const br = Math.floor(b / 3) * 3
   const bc = (b % 3) * 3
   return Array.from({ length: 9 }, (_, k) => {
@@ -76,13 +76,13 @@ export const cellRow: number[] = Array.from({ length: 81 }, (_, i) => Math.floor
 export const cellCol: number[] = Array.from({ length: 81 }, (_, i) => i % 9)
 
 /**
- * The house of each cell relative to their index.
+ * The box of each cell relative to their index.
  *
  * [0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2, 0, 0, 0, 1, 1, 1, 2, 2, 2,
  * 3, 3, 3, 4, 4, 4, 5, 5, 5, 3, 3, 3, 4, 4, 4, 5, 5, 5, 3, 3, 3, 4, 4, 4, 5, 5, 5,
  * 6, 6, 6, 7, 7, 7, 8, 8, 8, 6, 6, 6, 7, 7, 7, 8, 8, 8, 6, 6, 6, 7, 7, 7, 8, 8, 8]
  */
-export const cellHouse: number[] = Array.from({ length: 81 }, (_, i) => {
+export const cellBox: number[] = Array.from({ length: 81 }, (_, i) => {
   const r = Math.floor(i / 9)
   const c = i % 9
   return Math.floor(r / 3) * 3 + Math.floor(c / 3)
@@ -105,7 +105,7 @@ require iterating over a cell’s peers to propagate constraints; precomputing p
 row/col/box membership repeatedly.
  */
 export const peers: number[][] = Array.from({ length: 81 }, (_, i) => {
-  const set = new Set<number>([...rows[cellRow[i]], ...cols[cellCol[i]], ...houses[cellHouse[i]]])
+  const set = new Set<number>([...rows[cellRow[i]], ...cols[cellCol[i]], ...boxes[cellBox[i]]])
   set.delete(i)
   return [...set]
 })
