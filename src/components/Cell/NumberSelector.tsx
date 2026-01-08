@@ -1,10 +1,10 @@
 import { useEffect, useRef, type JSX } from 'react'
 import { createPortal } from 'react-dom'
 import { PiEraserDuotone } from 'react-icons/pi'
-import { CANDIDATES } from './Cell'
 import './NumberSelector.css'
 import useClickOutside from './hooks/useClickOutside'
 
+export const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 // Design thoughts:
 //  - Do we need an X close button?
@@ -79,7 +79,7 @@ export default function NumberSelector({
       role="dialog"
       style={positionStyles()}
     >
-      {CANDIDATES.map((digit: number) => {
+      {DIGITS.map((digit: number) => {
         return (
           <button
             className="number-option"

@@ -16,8 +16,7 @@ type CellProps = {
   additionalClasses?: string
 }
 
-// TODO: move this somewhere?
-export const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+const CANDIDATES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export default function Cell({ index, additionalClasses }: CellProps): JSX.Element {
   const cell = useGameStore((s) => s.board[index])
@@ -74,12 +73,6 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     cancelOutsideElement: true,
   })
 
-  // TODO: think about making high lighting / striking togglable
-  //    eg, if the user click the same cell with highlight combo, it should highlight then remove.
-  //    why? Maybe they mistakely highlighted - right now they would need to remove candidate then add
-  //         back with highlight.
-  //        Striked is worse since we don't allow a candidate to be striked unless it it has been selected.
-  //        So flow is - Click candidate, Strike, remove candidate, add candidate, strike candidate
   const handleUpdate = useCallback(
     (candidate: number) => {
       return (event: MouseEvent<HTMLButtonElement>) => {
@@ -96,7 +89,6 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         }
 
         if (isHighlightKeyCombo) {
-          // could also double click?`
           event.preventDefault() // prevent opening right click menu
           highlightCandidate(index, candidate)
         } else if (isStrikedKeyCombo) {
