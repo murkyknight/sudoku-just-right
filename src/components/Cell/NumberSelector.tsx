@@ -1,7 +1,8 @@
+import clsx from 'clsx'
 import { useEffect, useRef, type JSX } from 'react'
 import { createPortal } from 'react-dom'
 import { PiEraserDuotone } from 'react-icons/pi'
-import './NumberSelector.css'
+import styles from './NumberSelector.module.css'
 import useClickOutside from './hooks/useClickOutside'
 
 export const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -71,7 +72,7 @@ export default function NumberSelector({
     <div
       aria-label="number selector menu"
       aria-modal="true"
-      className="number-selector"
+      className={styles.numberSelector}
       ref={selectorRef}
       role="dialog"
       style={positionStyles()}
@@ -79,23 +80,23 @@ export default function NumberSelector({
       {DIGITS.map((digit: number) => {
         return (
           <button
-            className="number-option"
+            className={styles.numberOption}
             key={`selector-${digit}`}
             onPointerUp={handlePointerUp(digit)}
             type="button"
           >
-            {digit}
+            <span className={styles.numberText}>{digit}</span>
           </button>
         )
       })}
       <button
         aria-label="cell number eraser"
-        className="number-option eraser"
+        className={clsx(styles.numberOption, styles.eraser)}
         key="selector-delete"
         onPointerUp={handlePointerUp(undefined)}
         type="button"
       >
-        <PiEraserDuotone />
+        <PiEraserDuotone className={styles.numberText} />
       </button>
     </div>
   )
