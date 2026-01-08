@@ -11,21 +11,15 @@ export function createCell(cell: Partial<Cell> = {}): Cell {
     candidates: 0,
     highlightedCandidates: 0,
     strikedCandidates: 0,
+    given: false,
     ...cell,
   }
 }
 
 export function createStoreState(state: Partial<State> = {}): State {
   return {
-      board: [
-        {
-          value: null,
-          candidates: 0,
-          highlightedCandidates: 0,
-          strikedCandidates: 0,
-        },
-      ],
-      selectedCellIndex: null,
-      ...state,
-    }
+    board: [createCell()],
+    selectedCellIndex: null,
+    ...state,
+  }
 }

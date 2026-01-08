@@ -9,7 +9,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  background-color: #414141; /* for testing, TODO: need to make dynamic through config */
+  background-color: var(--colour-board);
   position: relative;
   border: 1px solid #b8b8ed;
 }
@@ -59,6 +59,10 @@
   color: #b8b8ed;
   grid-column: 2 / 3;
   grid-row: 2 / 3;
+}
+
+.cell.given {
+  background-color: #272727;
 }
 
 

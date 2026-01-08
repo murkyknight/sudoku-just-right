@@ -135,12 +135,13 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
   }
   
   const selectedStyle = index === selectedCellIndex ? 'selected ' : ''
+  const givenStyle = cell.given ? 'given ' : ''
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour.
     <div
       aria-label={`cell-${index}`}
-      className={`cell ${selectedStyle} ${additionalClasses}`}
+      className={`cell ${selectedStyle} ${givenStyle} ${additionalClasses}`}
       onBlur={handleBlur}
       onFocus={handleFocus}
       onKeyDown={(e) => {

@@ -11,6 +11,7 @@ export type Cell = {
   candidates: number
   highlightedCandidates: number
   strikedCandidates: number
+  given: boolean
 }
 
 export type State = {
@@ -47,6 +48,7 @@ const initialState: State = {
     candidates: 0,
     highlightedCandidates: 0,
     strikedCandidates: 0,
+    given: !!defaultSudokuNumbers[i],
   })),
   selectedCellIndex: null,
 }
