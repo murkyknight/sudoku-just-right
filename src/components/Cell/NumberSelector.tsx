@@ -6,9 +6,6 @@ import useClickOutside from './hooks/useClickOutside'
 
 export const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-// Design thoughts:
-//  - Do we need an X close button?
-//  - If so, then lets move the earser button to the top left and have an X icon top right
 type NumberSelectorProps = {
   onSelect: (num?: number) => void
   onClose: () => void
