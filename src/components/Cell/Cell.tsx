@@ -5,7 +5,7 @@ import { useShallow } from 'zustand/shallow'
 import useGameStore from '../store/useGameStore'
 import { hasDigit } from '../utils/bitMaskHelper'
 import Candidate from './Candidate'
-import './Cell.css'
+import styles from './Cell.module.css'
 import NumberSelector from './NumberSelector'
 
 const noComboKeyPressed = (event: React.MouseEvent | React.TouchEvent | React.PointerEvent) => {
@@ -127,14 +127,14 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     }
   }
   
-  const selectedStyle = index === selectedCellIndex ? 'selected ' : ''
-  const givenStyle = cell.given ? 'given ' : ''
+  const selectedStyle = index === selectedCellIndex ? styles.selected : ''
+  const givenStyle = cell.given ? styles.given : ''
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour.
     <div
       aria-label={`cell-${index}`}
-      className={clsx('cell', selectedStyle, givenStyle, additionalClasses)}
+      className={clsx(styles.cell, selectedStyle, givenStyle, additionalClasses)}
       onBlur={handleBlur}
       onFocus={handleFocus}
       onKeyDown={(e) => {
@@ -156,7 +156,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         />
       )}
       {cell.value ? (
-        <div className="cell-number">{cell.value}</div>
+        <div className={styles.cellNumber}>{cell.value}</div>
       ) : (
         CANDIDATES.map((candidate) => {
           const isActive = hasDigit(cell.candidates, candidate)

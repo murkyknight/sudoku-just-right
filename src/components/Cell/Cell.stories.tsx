@@ -46,7 +46,7 @@ export const Empty: Story = {
     }
 
     const cell = getCellButton(canvas, args.index)
-    await expect(cell).not.toHaveClass('selected')
+    await expect(cell).not.toHaveClass(cssSelectorToRegEx('selected'))
   },
 }
 
@@ -70,7 +70,7 @@ export const ClickingCandidateSelectsCell: Story = {
     await userEvent.click(candidateBtn)
 
     const cell = getCellButton(canvas, args.index)
-    await expect(cell).toHaveClass('selected')
+    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
   },
 }
 
@@ -329,7 +329,7 @@ export const CanOpenNumberSelectorFromSelectedCellOnUndiscoveredCandidate: Story
     const candidateBtn = getCandidateButton(canvas, 1)
     await expect(candidateBtn).toHaveTextContent('1')
     const cell = getCellButton(canvas, args.index)
-    await expect(cell).toHaveClass('selected')
+    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
 
     // long press 5 for number selector
     const candidateFiveBtn = getCandidateButton(canvas, 5)
@@ -356,11 +356,11 @@ export const ClickingOutsideCellDeselectsIt: Story = {
     getCandidateButton(canvas, candidate)
     const cell: HTMLElement = getCellButton(canvas, args.index)
     cell.focus()
-    await expect(cell).toHaveClass('selected')
+    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
 
     const outsideComp = canvas.getByTestId('outside')
     await userEvent.click(outsideComp)
 
-    await expect(cell).not.toHaveClass('selected')
+    await expect(cell).not.toHaveClass(cssSelectorToRegEx('selected'))
   },
 }
