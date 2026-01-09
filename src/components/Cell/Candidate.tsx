@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import type { JSX, MouseEvent } from 'react'
 
 type CandidateProps = {
@@ -19,14 +20,12 @@ export default function Candidate({
   const muted = isValidStriked ? 'muted ' : ''
   const highlight = isHighlighted ? 'highlight ' : ''
 
-  const styles = highlight.concat(muted)
-
   return (
     <button
       // TODO: key/label  need to be unique - we'll have 81 cells with 9 candidates
       // probs should be cellNumber.candiateNumber - since we'll number our cells 1 - 81
       aria-label={`candidate-${candidate}`}
-      className={`candidate ${styles}`}
+      className={clsx('candidate', highlight, muted)}
       key={candidate}
       onClick={onClick}
       onContextMenu={onClick}

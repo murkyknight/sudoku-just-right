@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useCallback, useRef, useState, type JSX, type MouseEvent } from 'react'
 import { useLongPress, type LongPressCallback } from 'use-long-press'
 import { useShallow } from 'zustand/shallow'
@@ -133,7 +134,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour.
     <div
       aria-label={`cell-${index}`}
-      className={`cell ${selectedStyle} ${givenStyle} ${additionalClasses}`}
+      className={clsx('cell', selectedStyle, givenStyle, additionalClasses)}
       onBlur={handleBlur}
       onFocus={handleFocus}
       onKeyDown={(e) => {
