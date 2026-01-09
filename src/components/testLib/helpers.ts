@@ -5,6 +5,13 @@ export function setMaskDigits(digits: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9], ma
   return addDigits(mask, digits)
 }
 
+export function cssSelectorToRegEx(cssClass: string): RegExp {
+  return new RegExp(`_${cssClass}_`)
+}
+
+//======================================
+//======= State Creator Helpers ========
+//======================================
 export function createCell(cell: Partial<Cell> = {}): Cell {
   return {
     value: null,

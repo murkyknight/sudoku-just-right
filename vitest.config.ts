@@ -50,4 +50,13 @@ export default defineConfig({
       },
     ],
   },
+  // Used to reference CSS class selectors in unit tests (jsdom) only like:
+  // expect(button).toHaveClass('muted')
+  resolve: {
+    alias: {
+      '\\.module\\.css$': 'identity-obj-proxy',
+      '\\.module\\.scss$': 'identity-obj-proxy',
+      '\\.module\\.sass$': 'identity-obj-proxy',
+    },
+  },
 })

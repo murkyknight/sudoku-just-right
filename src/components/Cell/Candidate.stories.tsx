@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { within } from '@testing-library/react'
-import { fn, expect } from 'storybook/test'
+import { expect, fn } from 'storybook/test'
+import { cssSelectorToRegEx } from '../testLib/helpers'
 import Candidate from './Candidate'
 
 const meta = {
@@ -72,7 +73,7 @@ export const Highlighted: Story = {
     const candidateBtn = getCandidateButton(canvas, candidate)
 
     await expect(candidateBtn).toHaveTextContent(candidate.toString())
-    await expect(candidateBtn).toHaveClass('highlight')
+    await expect(candidateBtn).toHaveClass(cssSelectorToRegEx('highlight'))
   },
 }
 
@@ -91,7 +92,7 @@ export const Striked: Story = {
 
     const strikedSvg = within(candidateBtn).getByTitle('striked')
     expect(strikedSvg).toBeInTheDocument()
-    expect(candidateBtn).toHaveClass('muted')
+    expect(candidateBtn).toHaveClass(cssSelectorToRegEx('muted'))
   },
 }
 
@@ -110,7 +111,7 @@ export const CanNotStrikeNonActiveCandidate: Story = {
 
     const strikedSvg = within(candidateBtn).queryByTitle('striked')
     expect(strikedSvg).not.toBeInTheDocument()
-    expect(candidateBtn).not.toHaveClass('muted')
+    expect(candidateBtn).not.toHaveClass(cssSelectorToRegEx('muted'))
   },
 }
 

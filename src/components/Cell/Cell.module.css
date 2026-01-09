@@ -1,0 +1,77 @@
+.cell {
+  /* remove default button css */
+  padding: 0;
+  font: inherit;
+  outline: inherit;
+  /* remove default button css */
+  width: 67px;
+  height: 67px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  background-color: var(--colour-board);
+  position: relative;
+  border: 1px solid #b8b8ed;
+}
+
+.cell.selected {
+  background-color: #6b36ef;
+}
+
+.cell .candidate {
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #929292;
+  position: relative;
+  /* remove default button css */
+  padding: 0;
+  border: none;
+  font: inherit;
+  background-color: inherit;
+  outline: inherit;
+  font-size: 18px;
+}
+
+.cell .candidate.highlight {
+  font-weight: 600;
+  color: aqua;
+  /* color: #8383ef; << Nice purple but hard to see with dark mode*/
+}
+
+.cell .candidate.muted {
+  color: #6f6f6f;
+  /* opacity: 0.5; */
+}
+
+.cell .candidate .striked {
+  position: absolute;
+  right: 0px;
+  stroke-width: 2px;
+  stroke: rgb(143, 62, 89);
+}
+
+.cell-number {
+  font-size: 50px;
+  font-weight: 550;
+  color: #b8b8ed;
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+.cell.given {
+  background-color: #272727;
+}
+
+
+.light-bg {
+  background-color: #414141;
+}
+
+.dark-bg {
+  background-color: #333333;
+}
+

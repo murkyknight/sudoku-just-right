@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fireEvent, within } from '@testing-library/react'
 import { expect, screen, waitFor } from 'storybook/test'
-import { createCell, setMaskDigits } from '../testLib/helpers'
+import { createCell, cssSelectorToRegEx, setMaskDigits } from '../testLib/helpers'
 import { withGameStore, withOutsideDiv } from '../testLib/storybook/decorators'
 import { addDigit } from '../utils/bitMaskHelper'
 import Cell from './Cell'
@@ -83,7 +83,7 @@ export const CanHighlightCellCandidates: Story = {
       const candidateBtn = getCandidateButton(canvas, candidate)
       await userEvent.click(candidateBtn)
       await expect(candidateBtn).toHaveTextContent(candidate.toString())
-      await expect(candidateBtn).toHaveClass('highlight')
+      await expect(candidateBtn).toHaveClass(cssSelectorToRegEx('highlight'))
     }
     await userEvent.keyboard('{/Control}')
   },
@@ -143,7 +143,7 @@ export const CanStrikeCellCandidates: Story = {
       await expect(candidateBtn).toHaveTextContent(candidate.toString())
       const strikedSvg = within(candidateBtn).getByTitle('striked')
       await expect(strikedSvg).toBeInTheDocument()
-      await expect(candidateBtn).toHaveClass('muted')
+      await expect(candidateBtn).toHaveClass(cssSelectorToRegEx('muted'))
     }
     await userEvent.keyboard('{/Meta}{/Shift}')
   },
@@ -209,19 +209,19 @@ export const ReAddingACandidateClearsHighlightState: Story = {
 
     const candidateBtn = getCandidateButton(canvas, candidate)
     await expect(candidateBtn).toHaveTextContent(candidate.toString())
-    await expect(candidateBtn).toHaveClass('highlight')
+    await expect(candidateBtn).toHaveClass(cssSelectorToRegEx('highlight'))
 
     // remove candidate 1
     await userEvent.keyboard('{Meta>}')
     await userEvent.click(candidateBtn)
     await userEvent.keyboard('{/Meta}')
     await expect(candidateBtn).not.toHaveTextContent(candidate.toString())
-    await expect(candidateBtn).not.toHaveClass('highlight')
+    await expect(candidateBtn).not.toHaveClass(cssSelectorToRegEx('highlight'))
 
     // Select candidate 1 again
     await userEvent.click(candidateBtn)
     await expect(candidateBtn).toHaveTextContent(candidate.toString())
-    await expect(candidateBtn).not.toHaveClass('highlight')
+    await expect(candidateBtn).not.toHaveClass(cssSelectorToRegEx('highlight'))
   },
 }
 
@@ -244,7 +244,7 @@ export const ReAddingACandidateClearsStrikeState: Story = {
     await expect(candidateBtn).toHaveTextContent(candidate.toString())
     const strikedSvg = within(candidateBtn).getByTitle('striked')
     await expect(strikedSvg).toBeInTheDocument()
-    await expect(candidateBtn).toHaveClass('muted')
+    await expect(candidateBtn).toHaveClass(cssSelectorToRegEx('muted'))
 
     // remove candidate 1
     await userEvent.keyboard('{Meta>}')
