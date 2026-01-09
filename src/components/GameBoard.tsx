@@ -1,12 +1,12 @@
 import Box from './Box'
-import './GameBoard.css'
+import styles from './GameBoard.module.css'
 
 export const BOXS = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 export default function GameBoard() {
   return (
-    <div className="container">
-      <div className="game-board-container">
+    <div className={styles.container}>
+      <div className={styles.gameBoardContainer}>
         {BOXS.map((boxIndex) => {
           return <Box index={boxIndex} key={`box-${boxIndex}`} />
         })}
