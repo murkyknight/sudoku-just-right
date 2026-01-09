@@ -1,18 +1,18 @@
-.box-container {
+.boxContainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   border: 1px solid #b8b8ed;
 }
 
-.border-left-thick-1 {
+.borderLeftThick1 {
   border-right: 4px solid black;
 }
 
-.border-right-thick-1 {
+.borderRightThick1 {
   border-right: 4px solid black;
 }
 
-.border-bottom-thick-1 {
+.borderBottomThick1 {
   border-bottom: 4px solid black;
 }

@@ -1,4 +1,5 @@
-import './Box.css'
+import clsx from 'clsx'
+import styles from './Box.module.css'
 import Cell from './Cell/Cell'
 import { boxes } from './utils/indices'
 
@@ -19,7 +20,7 @@ export default function Box({ index, additionalClasses }: BoxProps) {
   const cellBg2 = index % 2 === 0 ? 'dark-bg' : 'light-bg'
 
   return (
-    <div className={`box-container ${additionalClasses}`}>
+    <div className={clsx(styles.boxContainer, additionalClasses)}>
       {cells.map((cellIndex) => {
         return <Cell index={cellIndex} key={`box-${index}-cell-${cellIndex}`} />
       })}
