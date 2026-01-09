@@ -4,8 +4,8 @@
   font: inherit;
   outline: inherit;
   /* remove default button css */
-  width: 65px;
-  height: 65px;
+  width: 67px;
+  height: 67px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
