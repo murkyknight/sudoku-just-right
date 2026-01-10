@@ -14,7 +14,41 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --colour-primary: #4a90e2;
-  --colour-board: #414141;
-  --colour-danger: #e74c3c;
+  --color-primary: #4a90e2;
+  --color-danger: #e74c3c;
+
+  /* Surfaces */
+  --color-surface-default: #414141;
+  --color-surface-secondary: #272727;
+  --color-surface-selected: #6b36ef;
+
+  --color-border-primary: #b8b8ed; /* should not be the same as --color-text-primary - too much contrast*/
+  --color-border-subtle: #5a5a5a;
+
+  /* Text */
+  --color-text-primary: #b8b8ed;
+  --color-text-secondary: #929292;
+  --color-text-accent: #2ef3c3; /*was: #00ffff*/
+  --color-text-muted: #6f6f6f;
+  /* --color-text-cell-error */
+
+  /* Game mappings */
+  --color-surface-cell-default: var(--color-surface-default);
+  --color-surface-cell-given: var(--color-surface-secondary);
+  --color-surface-cell-selected: var(--color-surface-selected);
+  /* --color-surface-cell-error */
+
+  --color-text-number: var(--color-text-primary);
+  --color-text-candidate: var(--color-text-secondary);
+  --color-text-highlight: var(--color-text-accent);
+
+  --color-border-cell: var(--color-border-primary);
+
+  /* 
+  TODO:
+    invalid
+    conflict
+    hint
+    focus
+  */
 }

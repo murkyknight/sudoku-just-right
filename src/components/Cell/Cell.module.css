@@ -9,13 +9,13 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  background-color: var(--colour-board);
+  background-color: var(--color-surface-cell-default);
   position: relative;
-  border: 1px solid #b8b8ed;
+  border: 1px solid var(--color-border-cell);
 }
 
 .cell.selected {
-  background-color: #6b36ef;
+  background-color: var(--color-surface-cell-selected);
 }
 
 .cell .candidate {
@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #929292;
+  color: var(--color-text-candidate);
   position: relative;
   /* remove default button css */
   padding: 0;
@@ -38,12 +38,12 @@
 
 .cell .candidate.highlight {
   font-weight: 600;
-  color: aqua;
+  color: var(--color-text-highlight);
   /* color: #8383ef; << Nice purple but hard to see with dark mode*/
 }
 
 .cell .candidate.muted {
-  color: #6f6f6f;
+  color: var(--color-text-muted);
   /* opacity: 0.5; */
 }
 
@@ -57,13 +57,13 @@
 .cellNumber {
   font-size: 50px;
   font-weight: 550;
-  color: #b8b8ed;
+  color: var(--color-text-number);
   grid-column: 2 / 3;
   grid-row: 2 / 3;
 }
 
 .cell.given {
-  background-color: #272727;
+  background-color: var(--color-surface-cell-given);
 }
 
 
