@@ -339,6 +339,31 @@ export const CanOpenNumberSelectorFromSelectedCellOnUndiscoveredCandidate: Story
   },
 }
 
+export const EscapeDeselectsCell: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: addDigit(EMPTY_MASK, 5),
+        }),
+      ],
+      selectedCellIndex: 0,
+    },
+  },
+  play: async ({ canvasElement, userEvent, args }) => {
+    const canvas = within(canvasElement)
+    const candidate = 5
+    getCandidateButton(canvas, candidate)
+    const cell: HTMLElement = getCellButton(canvas, args.index)
+    cell.focus()
+    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
+
+    await userEvent.keyboard('{Escape}')
+
+    await expect(cell).not.toHaveClass(cssSelectorToRegEx('selected'))
+  },
+}
+
 export const ClickingOutsideCellDeselectsIt: Story = {
   parameters: {
     state: {

@@ -115,7 +115,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     [index, placeValue, removeValue],
   )
 
-  const handleBlur = () => {
+  const deselectCell = () => {
     if (index === selectedCellIndex) {
       selectCell(null)
     }
@@ -137,12 +137,14 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         [styles.selected]: isSelected,
         [styles.given]: cell.given,
       })}
-      onBlur={handleBlur}
+      onBlur={deselectCell}
       onFocus={handleFocus}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           openNumberSelector()
+        } else if (e.key === 'Escape') {
+          deselectCell()
         }
       }}
       ref={cellRef}
