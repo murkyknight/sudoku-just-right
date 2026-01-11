@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fireEvent, within } from '@testing-library/react'
 import { expect, screen, waitFor } from 'storybook/test'
-import { createCell, cssSelectorToRegEx, setMaskDigits } from '../testLib/helpers'
+import { createCell, cssSelectorToRegEx, setMaskDigits, storeWithCell } from '../testLib/helpers'
 import { withGameStore, withOutsideDiv } from '../testLib/storybook/decorators'
 import { addDigit } from '../utils/bitMaskHelper'
 import Cell from './Cell'
@@ -50,18 +50,6 @@ export const Empty: Story = {
   },
 }
 
-export const CanSelectCellCandidates: Story = {
-  play: async ({ canvasElement, userEvent }) => {
-    const canvas = within(canvasElement)
-
-    for (let candidate = 1; candidate <= 9; candidate++) {
-      const candidateBtn = getCandidateButton(canvas, candidate)
-      await userEvent.click(candidateBtn)
-      await expect(candidateBtn).toHaveTextContent(candidate.toString())
-    }
-  },
-}
-
 export const ClickingCandidateSelectsCell: Story = {
   play: async ({ canvasElement, userEvent, args }) => {
     const canvas = within(canvasElement)
@@ -71,6 +59,98 @@ export const ClickingCandidateSelectsCell: Story = {
 
     const cell = getCellButton(canvas, args.index)
     await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
+  },
+}
+
+export const ClickingCellNumberSelectsCell: Story = {
+  parameters: {
+    state: storeWithCell({ value: 1 }),
+  },
+  play: async ({ canvasElement, userEvent, args }) => {
+    const canvas = within(canvasElement)
+    const cell = getCellButton(canvas, args.index)
+
+    await userEvent.click(cell)
+
+    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
+  },
+}
+
+export const ClickingCellGivenNumberDoesSelectCell: Story = {
+  parameters: {
+    state: storeWithCell({ value: 1, given: true }),
+  },
+  play: async ({ canvasElement, userEvent, args }) => {
+    const canvas = within(canvasElement)
+    const cell = getCellButton(canvas, args.index)
+
+    await userEvent.click(cell)
+
+    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
+    // TODO: also test that the colour is different then selecting non-given cell
+  },
+}
+
+export const EscapeDeselectsCell: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: addDigit(EMPTY_MASK, 5),
+        }),
+      ],
+      selectedCellIndex: 0,
+    },
+  },
+  play: async ({ canvasElement, userEvent, args }) => {
+    const canvas = within(canvasElement)
+    const candidate = 5
+    getCandidateButton(canvas, candidate)
+    const cell: HTMLElement = getCellButton(canvas, args.index)
+    cell.focus()
+    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
+
+    await userEvent.keyboard('{Escape}')
+
+    await expect(cell).not.toHaveClass(cssSelectorToRegEx('selected'))
+  },
+}
+
+export const ClickingOutsideCellDeselectsIt: Story = {
+  parameters: {
+    state: {
+      board: [
+        createCell({
+          candidates: addDigit(EMPTY_MASK, 5),
+        }),
+      ],
+      selectedCellIndex: 0,
+    },
+  },
+  play: async ({ canvasElement, userEvent, args }) => {
+    const canvas = within(canvasElement)
+    const candidate = 5
+    getCandidateButton(canvas, candidate)
+    const cell: HTMLElement = getCellButton(canvas, args.index)
+    cell.focus()
+    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
+
+    const outsideComp = canvas.getByTestId('outside')
+    await userEvent.click(outsideComp)
+
+    await expect(cell).not.toHaveClass(cssSelectorToRegEx('selected'))
+  },
+}
+
+export const CanAddCellCandidates: Story = {
+  play: async ({ canvasElement, userEvent }) => {
+    const canvas = within(canvasElement)
+
+    for (let candidate = 1; candidate <= 9; candidate++) {
+      const candidateBtn = getCandidateButton(canvas, candidate)
+      await userEvent.click(candidateBtn)
+      await expect(candidateBtn).toHaveTextContent(candidate.toString())
+    }
   },
 }
 
@@ -336,56 +416,5 @@ export const CanOpenNumberSelectorFromSelectedCellOnUndiscoveredCandidate: Story
     fireEvent.pointerDown(candidateFiveBtn)
     const numberSelector = await screen.findByRole('dialog', { name: 'number selector menu' })
     await expect(numberSelector).toBeInTheDocument()
-  },
-}
-
-export const EscapeDeselectsCell: Story = {
-  parameters: {
-    state: {
-      board: [
-        createCell({
-          candidates: addDigit(EMPTY_MASK, 5),
-        }),
-      ],
-      selectedCellIndex: 0,
-    },
-  },
-  play: async ({ canvasElement, userEvent, args }) => {
-    const canvas = within(canvasElement)
-    const candidate = 5
-    getCandidateButton(canvas, candidate)
-    const cell: HTMLElement = getCellButton(canvas, args.index)
-    cell.focus()
-    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
-
-    await userEvent.keyboard('{Escape}')
-
-    await expect(cell).not.toHaveClass(cssSelectorToRegEx('selected'))
-  },
-}
-
-export const ClickingOutsideCellDeselectsIt: Story = {
-  parameters: {
-    state: {
-      board: [
-        createCell({
-          candidates: addDigit(EMPTY_MASK, 5),
-        }),
-      ],
-      selectedCellIndex: 0,
-    },
-  },
-  play: async ({ canvasElement, userEvent, args }) => {
-    const canvas = within(canvasElement)
-    const candidate = 5
-    getCandidateButton(canvas, candidate)
-    const cell: HTMLElement = getCellButton(canvas, args.index)
-    cell.focus()
-    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
-
-    const outsideComp = canvas.getByTestId('outside')
-    await userEvent.click(outsideComp)
-
-    await expect(cell).not.toHaveClass(cssSelectorToRegEx('selected'))
   },
 }

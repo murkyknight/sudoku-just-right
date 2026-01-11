@@ -30,3 +30,10 @@ export function createStoreState(state: Partial<State> = {}): State {
     ...state,
   }
 }
+
+export function storeWithCell(state: Partial<Cell> = {}): State {
+  return {
+    board: [createCell(state)],
+    selectedCellIndex: null,
+  }
+}
