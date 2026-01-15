@@ -127,7 +127,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
     }
   }
 
-  const isSelected = index === selectedCellIndex
+  const isSelected = !cell.given && index === selectedCellIndex
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: Can't use button element since we render nested buttons - can cause weird button behaviour.

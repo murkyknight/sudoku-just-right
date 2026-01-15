@@ -76,7 +76,7 @@ export const ClickingCellNumberSelectsCell: Story = {
   },
 }
 
-export const ClickingCellGivenNumberDoesSelectCell: Story = {
+export const ClickingCellWithGivenNumberDoesNotVisuallySelectCell: Story = {
   parameters: {
     state: storeWithCell({ value: 1, given: true }),
   },
@@ -86,8 +86,7 @@ export const ClickingCellGivenNumberDoesSelectCell: Story = {
 
     await userEvent.click(cell)
 
-    await expect(cell).toHaveClass(cssSelectorToRegEx('selected'))
-    // TODO: also test that the colour is different then selecting non-given cell
+    await expect(cell).not.toHaveClass(cssSelectorToRegEx('selected'))
   },
 }
 
