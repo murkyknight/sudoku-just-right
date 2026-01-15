@@ -13,16 +13,16 @@ html {
 }
 
 :root {
-  --color-primary: #4a90e2;
-  --color-danger: #e74c3c;
+  /* Color Palette */
 
-  /* Surfaces */
-  --color-surface-default: #414141;
-  --color-surface-secondary: #272727;
-  --color-surface-selected: #6b36ef;
+  --color-surface-primary: #414141;
+  --color-surface-secondary: #2c2c2c;
+  --color-surface-selected: rgb(107, 54, 239, 0.45);
 
-  --color-border-primary: #b8b8ed; /* should not be the same as --color-text-primary - too much contrast*/
-  --color-border-subtle: #5a5a5a;
+  --color-border-default: #8a8a8a; /* should not be the same as --color-text-primary - too much contrast*/
+  --color-border-subtle: #6b6b6b;
+  --color-border-subtle-2: #7d7d7d;
+  --color-border-cell-strong: #9a9a9a;
 
   /* Text */
   --color-text-primary: #b8b8ed;
@@ -32,8 +32,10 @@ html {
   /* --color-text-cell-error */
 
   /* Game mappings */
-  --color-surface-cell-default: var(--color-surface-default);
+  --color-surface-cell-default: var(--color-surface-primary);
   --color-surface-cell-given: var(--color-surface-secondary);
+
+  /* State overlays */
   --color-surface-cell-selected: var(--color-surface-selected);
   /* --color-surface-cell-error */
 
@@ -41,7 +43,7 @@ html {
   --color-text-candidate: var(--color-text-secondary);
   --color-text-highlight: var(--color-text-accent);
 
-  --color-border-cell: var(--color-border-primary);
+  --color-border-cell: var(--color-border-subtle-2);
 
   /* 
   TODO:
