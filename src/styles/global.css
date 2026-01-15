@@ -1,4 +1,6 @@
 html {
+  font-size: 16px;
+  scroll-behavior: smooth;
   box-sizing: border-box;
 }
 
@@ -8,27 +10,6 @@ html {
   box-sizing: inherit;
   margin: 0;
   padding: 0;
-}
-
-/* ===== Base Styles ===== */
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  min-height: 100vh;
-
-  color-scheme: light dark;
-  /* color: var(--text-primary); */
-  color: rgba(255, 255, 255, 0.87);
-  /* background: var(--bg-primary); */
-  background: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 :root {
@@ -69,4 +50,21 @@ body {
     hint
     focus
   */
+}
+
+/* ===== Base Styles ===== */
+  body {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+
+  color-scheme: light dark;
+  /* color: var(--text-primary); */
+  color: rgba(255, 255, 255, 0.87);
+  /* background: var(--bg-primary); */
+  background: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
