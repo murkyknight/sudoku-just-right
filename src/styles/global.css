@@ -13,37 +13,44 @@ html {
 }
 
 :root {
+  /*===============*/
   /* Color Palette */
+  /*===============*/
 
-  --color-surface-primary: #414141;
+  --color-surface-primary: var(--stone-10);
+  /* --color-surface-primary: #414141; */
+  /* --color-surface-secondary: var(--gray-9); Pretty good but not sure */
   --color-surface-secondary: #2c2c2c;
-  --color-surface-selected: rgb(107, 54, 239, 0.45);
+  --color-surface-accent: var(--purple-10);
+  --color-surface-error: var(--red-4);
 
-  --color-border-default: #8a8a8a; /* should not be the same as --color-text-primary - too much contrast*/
-  --color-border-subtle: #6b6b6b;
-  --color-border-subtle-2: #7d7d7d;
-  --color-border-cell-strong: #9a9a9a;
+  --color-border-default: var(--stone-7);
+  --color-border-subtle: var(--stone-8);
 
   /* Text */
-  --color-text-primary: #b8b8ed;
-  --color-text-secondary: #929292;
-  --color-text-accent: #2ef3c3; /*was: #00ffff*/
-  --color-text-muted: #6f6f6f;
-  /* --color-text-cell-error */
+  --color-text-primary: var(--indigo-2);
+  --color-text-secondary: var(--stone-6);
+  --color-text-accent: var(--lime-5);
+  --color-text-muted: var(--stone-8);
+  --color-text-error: var(--red-9);
 
+  /*===============*/
   /* Game mappings */
-  --color-surface-cell-default: var(--color-surface-primary);
-  --color-surface-cell-given: var(--color-surface-secondary);
+  /*===============*/
+  --cell-bg-default: var(--color-surface-primary);
+  --cell-bg-given: var(--color-surface-secondary);
 
   /* State overlays */
-  --color-surface-cell-selected: var(--color-surface-selected);
-  /* --color-surface-cell-error */
+  --cell-bg-selected: var(--color-surface-accent);
+  --cell-bg-error: var(--color-surface-error);
 
-  --color-text-number: var(--color-text-primary);
-  --color-text-candidate: var(--color-text-secondary);
-  --color-text-highlight: var(--color-text-accent);
+  --cell-text-number: var(--color-text-primary);
+  --cell-text-candidate: var(--color-text-secondary);
+  --cell-text-highlight: var(--color-text-accent);
+  --cell-text-muted: var(--color-text-muted);
+  --cell-text-error: var(--color-text-error);
 
-  --color-border-cell: var(--color-border-subtle-2);
+  --cell-border-default: var(--color-border-default);
 
   /* 
   TODO:
@@ -60,8 +67,7 @@ html {
   min-height: 100vh;
 
   color-scheme: light dark;
-  /* color: var(--text-primary); */
-  color: rgba(255, 255, 255, 0.87);
+  color: var(--color-text-primary);
   /* background: var(--bg-primary); */
   background: #242424;
 

@@ -9,17 +9,17 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  background-color: var(--color-surface-cell-default);
+  background-color: var(--cell-bg-default);
   position: relative;
-  border: 1px solid var(--color-border-cell);
+  border: 1px solid var(--cell-border-default);
 }
 
 .cell.given {
-  background-color: var(--color-surface-cell-given);
+  background-color: var(--cell-bg-given);
 }
 
 .cell.selected {
-  background-color: var(--color-surface-cell-selected);
+  background-color: var(--cell-bg-selected);
 }
 
 .cell .candidate {
@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-candidate);
+  color: var(--cell-text-candidate);
   position: relative;
   /* remove default button css */
   padding: 0;
@@ -42,12 +42,12 @@
 
 .cell .candidate.highlight {
   font-weight: 600;
-  color: var(--color-text-highlight);
+  color: var(--cell-text-highlight);
   /* color: #8383ef; << Nice purple but hard to see with dark mode*/
 }
 
 .cell .candidate.muted {
-  color: var(--color-text-muted);
+  color: var(--cell-text-muted);
   /* opacity: 0.5; */
 }
 
@@ -63,7 +63,7 @@
   font-weight: 550;
   cursor: pointer;
   user-select: none;
-  color: var(--color-text-number);
+  color: var(--cell-text-number);
   grid-column: 2 / 3;
   grid-row: 2 / 3;
 }

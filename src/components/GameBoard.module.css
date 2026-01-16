@@ -9,5 +9,5 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  border: 2px solid var(--color-border-cell);
+  border: 2px solid var(--cell-border-default);
 }
