@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { within } from '@testing-library/react'
 import { expect, fn } from 'storybook/test'
 import { cssSelectorToRegEx } from '../testLib/helpers'
+import { withCell } from '../testLib/storybook/decorators'
 import Candidate from './Candidate'
 
 const meta = {
@@ -13,15 +14,9 @@ const meta = {
     isActive: false,
     isHighlighted: false,
     isStriked: false,
-    onClick: fn()
+    onClick: fn(),
   },
-  decorators: [
-    (Story) => (
-        <div className='cell'>
-            <Story />
-        </div>
-    )
-  ],
+  decorators: [withCell],
   parameters: {
     layout: 'centered',
   },
