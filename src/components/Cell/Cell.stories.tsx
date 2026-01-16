@@ -372,6 +372,20 @@ export const CanUpdateCellNumber: Story = {
   },
 }
 
+export const CanNotUpdateCellWithGivenNumber: Story = {
+  parameters: {
+    state: storeWithCell(createCell({ value: 9, given: true })),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const cellBtn = getCellButton(canvas, args.index)
+    fireEvent.pointerDown(cellBtn)
+    const maybeNumberSelector = screen.queryByRole('dialog', { name: 'number selector menu' })
+    fireEvent.pointerUp(cellBtn)
+    expect(maybeNumberSelector).not.toBeInTheDocument()
+  },
+}
+
 export const OpeningNumberSelectorThenClosingViaESCDoesNotMarkCellCandidate: Story = {
   play: async ({ canvasElement, userEvent }) => {
     const canvas = within(canvasElement)

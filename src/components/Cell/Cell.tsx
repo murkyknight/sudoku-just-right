@@ -58,10 +58,12 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         selectCell(index)
       }
 
-      openNumberSelector()
-      wasLongPressRef.current = true
+      if (!cell.given) {
+        openNumberSelector()
+        wasLongPressRef.current = true
+      }
     },
-    [index, selectedCellIndex, selectCell, openNumberSelector],
+    [index, selectedCellIndex, selectCell, openNumberSelector, cell.given],
   )
 
   const longClickPointerHandlers = useLongPress(handleOpenNumberSelector, {
