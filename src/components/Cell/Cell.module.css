@@ -41,7 +41,7 @@
 }
 
 .cell .candidate.highlight {
-  font-weight: 600;
+  font-weight: 900;
   color: var(--cell-text-highlight);
   /* color: #8383ef; << Nice purple but hard to see with dark mode*/
 }
