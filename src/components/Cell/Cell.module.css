@@ -35,7 +35,7 @@
   padding: 0;
   border: none;
   font: inherit;
-  background-color: inherit;
+  background-color: transparent;
   outline: inherit;
   font-size: 18px;
 }
@@ -64,6 +64,7 @@
   cursor: pointer;
   user-select: none;
   color: var(--cell-text-number);
+  background-color: transparent;
   grid-column: 2 / 3;
   grid-row: 2 / 3;
 }
