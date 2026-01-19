@@ -27,6 +27,11 @@ html {
   --color-border-default: var(--stone-7);
   --color-border-subtle: var(--stone-8);
 
+  --accent-primary: #f59e0b;
+  --accent-secondary: #ef4444;
+  --accent-tertiary: #8b5cf6;
+  --accent-glow: rgba(245, 158, 11, 0.3);
+
   /* Text */
   --color-text-primary: var(--indigo-2);
   --color-text-secondary: var(--stone-6);
@@ -59,6 +64,31 @@ html {
     hint
     focus
   */
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 30px var(--accent-glow);
 }
 
 /* ===== Base Styles ===== */
