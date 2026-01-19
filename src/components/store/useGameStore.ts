@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
+import { peers } from '../utils/indices'
+import * as draftHeleprs from './helpers/draftHelpers'
 
 // We could also add helper functions like:
 //  hasCandidate(value:number)
@@ -12,6 +14,7 @@ export type Cell = {
   highlightedCandidates: number
   strikedCandidates: number
   given: boolean
+  hasConflict: boolean
 }
 
 export type State = {
@@ -49,6 +52,7 @@ const initialState: State = {
     highlightedCandidates: 0,
     strikedCandidates: 0,
     given: !!defaultSudokuNumbers[i],
+    hasConflict: false,
   })),
   selectedCellIndex: null,
 }
@@ -73,9 +77,12 @@ const useGameStore = create<StoreState>()(
             if (cell.value === value) {
               return // returning early tells immer and zustard there is nothing to do - no-op
             }
+
+            cell.value = value
+            draftHeleprs.updateConflictsInDraft(state, index, value)
+
             // with immer, we can just update what we wanted changed and immer takes care of the rest
             // See: "Store implementation with Immer" in our notes.
-            cell.value = value
           }),
 
         removeValue: (index) =>
@@ -84,7 +91,10 @@ const useGameStore = create<StoreState>()(
             if (cell.value === null) {
               return
             }
+
+            draftHeleprs.unmarkNonConflictsInDraft(state, index)
             cell.value = null
+            cell.hasConflict = false
           }),
 
         addCandidate: (index, candidate) =>

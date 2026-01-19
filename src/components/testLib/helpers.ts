@@ -19,6 +19,7 @@ export function createCell(cell: Partial<Cell> = {}): Cell {
     highlightedCandidates: 0,
     strikedCandidates: 0,
     given: false,
+    hasConflict: false,
     ...cell,
   }
 }

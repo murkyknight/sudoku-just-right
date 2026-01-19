@@ -22,6 +22,10 @@
   background-color: var(--cell-bg-selected);
 }
 
+.cell.conflict {
+  background-color: var(--cell-bg-error);
+}
+
 .cell .candidate {
   cursor: pointer;
   width: 100%;

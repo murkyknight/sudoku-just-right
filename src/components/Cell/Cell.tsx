@@ -138,6 +138,7 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
       className={clsx(styles.cell, additionalClasses, {
         [styles.selected]: isSelected,
         [styles.given]: cell.given,
+        [styles.conflict]: cell.hasConflict,
       })}
       onBlur={deselectCell}
       onFocus={handleFocus}

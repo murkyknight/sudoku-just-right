@@ -93,6 +93,7 @@ export const cellBox: number[] = Array.from({ length: 81 }, (_, i) => {
  * The peers array maps each Sudoku cell (0..80) to the list of other cell indices that share 
  * a constraint with it: same row, same column, or same 3×3 box. It’s a precomputed static index 
  * used to quickly find all cells that must not contain the same digit as a given cell.
+ * NOTE: Peer list returned excludes index used to retive peer list
 
 Why this is useful (practical uses):
 
