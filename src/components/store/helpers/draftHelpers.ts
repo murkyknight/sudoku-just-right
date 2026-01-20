@@ -10,16 +10,12 @@ export function updateConflictsInDraft(
   cellIndex: number,
   selectedValue: number,
 ) {
-  unmarkNonConflictsInDraft(draft, cellIndex)
+  clearResolvedPeerConflictsForCellInDraft(draft, cellIndex)
   markConflictsInDraft(draft, cellIndex, selectedValue)
 }
 
 // private
-function markConflictsInDraft(
-  draft: Draft<State>,
-  cellIndex: number,
-  selectedValue: number,
-) {
+function markConflictsInDraft(draft: Draft<State>, cellIndex: number, selectedValue: number) {
   const cell = draft.board[cellIndex]
   const placedCellPeers = peers[cellIndex]
 
@@ -32,24 +28,22 @@ function markConflictsInDraft(
   }
 }
 
-
-// TODO: we still have an issue with this senario:
-// - Start with a valid cell value
-// - Then update the same cell with a duplicate value - should flag validation
-// - Now go back to valid value - cell is still showing validation error when it shouldnt 
-
-// Another bug:
-// Start with a column with 1 conflict
-// then add another of the same conflict number - we should have 3 numbers min in conflic
-// Change last number to a valid number
-// expected, cell goes back to normal - actual - the cell is still hasConflict = true
-// ========================================================
-// WRITE TESTS BEFORE TOUCHING THIS CODE AGAIN!!!!!
-// ========================================================
-export function unmarkNonConflictsInDraft(draft: Draft<State>, targetCellIndex: number) {
+/**
+ * Re-evaluates conflicted peers for target cell. 
+ * Only clears conflicts that are no longer valid relative to the target cell.
+ * (i.e., it won’t blindly remove flags that come from other conflicting cells).
+ * 
+ * @param draft - Immer draft that we want to update
+ * @param targetCellIndex - The cell we want to clear all resolved peer conflicts from
+ */
+export function clearResolvedPeerConflictsForCellInDraft(
+  draft: Draft<State>,
+  targetCellIndex: number,
+) {
   // const startingCell = draft.board[targetCellIndex]
   // const targetValue = startingCell.value
 
+  // TODO: solve this:
   // HACKY: need to include target index becuase it doesnt come with peers and we need to remove highlight if we choose valid number next
   // can we solve this better? - Maybe create a peersInclusive
   const targetPeers = [...peers[targetCellIndex], targetCellIndex]
@@ -86,6 +80,7 @@ function unmarkConflictsOfCellInDraft(
 
   const foundConflictCellIndexes = []
 
+  // Search for conflicts
   for (const peerIndex of targetPeers) {
     // if we update new cell first then unmark we don't need `skipCellIndex` aka `peerIndex === skipCellIndex`
     if (peerIndex === skipCellIndex || peerIndex === targetCellIndex) {

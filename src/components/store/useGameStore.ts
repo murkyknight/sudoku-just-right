@@ -2,7 +2,6 @@ import { create } from 'zustand'
 import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
-import { peers } from '../utils/indices'
 import * as draftHeleprs from './helpers/draftHelpers'
 
 // We could also add helper functions like:
@@ -57,93 +56,97 @@ const initialState: State = {
   selectedCellIndex: null,
 }
 
-const useGameStore = create<StoreState>()(
-  devtools(
-    immer(
-      combine(initialState, (set, _get) => ({
-        selectCell: (index) =>
-          set((state) => {
-            state.selectedCellIndex = index
-          }),
+export const createUseStore = () =>
+  create<StoreState>()(
+    devtools(
+      immer(
+        combine(initialState, (set, _get) => ({
+          selectCell: (index) =>
+            set((state) => {
+              state.selectedCellIndex = index
+            }),
 
-        removeSelectedCell: () =>
-          set((state) => {
-            state.selectedCellIndex = null
-          }),
+          removeSelectedCell: () =>
+            set((state) => {
+              state.selectedCellIndex = null
+            }),
 
-        placeValue: (index, value) =>
-          set((state) => {
-            const cell = state.board[index]
-            if (cell.value === value) {
-              return // returning early tells immer and zustard there is nothing to do - no-op
-            }
+          placeValue: (index, value) =>
+            set((state) => {
+              const cell = state.board[index]
+              if (cell.value === value) {
+                return // returning early tells immer and zustard there is nothing to do - no-op
+              }
 
-            cell.value = value
-            draftHeleprs.updateConflictsInDraft(state, index, value)
+              cell.value = value
+              draftHeleprs.updateConflictsInDraft(state, index, value)
 
-            // with immer, we can just update what we wanted changed and immer takes care of the rest
-            // See: "Store implementation with Immer" in our notes.
-          }),
+              // with immer, we can just update what we wanted changed and immer takes care of the rest
+              // See: "Store implementation with Immer" in our notes.
+            }),
 
-        removeValue: (index) =>
-          set((state) => {
-            const cell = state.board[index]
-            if (cell.value === null) {
-              return
-            }
+          removeValue: (index) =>
+            set((state) => {
+              const cell = state.board[index]
+              if (cell.value === null) {
+                return
+              }
 
-            draftHeleprs.unmarkNonConflictsInDraft(state, index)
-            cell.value = null
-            cell.hasConflict = false
-          }),
+              cell.value = null
+              draftHeleprs.clearResolvedPeerConflictsForCellInDraft(state, index)
+              // cell.hasConflict = false // I don't think we need this since the helper sets this
+              // - although now we depend on the helper - which means we need to have this scenario under store test
+            }),
 
-        addCandidate: (index, candidate) =>
-          set((state) => {
-            const cell = state.board[index]
-            cell.candidates = addDigit(cell.candidates, candidate)
-          }),
-
-        removeCandidate: (index, candidate) =>
-          set((state) => {
-            const cell = state.board[index]
-            cell.strikedCandidates = removeDigit(cell.strikedCandidates, candidate)
-            cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-            cell.candidates = removeDigit(cell.candidates, candidate)
-          }),
-
-        highlightCandidate: (index, candidate) =>
-          set((state) => {
-            const cell = state.board[index]
-            if (!hasDigit(cell.candidates, candidate)) {
+          addCandidate: (index, candidate) =>
+            set((state) => {
+              const cell = state.board[index]
               cell.candidates = addDigit(cell.candidates, candidate)
-            }
-            cell.highlightedCandidates = addDigit(cell.highlightedCandidates, candidate)
-          }),
+            }),
 
-        removeCandidateHighlight: (index, candidate) =>
-          set((state) => {
-            const cell = state.board[index]
-            cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-          }),
+          removeCandidate: (index, candidate) =>
+            set((state) => {
+              const cell = state.board[index]
+              cell.strikedCandidates = removeDigit(cell.strikedCandidates, candidate)
+              cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+              cell.candidates = removeDigit(cell.candidates, candidate)
+            }),
 
-        strikeCandidate: (index, candidate) =>
-          set((state) => {
-            const cell = state.board[index]
-            if (!hasDigit(cell.candidates, candidate)) {
-              return
-            }
-            cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-            cell.strikedCandidates = addDigit(cell.strikedCandidates, candidate)
-          }),
+          highlightCandidate: (index, candidate) =>
+            set((state) => {
+              const cell = state.board[index]
+              if (!hasDigit(cell.candidates, candidate)) {
+                cell.candidates = addDigit(cell.candidates, candidate)
+              }
+              cell.highlightedCandidates = addDigit(cell.highlightedCandidates, candidate)
+            }),
 
-        removeCandidateStrike: (index, candidate) =>
-          set((state) => {
-            const cell = state.board[index]
-            cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-          }),
-      })),
+          removeCandidateHighlight: (index, candidate) =>
+            set((state) => {
+              const cell = state.board[index]
+              cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+            }),
+
+          strikeCandidate: (index, candidate) =>
+            set((state) => {
+              const cell = state.board[index]
+              if (!hasDigit(cell.candidates, candidate)) {
+                return
+              }
+              cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+              cell.strikedCandidates = addDigit(cell.strikedCandidates, candidate)
+            }),
+
+          removeCandidateStrike: (index, candidate) =>
+            set((state) => {
+              const cell = state.board[index]
+              cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+            }),
+        })),
+      ),
     ),
-  ),
-)
+  )
 
-export default useGameStore
+  // Default singleton for app usage (to not be used in tests)
+  const useGameStore = createUseStore()
+  export default useGameStore
