@@ -1,73 +1,95 @@
-# React + TypeScript + Vite
+# Sudoku Just Right
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### ⚠️ Note: This project is heavily under development. ⚠️
 
-Currently, two official plugins are available:
+## Licence
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This repository is proprietary. All rights are reserved by the copyright holder (Demian Myers). The code and assets in this repo are for evaluation and review only. You may not copy, publish, distribute, modify, or use any part of this repository without prior written permission. See [LICENSE.md](https://github.com/murkyknight/sudoku-just-right/blob/main/LICENSE.md) for more infomation.
 
-## React Compiler
+---
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## Why does this project exist?
+Online Sudoku apps, to me, lack the charm of pen-and-paper Sudoku. While some offer note-taking, it's usually bare-minimum functionality with no way to highlight or strike a candidate. What's' worse, is the user experience for entering notes. Clicking a cell, clicking the "note" button, then selecting a candidate from the on-screen keypad is tedious and awkward to repeat (note-taking is essential for any challenging Sudoku). The same friction applies when selecting a number for a cell: you click the cell, then click the number pad (and hope you remembered to uncheck the notes toggle, or you'll just add a note). You can press a number key, but that breaks concentration as you look at the keyboard and move your hands.
 
-## Expanding the ESLint configuration
+Even writing the above felt tedious and boring. Sudoku Just Right aims to bring the fun of pen-and-paper Sudoku back, plus a range of usability and quality-of-life improvements, such as:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Single-click candidate placement in a cell
+- Long-press for single-number cell selection
+- Simple keyboard shortcut + click to highlight, strike, or remove a candidate
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The main goal is to speed up gameplay and sharpen focus while eliminating tedious, awkward, and repetitive button clicks.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+----
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+A Sudoku UI built with React + TypeScript + Vite. This README explains how to build and start the app and summarizes the current features.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Quick setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Clone
+   - git clone https://github.com/murkyknight/sudoku-just-right
+   - cd sudoku-just-right
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. Install dependencies
+   - npm install
+   - (pnpm or yarn should also work)
+
+3. Recommended Node
+   - Use a recent LTS (Node 18+ recommended).
+
+## Development
+
+- Start development server (Vite with HMR)
+  - npm run dev
+  - Default: http://localhost:5173
+
+- Run Storybook (component dev environment)
+  - npm run storybook
+  - Default: http://localhost:6006
+
+
+## Tests
+
+- Run unit tests:
+  - npm run test
+
+- Run Storybook tests (in terminal):
+  - npm run test-storybook
+
+## Current features (what works now)
+
+- Core stack
+  - React (v19), TypeScript, Vite
+  - Zustand (with Immer and DevTools) for state management (will also add persist for local game persistence)
+  - open-props for styling primitives
+  - Vitest for tests and Storybook for component development
+
+- Cells & state
+  - Candidate handling
+    - Candidates are stored and manipulated via compact bitmask helpers for lighting fast mutations:
+      - addDigit, removeDigit, hasDigit, addDigits
+    - Candidate actions:
+      - Normal click: add/toggle candidate
+      - Ctrl + click: highlight candidate (also adds candidate if missing)
+      - Meta (Cmd/Win) + click: remove candidate
+      - Shift + Meta + click: strike a candidate
+
+- Number selector
+  - Long-press (or keyboard Enter/Space) opens a Number Selector dialog (rendered via a react portal).
+  - The Number Selector allows placing a digit or erasing the cell value in one click and hold action.
+  - Escape also closes the selector and deselects the cell.
+
+- Store & helpers
+  - Global store is in src/components/store/useGameStore.ts, built with Zustand + immer.
+  - Conflict detection and peer updates are handled via helpers referenced from the store.
+
+## Coming features
+
+- Undo/Redo - to quickly undo mistakes or misclicks (keyboard shortcut native, of course)
+- Gentle Hints - that encourage and empower the player by explaining the technique behind the hint while highlighting the house the hint relates to so the player can discover it themselves.
+- Batch candidate updates - click and drag across multiple cells to update all candidates
+- Draft Mode - toggle draft mode to help with forcing chains - update the board in any way then untoggle to return to your original game state.
+
+
+## Contributing / Development notes
+
+- This repository is private and under active development. Expect changes and possible breaking refactors.
