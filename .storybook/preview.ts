@@ -5,6 +5,7 @@ import 'open-props/aspects.min.css'
 import 'open-props/borders.min.css'
 import 'open-props/colors.min.css'
 import 'open-props/easings.min.css'
+import 'open-props/fonts.min.css'
 import 'open-props/shadows.min.css'
 import '../src/styles/global.css'
 

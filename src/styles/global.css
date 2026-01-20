@@ -93,6 +93,8 @@ html {
 
 /* ===== Base Styles ===== */
   body {
+  /* font-family: var(--font-rounded-sans); */
+  /* // TODO: check how to gaurentee fonts */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   min-height: 100vh;
 
