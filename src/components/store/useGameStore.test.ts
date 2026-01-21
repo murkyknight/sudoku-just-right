@@ -1,5 +1,4 @@
 import { getConflictingCellIndexes } from '../testLib/boardTestHelpers'
-import { updateBoard, type CellPlacement } from '../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../utils/indices'
 import { createUseStore, type StoreState } from './useGameStore'
 
@@ -11,17 +10,6 @@ describe('useGameStore', () => {
     useStore = createUseStore()
     store = () => useStore.getState()
   })
-
-  // const placedCellIndex = 1
-  // const placedValue = 8
-  // updateStoreBoard({
-  //   placedCells: [{ cellIndex: placedCellIndex, cellPartial: { value: placedValue } }],
-  // })
-  function updateStoreBoard({ placedCells }: { placedCells: Array<CellPlacement> }) {
-    useStore.setState((state) => {
-      state.board = updateBoard(state.board, { placedCells })
-    })
-  }
 
   function getValueAt(cellIndex: number): number | null {
     return store().board[cellIndex].value
