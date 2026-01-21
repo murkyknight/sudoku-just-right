@@ -89,7 +89,7 @@ describe('draftHelpers', () => {
         ])
       })
 
-      it('marks all affected cells when the placed value conflicts across multiple groups (row/column/box)', () => {
+      it('marks all affected cells when the placed value conflicts across multiple units (row/column/box)', () => {
         const placedCellIndex = 1
         const placedValue = 8
         const baseState = createStoreState({
@@ -427,7 +427,7 @@ describe('draftHelpers', () => {
         expect(nonConflictingPlacementValue).toEqual(1) // unchanged
       })
 
-      it('only removes conflicted target when multiple of same value exist in same house, leaves the rest conflicted', () => {
+      it('only removes conflicted target when multiple of same value exist in same unit, leaves the rest conflicted', () => {
         const targetCellIndex = 0
         const conflictedIndex1 = 1
         const conflictedIndex2 = 2

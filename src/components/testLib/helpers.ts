@@ -55,6 +55,18 @@ export function createBoard(
   return board
 }
 
+export function updateBoard(board: Array<Cell>, { placedCells }: CreateBoardProps): Array<Cell> {
+  for (const cellPlacement of placedCells) {
+    const currentCell = board[cellPlacement.cellIndex]
+    board[cellPlacement.cellIndex] = {
+      ...currentCell,
+      ...cellPlacement.cellPartial,
+    }
+  }
+
+  return board
+}
+
 // Store Creators
 
 export function createStoreState(state: Partial<State> = {}): State {
