@@ -2,9 +2,6 @@ import type { Draft } from 'immer'
 import { peers } from '../../utils/indices'
 import type { State } from '../useGameStore'
 
-// draftHeleprs.unmarkNonConflictsInDraft(state, index)
-//             draftHeleprs.markConflictsInDraft(state, index, value)
-
 export function updateConflictsInDraft(
   draft: Draft<State>,
   cellIndex: number,
@@ -12,20 +9,6 @@ export function updateConflictsInDraft(
 ) {
   clearResolvedPeerConflictsForCellInDraft(draft, cellIndex)
   markConflictsInDraft(draft, cellIndex, selectedValue)
-}
-
-// private
-function markConflictsInDraft(draft: Draft<State>, cellIndex: number, selectedValue: number) {
-  const cell = draft.board[cellIndex]
-  const placedCellPeers = peers[cellIndex]
-
-  for (const peerIndex of placedCellPeers) {
-    const peer = draft.board[peerIndex]
-    if (peer.value === selectedValue) {
-      peer.hasConflict = true
-      cell.hasConflict = true
-    }
-  }
 }
 
 /**
@@ -104,3 +87,17 @@ function unmarkConflictsOfCellInDraft(
 // loops over indices and looks for `value` -> returns index number if found
 // skipIndex is here so we don't count the cell whos value we are looking for (as that cell would obviously have teh same number as itself lol)
 // findValue(draft: Draft<State>, value: number, indices: number[], skipIndex: number): number
+
+// private
+function markConflictsInDraft(draft: Draft<State>, cellIndex: number, selectedValue: number) {
+  const cell = draft.board[cellIndex]
+  const placedCellPeers = peers[cellIndex]
+
+  for (const peerIndex of placedCellPeers) {
+    const peer = draft.board[peerIndex]
+    if (peer.value === selectedValue) {
+      peer.hasConflict = true
+      cell.hasConflict = true
+    }
+  }
+}
