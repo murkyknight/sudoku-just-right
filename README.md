@@ -1,4 +1,5 @@
 # Sudoku Just Right
+![Static Badge](https://img.shields.io/badge/Licence-All%20rights%20reserved-lightgray)
 
 ### ⚠️ Note: This project is heavily under development. ⚠️
 
