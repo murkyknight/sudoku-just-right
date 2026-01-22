@@ -4,6 +4,13 @@ import { createBoard, createStoreState } from '../../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../../utils/indices'
 import { clearResolvedPeerConflictsForCellInDraft, updateConflictsInDraft } from './draftHelpers'
 
+/**
+ * Mental Note:
+ * The draft needs to be updated first before we can mark or resolve any conflicts on the target cell.
+ * If the draft is not updated, how will we know what will be changed? We can't see the future, so we have
+ * no choice but to wait until the draft is updated to reconclile conflicts.
+ */
+
 describe('draftHelpers', () => {
   describe('updateConflictsInDraft()', () => {
     describe('with no existing conflicts on board', () => {
@@ -140,18 +147,20 @@ describe('draftHelpers', () => {
     describe('with existing conflicts on board', () => {
       it('clears conflicts introduced by the previously placed value when those conflicts no longer exist', () => {
         const placedIndex = 2
-        const placedValue = 5
+        const updatedPlacedValue = 1
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
-              { cellIndex: placedIndex, cellPartial: { value: placedValue, hasConflict: true } },
+              {
+                cellIndex: placedIndex,
+                cellPartial: { value: updatedPlacedValue, hasConflict: true }, // was value 5
+              },
               { cellIndex: 3, cellPartial: { hasConflict: true } },
             ],
           }),
         })
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
-        const updatedPlacedValue = 1
         const next = produce(baseState, (draft) => {
           updateConflictsInDraft(draft, placedIndex, updatedPlacedValue)
         })
@@ -309,13 +318,13 @@ describe('draftHelpers', () => {
     })
 
     describe('with existing conflicts on board', () => {
-      it('clears conflicts on the target cell and its same-row peer', () => {
+      it('clears conflicts for removed target cell value and its same-row peer', () => {
         const targetCellIndex = 2
         const conflictedIndex = 3
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
-              { cellIndex: targetCellIndex, cellPartial: { value: 5, hasConflict: true } },
+              { cellIndex: targetCellIndex, cellPartial: { value: null, hasConflict: true } }, // digit removed: 5
               { cellIndex: conflictedIndex, cellPartial: { hasConflict: true } },
             ],
           }),
@@ -330,13 +339,13 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
       })
 
-      it('clears conflicts on the target cell and its same-column peer', () => {
+      it('clears conflicts for removed target cell value and its same-column peer', () => {
         const targetCellIndex = 2
         const conflictedIndex = 47
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
-              { cellIndex: targetCellIndex, cellPartial: { value: 7, hasConflict: true } },
+              { cellIndex: targetCellIndex, cellPartial: { value: null, hasConflict: true } },
               { cellIndex: conflictedIndex, cellPartial: { hasConflict: true } },
             ],
           }),
@@ -351,13 +360,13 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
       })
 
-      it('clears conflicts on the target cell and its same-box peer', () => {
+      it('clears conflicts for removed target cell value and its same-box peer', () => {
         const targetCellIndex = 1
         const conflictedIndex = 11
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
-              { cellIndex: targetCellIndex, cellPartial: { value: 9, hasConflict: true } },
+              { cellIndex: targetCellIndex, cellPartial: { value: null, hasConflict: true } }, // digit removed: 9
               { cellIndex: conflictedIndex, cellPartial: { hasConflict: true } },
             ],
           }),
@@ -372,7 +381,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
       })
 
-      it('clears conflicts on the target cell and its same box/column/row peers', () => {
+      it('clears conflicts for removed target cell value and its same box/column/row peers', () => {
         const targetCellIndex = 1
         const conflictedBoxIndex = 9
         const conflictedRowIndex = 8
@@ -380,7 +389,7 @@ describe('draftHelpers', () => {
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
-              { cellIndex: targetCellIndex, cellPartial: { value: 8, hasConflict: true } },
+              { cellIndex: targetCellIndex, cellPartial: { value: null, hasConflict: true } }, // digit removed: 8
               { cellIndex: conflictedBoxIndex, cellPartial: { hasConflict: true } },
               { cellIndex: conflictedRowIndex, cellPartial: { hasConflict: true } },
               { cellIndex: conflictedColIndex, cellPartial: { hasConflict: true } },
@@ -497,4 +506,3 @@ describe('draftHelpers', () => {
     })
   })
 })
-

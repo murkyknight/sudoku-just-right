@@ -8,16 +8,17 @@ export function updateConflictsInDraft(
   selectedValue: number,
 ) {
   clearResolvedPeerConflictsForCellInDraft(draft, cellIndex)
-  markConflictsInDraft(draft, cellIndex, selectedValue)
+  markAllPeerConflictsForCellInDraft(draft, cellIndex, selectedValue)
 }
 
 /**
  * Re-evaluates conflicted peers for target cell. 
- * Only clears conflicts that are no longer valid relative to the target cell.
+ * Only clears conflicts that are no longer valid relative to the target cell, including the target cell.
  * (i.e., it won’t blindly remove flags that come from other conflicting cells).
  * 
  * @param draft - Immer draft that we want to update
- * @param targetCellIndex - The cell we want to clear all resolved peer conflicts from
+ * @param targetCellIndex - The cell we want to clear all resolved peer conflicts from,
+ *  which may also include resolving a conflict on itself
  */
 export function clearResolvedPeerConflictsForCellInDraft(
   draft: Draft<State>,
@@ -44,44 +45,36 @@ export function clearResolvedPeerConflictsForCellInDraft(
   // check if they still have conflicts
 
   for (const conflictedCellIndex of currentlyConflictedCellsInPeers) {
-    unmarkConflictsOfCellInDraft(draft, conflictedCellIndex, targetCellIndex)
+    clearConflictIfResolved(draft, conflictedCellIndex)
 
     // we need to skip the conflictedCellIndex BUT we MUST set its cell to hasConflict = false IF we find no other cells
     // NOTE: If we do the update first THEN unmark conflicts, we don't need to to the above comment
   }
 }
 
-function unmarkConflictsOfCellInDraft(
-  draft: Draft<State>,
-  targetCellIndex: number,
-  skipCellIndex: number,
-) {
-  console.log('targetCellIndex: ', targetCellIndex)
+function clearConflictIfResolved(draft: Draft<State>, targetCellIndex: number) {
   const startingCell = draft.board[targetCellIndex]
   const targetValue = startingCell.value
-  const targetPeers = peers[targetCellIndex] // peer list wont contain targetCellIndex
 
-  const foundConflictCellIndexes = []
-
-  // Search for conflicts
-  for (const peerIndex of targetPeers) {
-    // if we update new cell first then unmark we don't need `skipCellIndex` aka `peerIndex === skipCellIndex`
-    if (peerIndex === skipCellIndex || peerIndex === targetCellIndex) {
-      continue
-    }
-
-    const cell = draft.board[peerIndex]
-
-    if (cell.value && cell.hasConflict && cell.value === targetValue) {
-      foundConflictCellIndexes.push(peerIndex) // should be 0 length if no conflicts
-    }
-  }
-
-  console.log('foundConflictCellIndexes: ', foundConflictCellIndexes.length)
-
-  if (foundConflictCellIndexes.length === 0) {
+  const targetHasNoValue = targetValue === null
+  if (!hasConflicts(draft, targetCellIndex) || targetHasNoValue) {
     startingCell.hasConflict = false
   }
+}
+
+function hasConflicts(draft: Draft<State>, cellIndex: number): boolean {
+  const startingCell = draft.board[cellIndex]
+  const peersOfStartingCell = peers[cellIndex] // not including startingCell
+
+  let hasConflict = false
+  for (const peerIndex of peersOfStartingCell) {
+    const peerCell = draft.board[peerIndex]
+    if (peerCell.value === startingCell.value) {
+      hasConflict = true
+    }
+  }
+
+  return hasConflict
 }
 
 // loops over indices and looks for `value` -> returns index number if found
@@ -89,7 +82,12 @@ function unmarkConflictsOfCellInDraft(
 // findValue(draft: Draft<State>, value: number, indices: number[], skipIndex: number): number
 
 // private
-function markConflictsInDraft(draft: Draft<State>, cellIndex: number, selectedValue: number) {
+// why do we need selectedValue?? We can just get the selected value from cell.value
+function markAllPeerConflictsForCellInDraft(
+  draft: Draft<State>,
+  cellIndex: number,
+  selectedValue: number,
+) {
   const cell = draft.board[cellIndex]
   const placedCellPeers = peers[cellIndex]
 
