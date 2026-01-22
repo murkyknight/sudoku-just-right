@@ -1,5 +1,5 @@
 import type { Draft } from 'immer'
-import { peers } from '../../utils/indices'
+import { peers, peersInclusive } from '../../utils/indices'
 import type { State } from '../useGameStore'
 
 export function updateConflictsInDraft(
@@ -18,37 +18,20 @@ export function updateConflictsInDraft(
  * 
  * @param draft - Immer draft that we want to update
  * @param targetCellIndex - The cell we want to clear all resolved peer conflicts from,
- *  which may also include resolving a conflict on itself
+ *  which may also include resolving a conflict on itself.
  */
 export function clearResolvedPeerConflictsForCellInDraft(
   draft: Draft<State>,
   targetCellIndex: number,
 ) {
-  // const startingCell = draft.board[targetCellIndex]
-  // const targetValue = startingCell.value
+  const targetPeers = peersInclusive[targetCellIndex]
 
-  // TODO: solve this:
-  // HACKY: need to include target index becuase it doesnt come with peers and we need to remove highlight if we choose valid number next
-  // can we solve this better? - Maybe create a peersInclusive
-  const targetPeers = [...peers[targetCellIndex], targetCellIndex]
-
-  // once target value of cell is gone,
-  // now I need to go and check all cells in peers that had conflics - are they still conflicted?
-
-  // this will include the original target cell that we're removing - means we'll need to skip it below
-  const currentlyConflictedCellsInPeers = targetPeers.filter(
+  const currentlyConflictedPeerCellIndexes = targetPeers.filter(
     (peerIndex) => draft.board[peerIndex].hasConflict,
   )
 
-  console.log('currentlyConflictedCellsInPeers: ', currentlyConflictedCellsInPeers)
-
-  // check if they still have conflicts
-
-  for (const conflictedCellIndex of currentlyConflictedCellsInPeers) {
+  for (const conflictedCellIndex of currentlyConflictedPeerCellIndexes) {
     clearConflictIfResolved(draft, conflictedCellIndex)
-
-    // we need to skip the conflictedCellIndex BUT we MUST set its cell to hasConflict = false IF we find no other cells
-    // NOTE: If we do the update first THEN unmark conflicts, we don't need to to the above comment
   }
 }
 
