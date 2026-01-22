@@ -53,18 +53,25 @@ export function clearResolvedPeerConflictsForCellInDraft(
 }
 
 function clearConflictIfResolved(draft: Draft<State>, targetCellIndex: number) {
-  const startingCell = draft.board[targetCellIndex]
-  const targetValue = startingCell.value
+  const targetCell = draft.board[targetCellIndex]
+  const targetValue = targetCell.value
 
-  const targetHasNoValue = targetValue === null
-  if (!hasConflicts(draft, targetCellIndex) || targetHasNoValue) {
-    startingCell.hasConflict = false
+  const targetCellHasNoValue = targetValue === null
+  if (!hasConflicts(draft, targetCellIndex) || targetCellHasNoValue) {
+    targetCell.hasConflict = false
   }
 }
 
+/**
+ * Check to see if a given cell has conflicts
+ *
+ * @param draft
+ * @param cellIndex Target cell
+ * @returns true if at least one conflict is found within peers of given cellIndex
+ */
 function hasConflicts(draft: Draft<State>, cellIndex: number): boolean {
   const startingCell = draft.board[cellIndex]
-  const peersOfStartingCell = peers[cellIndex] // not including startingCell
+  const peersOfStartingCell = peers[cellIndex]
 
   let hasConflict = false
   for (const peerIndex of peersOfStartingCell) {
