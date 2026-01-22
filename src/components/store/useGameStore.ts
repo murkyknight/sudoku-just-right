@@ -79,7 +79,7 @@ export const createUseStore = () =>
               }
 
               cell.value = value
-              draftHeleprs.updateConflictsInDraft(state, index, value)
+              draftHeleprs.updateConflictsForCellInDraft(state, index)
 
               // with immer, we can just update what we wanted changed and immer takes care of the rest
               // See: "Store implementation with Immer" in our notes.
@@ -94,8 +94,6 @@ export const createUseStore = () =>
 
               cell.value = null
               draftHeleprs.clearResolvedPeerConflictsForCellInDraft(state, index)
-              // cell.hasConflict = false // I don't think we need this since the helper sets this
-              // - although now we depend on the helper - which means we need to have this scenario under store test
             }),
 
           addCandidate: (index, candidate) =>

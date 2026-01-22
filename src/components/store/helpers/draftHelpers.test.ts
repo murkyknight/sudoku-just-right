@@ -2,7 +2,10 @@ import { produce } from 'immer'
 import { getConflictingCellIndexes } from '../../testLib/boardTestHelpers'
 import { createBoard, createStoreState } from '../../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../../utils/indices'
-import { clearResolvedPeerConflictsForCellInDraft, updateConflictsInDraft } from './draftHelpers'
+import {
+  clearResolvedPeerConflictsForCellInDraft,
+  updateConflictsForCellInDraft,
+} from './draftHelpers'
 
 /**
  * Mental Note:
@@ -25,7 +28,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(0)
 
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, placedCellIndex, placedValue)
+          updateConflictsForCellInDraft(draft, placedCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -43,7 +46,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, placedCellIndex, placedValue)
+          updateConflictsForCellInDraft(draft, placedCellIndex)
         })
 
         const expectedConflictRowCellIndex = 3
@@ -64,7 +67,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, placedCellIndex, placedValue)
+          updateConflictsForCellInDraft(draft, placedCellIndex)
         })
 
         const expectedConflictColumnCellIndex = 47
@@ -85,7 +88,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, placedCellIndex, placedValue)
+          updateConflictsForCellInDraft(draft, placedCellIndex)
         })
 
         const expectedConflictBoxCellIndex = 11
@@ -106,7 +109,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, placedCellIndex, placedValue)
+          updateConflictsForCellInDraft(draft, placedCellIndex)
         })
 
         const expectedConflictBoxCellIndex = 9
@@ -135,7 +138,7 @@ describe('draftHelpers', () => {
 
         // try place same value again
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, placedIndex, placedValue)
+          updateConflictsForCellInDraft(draft, placedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -162,7 +165,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, placedIndex, updatedPlacedValue)
+          updateConflictsForCellInDraft(draft, placedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -172,43 +175,49 @@ describe('draftHelpers', () => {
         const placedIndex = 2
         const placedValue = 5
         const conflictedIndex = 3
+        const nextPlacedIndex = 1
+        const nonConflictingPlacedValue = 1
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
               { cellIndex: placedIndex, cellPartial: { value: placedValue, hasConflict: true } },
               { cellIndex: conflictedIndex, cellPartial: { hasConflict: true } },
+              { cellIndex: nextPlacedIndex, cellPartial: { value: nonConflictingPlacedValue } },
             ],
           }),
         })
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
-        const nextPlacedIndex = 1
-        const nonConflictingPlacedValue = 1
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, nextPlacedIndex, nonConflictingPlacedValue)
+          updateConflictsForCellInDraft(draft, nextPlacedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual([placedIndex, conflictedIndex])
+        expect(next.board[nextPlacedIndex].value).toEqual(1)
       })
 
       it('preserves continuously existing conflicts when an UNRELATED placement adds new conflicts', () => {
         const placedIndex = 2
         const placedValue = 5
         const conflictedIndex = 3
+        const nextPlacedIndex = 1
+        const nextPlacedValue = 6
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
               { cellIndex: placedIndex, cellPartial: { value: placedValue, hasConflict: true } },
               { cellIndex: conflictedIndex, cellPartial: { hasConflict: true } },
+              {
+                cellIndex: nextPlacedIndex,
+                cellPartial: { value: nextPlacedValue, hasConflict: false },
+              },
             ],
           }),
         })
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
-        const nextPlacedIndex = 1
-        const nextPlacedValue = 6
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, nextPlacedIndex, nextPlacedValue)
+          updateConflictsForCellInDraft(draft, nextPlacedIndex)
         })
 
         const newConflictedIndexes = [nextPlacedIndex, 6]
@@ -221,19 +230,23 @@ describe('draftHelpers', () => {
         const placedIndex = 2
         const placedValue = 5
         const conflictedIndex = 3
+        const nextPlacedIndex = 10
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
-              { cellIndex: placedIndex, cellPartial: { value: placedValue, hasConflict: true } },
+              { cellIndex: placedIndex, cellPartial: { value: placedValue, hasConflict: true } }, // digit replaced: 5
               { cellIndex: conflictedIndex, cellPartial: { hasConflict: true } },
+              {
+                cellIndex: nextPlacedIndex,
+                cellPartial: { value: placedValue, hasConflict: false },
+              },
             ],
           }),
         })
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
-        const nextPlacedIndex = 10
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, nextPlacedIndex, placedValue)
+          updateConflictsForCellInDraft(draft, nextPlacedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual(
@@ -246,10 +259,14 @@ describe('draftHelpers', () => {
         const columnPlacedIndex = 56
         const placedValue = 9
         const conflictedGivenIndex = 11
+        const nonConflictedValue = 1
         const baseState = createStoreState({
           board: createBoard({
             placedCells: [
-              { cellIndex: boxPlacedIndex, cellPartial: { value: placedValue, hasConflict: true } },
+              {
+                cellIndex: boxPlacedIndex,
+                cellPartial: { value: nonConflictedValue, hasConflict: true }, // was value 9
+              },
               {
                 cellIndex: columnPlacedIndex,
                 cellPartial: { value: placedValue, hasConflict: true },
@@ -260,9 +277,8 @@ describe('draftHelpers', () => {
         })
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(3)
 
-        const nonConflictedValue = 1
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, boxPlacedIndex, nonConflictedValue)
+          updateConflictsForCellInDraft(draft, boxPlacedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual(
@@ -286,7 +302,7 @@ describe('draftHelpers', () => {
 
         // try place same value again
         const next = produce(baseState, (draft) => {
-          updateConflictsInDraft(draft, placedIndex, placedValue)
+          updateConflictsForCellInDraft(draft, placedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual([placedIndex, conflictedIndex])
