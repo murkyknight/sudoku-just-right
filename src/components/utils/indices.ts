@@ -88,7 +88,6 @@ export const cellBox: number[] = Array.from({ length: 81 }, (_, i) => {
   return Math.floor(r / 3) * 3 + Math.floor(c / 3)
 })
 
-// Peers for each cell
 /**
  * The peers array maps each Sudoku cell (0..80) to the list of other cell indices that share 
  * a constraint with it: same row, same column, or same 3×3 box. It’s a precomputed static index 
@@ -108,5 +107,13 @@ row/col/box membership repeatedly.
 export const peers: number[][] = Array.from({ length: 81 }, (_, i) => {
   const set = new Set<number>([...rows[cellRow[i]], ...cols[cellCol[i]], ...boxes[cellBox[i]]])
   set.delete(i)
+  return [...set]
+})
+
+/**
+ * Peer list that includes the given index used to retrieve the peer list.
+ */
+export const peersInclusive: number[][] = Array.from({ length: 81 }, (_, i) => {
+  const set = new Set<number>([...rows[cellRow[i]], ...cols[cellCol[i]], ...boxes[cellBox[i]]])
   return [...set]
 })
