@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { within } from '@testing-library/react'
+import { expect } from 'storybook/test'
 import GameBoard from './GameBoard'
 import { cssSelectorToRegEx } from './testLib/helpers'
 import { withFullBoardGameStore } from './testLib/storybook/decorators'
