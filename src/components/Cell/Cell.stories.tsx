@@ -1,8 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fireEvent, within } from '@testing-library/react'
 import { expect, screen, waitFor } from 'storybook/test'
-import { createCell, cssSelectorToRegEx, setMaskDigits, storeWithCell } from '../testLib/helpers'
+import {
+  createBoard,
+  createCell,
+  createStoreState,
+  cssSelectorToRegEx,
+  setMaskDigits,
+  storeWithCell,
+} from '../testLib/helpers'
 import { withGameStore, withOutsideDiv } from '../testLib/storybook/decorators'
+import { selectNumber } from '../testLib/storybook/helpers'
 import { addDigit } from '../utils/bitMaskHelper'
 import Cell from './Cell'
 
@@ -355,17 +363,17 @@ export const LongPressOpensNumberSelector: Story = {
 }
 
 export const CanUpdateCellNumber: Story = {
+  parameters: {
+    state: createStoreState({
+      board: createBoard(),
+    }),
+  },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement)
     const candidate = 1
 
     const candidateBtn = getCandidateButton(canvas, candidate) // could be any button
-    fireEvent.pointerDown(candidateBtn)
-    await waitFor(() => {
-      const numSelector = within(getNumberSelector())
-      const buttonOne = numSelector.getByRole('button', { name: '1' })
-      fireEvent.pointerUp(buttonOne)
-    })
+    await selectNumber(candidateBtn, '1')
 
     const cellBtn = await canvas.findByRole('button', { name: `cell-${args.index}` })
     await expect(cellBtn).toHaveTextContent(candidate.toString())

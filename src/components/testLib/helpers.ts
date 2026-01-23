@@ -39,7 +39,7 @@ export type CreateBoardProps = {
 }
 
 export function createBoard(
-  { placedCells }: CreateBoardProps,
+  { placedCells }: CreateBoardProps = { placedCells: [] },
   rawBoard = getDefaultBoard(),
 ): Array<Cell> {
   const board = createInitialState(rawBoard).board
