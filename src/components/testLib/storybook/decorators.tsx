@@ -4,7 +4,7 @@ import cellStyles from '../../Cell/Cell.module.css'
 import useGameStore, { type StoreState } from '../../store/useGameStore'
 import { createBoard, createStoreState } from '../helpers'
 
-export const withGameStore: Decorator = (Story, { parameters }) => {
+export const withBasicGameStore: Decorator = (Story, { parameters }) => {
   const state: Partial<StoreState> = parameters.state ?? {}
   useEffect(() => {
     useGameStore.setState(createStoreState(state))

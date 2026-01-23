@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 // import { expect, userEvent, within } from 'storybook/test'
 import { within } from '@testing-library/react'
 import Box from './Box'
-import { withGameStore } from './testLib/storybook/decorators'
 
 const meta = {
   title: 'Board/Box',

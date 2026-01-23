@@ -9,7 +9,7 @@ import {
   setMaskDigits,
   storeWithCell,
 } from '../testLib/helpers'
-import { withGameStore, withOutsideDiv } from '../testLib/storybook/decorators'
+import { withBasicGameStore, withOutsideDiv } from '../testLib/storybook/decorators'
 import { selectNumber } from '../testLib/storybook/helpers'
 import { addDigit } from '../utils/bitMaskHelper'
 import Cell from './Cell'
@@ -20,7 +20,7 @@ const meta = {
   args: {
     index: 0,
   },
-  decorators: [withGameStore, withOutsideDiv],
+  decorators: [withBasicGameStore, withOutsideDiv],
   parameters: {
     layout: 'centered',
   },
