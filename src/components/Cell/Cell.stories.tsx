@@ -58,6 +58,18 @@ export const Empty: Story = {
   },
 }
 
+export const Conflicted: Story = {
+  parameters: {
+    state: storeWithCell({ value: 1, hasConflict: true }),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement)
+    const cell = getCellButton(canvas, args.index)
+
+    await expect(cell).toHaveClass(cssSelectorToRegEx('conflicted'))
+  },
+}
+
 export const ClickingCandidateSelectsCell: Story = {
   play: async ({ canvasElement, userEvent, args }) => {
     const canvas = within(canvasElement)

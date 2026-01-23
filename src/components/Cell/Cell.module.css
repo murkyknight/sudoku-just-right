@@ -22,7 +22,7 @@
   background-color: var(--cell-bg-selected);
 }
 
-.cell.conflict {
+.cell.conflicted {
   background-color: var(--cell-bg-error);
 }
 
