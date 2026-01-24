@@ -12,6 +12,7 @@
   background-color: var(--cell-bg-default);
   position: relative;
   border: 1px solid var(--cell-border-default);
+  transition: box-shadow var(--transition-normal);
 }
 
 .cell.given {
@@ -23,7 +24,22 @@
 }
 
 .cell.conflicted {
-  background-color: var(--cell-bg-error);
+  box-shadow: inset 0 0 15px 3px var(--color-shadow-error);
+}
+
+.cellNumber {
+  font-size: 50px;
+  font-weight: 550;
+  cursor: pointer;
+  user-select: none;
+  color: var(--cell-text-number);
+  background-color: transparent;
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+.cellNumber.conflicted {
+  color: var(--color-text-error);
 }
 
 .cell .candidate {
@@ -61,20 +77,6 @@
   stroke-width: 2px;
   stroke: rgb(143, 62, 89);
 }
-
-.cellNumber {
-  font-size: 50px;
-  font-weight: 550;
-  cursor: pointer;
-  user-select: none;
-  color: var(--cell-text-number);
-  background-color: transparent;
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-}
-
-
-
 
 .light-bg {
   background-color: #414141;

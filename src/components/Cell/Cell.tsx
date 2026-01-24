@@ -163,7 +163,13 @@ export default function Cell({ index, additionalClasses }: CellProps): JSX.Eleme
         />
       )}
       {cell.value ? (
-        <div className={styles.cellNumber}>{cell.value}</div>
+        <div
+          className={clsx(styles.cellNumber, {
+            [styles.conflicted]: !cell.given && cell.hasConflict,
+          })}
+        >
+          {cell.value}
+        </div>
       ) : (
         CANDIDATES.map((candidate) => {
           const isActive = hasDigit(cell.candidates, candidate)

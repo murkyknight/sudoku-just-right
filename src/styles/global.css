@@ -18,18 +18,19 @@ html {
   /*===============*/
 
   --color-surface-primary: var(--stone-10);
-  /* --color-surface-primary: #414141; */
-  /* --color-surface-secondary: var(--gray-9); Pretty good but not sure */
   --color-surface-secondary: #2c2c2c;
   --color-surface-accent: var(--purple-10);
-  --color-surface-error: var(--red-4);
+  --color-surface-error: var(--red-6);
 
   --color-border-default: var(--stone-7);
   --color-border-subtle: var(--stone-8);
+  --color-border-error: var(--red-10);
+
+  --color-shadow-error: var(--red-6);
 
   --accent-primary: #f59e0b;
   --accent-secondary: #ef4444;
-  --accent-tertiary: #8b5cf6;
+  --accent-tertiary: var(--violet-6);
   --accent-glow: rgba(245, 158, 11, 0.3);
 
   /* Text */
@@ -37,7 +38,7 @@ html {
   --color-text-secondary: var(--stone-6);
   --color-text-accent: var(--lime-5);
   --color-text-muted: var(--stone-8);
-  --color-text-error: var(--red-9);
+  --color-text-error: var(--red-7);
 
   /*===============*/
   /* Game mappings */
@@ -56,6 +57,7 @@ html {
   --cell-text-error: var(--color-text-error);
 
   --cell-border-default: var(--color-border-default);
+  --cell-border-error-glow: color-mix(in srgb, var(--red-8) 45%, transparent);
 
   /* 
   TODO:

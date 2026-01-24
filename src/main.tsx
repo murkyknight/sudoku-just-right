@@ -1,8 +1,10 @@
 
 import 'open-props/animations.min.css'
+import 'open-props/colors-hsl.min.css'
 import 'open-props/colors.min.css'
 import 'open-props/easings.min.css'
 import 'open-props/fonts.min.css'
+import 'open-props/shadows-hsl.min.css'
 import 'open-props/shadows.min.css'
 import { createRoot } from 'react-dom/client'
 import GameBoard from './components/GameBoard.tsx'
