@@ -24,7 +24,9 @@
 }
 
 .cell.conflicted {
-  box-shadow: inset 0 0 15px 3px var(--color-shadow-error);
+  box-shadow:
+    inset 0 0 0 3px var(--cell-shadow-error-ring),
+    inset 0 -8px 20px var(--cell-shadow-error-glow);
 }
 
 .cellNumber {
