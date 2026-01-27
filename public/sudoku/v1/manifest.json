@@ -1,0 +1,44 @@
+{
+    "easy": {
+        "difficulty": "easy",
+        "chunks": 200,
+        "chunk_size": 500,
+        "last_file": "0199.json",
+        "totalPuzzles": 100000
+    },
+    "medium": {
+        "difficulty": "medium",
+        "chunks": 354,
+        "chunk_size": 500,
+        "last_file": "0353.json",
+        "totalPuzzles": 176643
+    },
+    "hard": {
+        "difficulty": "hard",
+        "chunks": 511,
+        "chunk_size": 500,
+        "last_file": "0510.json",
+        "totalPuzzles": 255116
+    },
+    "pro": {
+        "difficulty": "pro",
+        "chunks": 485,
+        "chunk_size": 500,
+        "last_file": "0484.json",
+        "totalPuzzles": 242476
+    },
+    "expert": {
+        "difficulty": "expert",
+        "chunks": 194,
+        "chunk_size": 500,
+        "last_file": "0193.json",
+        "totalPuzzles": 96598
+    },
+    "master": {
+        "difficulty": "master",
+        "chunks": 47,
+        "chunk_size": 500,
+        "last_file": "0046.json",
+        "totalPuzzles": 23083
+    }
+}

@@ -11,5 +11,5 @@
   grid-template-rows: repeat(3, 1fr);
   border: 2px solid var(--cell-border-default);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  overflow: visible;
 }
