@@ -2,9 +2,6 @@ import { fireEvent, screen, waitFor, within } from 'storybook/test'
 
 export type Canvas = ReturnType<typeof within>
 
-const getCandidateButton = (canvas: Canvas, candidate: number) =>
-  canvas.getByRole('button', { name: `candidate-${candidate}` })
-
 const getNumberSelector = () =>
   screen.getByRole('dialog', { name: 'number selector menu' })
 
