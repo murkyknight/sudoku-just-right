@@ -13,6 +13,7 @@
     "test:ui": "vitest --ui",
     "test:watch": "vitest --watch",
     "storybook": "storybook dev -p 6006",
+    "storybook:check": "tsc --project .storybook/tsconfig.json --noEmit",
     "test-storybook": "vitest --project=storybook",
     "build-storybook": "storybook build"
   },
