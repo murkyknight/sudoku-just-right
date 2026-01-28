@@ -1,44 +1,61 @@
 {
+  "version": "v1",
+  "generatedAt": "2026-01-27T21:30:00Z",
+  "basePath": "/sudoku/v1/",
+  "difficulties": {
     "easy": {
-        "difficulty": "easy",
-        "chunks": 200,
-        "chunk_size": 500,
-        "last_file": "0199.json",
-        "totalPuzzles": 100000
+      "difficulty": "easy",
+      "chunks": 200,
+      "chunk_size": 500,
+      "last_file": "0199.json",
+      "totalPuzzles": 100000,
+      "chunkPadding": 4,
+      "basePath": "/sudoku/v1/easy/"
     },
     "medium": {
-        "difficulty": "medium",
-        "chunks": 354,
-        "chunk_size": 500,
-        "last_file": "0353.json",
-        "totalPuzzles": 176643
+      "difficulty": "medium",
+      "chunks": 354,
+      "chunk_size": 500,
+      "last_file": "0353.json",
+      "totalPuzzles": 176643,
+      "chunkPadding": 4,
+      "basePath": "/sudoku/v1/medium/"
     },
     "hard": {
-        "difficulty": "hard",
-        "chunks": 511,
-        "chunk_size": 500,
-        "last_file": "0510.json",
-        "totalPuzzles": 255116
+      "difficulty": "hard",
+      "chunks": 511,
+      "chunk_size": 500,
+      "last_file": "0510.json",
+      "totalPuzzles": 255116,
+      "chunkPadding": 4,
+      "basePath": "/sudoku/v1/hard/"
     },
     "pro": {
-        "difficulty": "pro",
-        "chunks": 485,
-        "chunk_size": 500,
-        "last_file": "0484.json",
-        "totalPuzzles": 242476
+      "difficulty": "pro",
+      "chunks": 485,
+      "chunk_size": 500,
+      "last_file": "0484.json",
+      "totalPuzzles": 242476,
+      "chunkPadding": 4,
+      "basePath": "/sudoku/v1/pro/"
     },
     "expert": {
-        "difficulty": "expert",
-        "chunks": 194,
-        "chunk_size": 500,
-        "last_file": "0193.json",
-        "totalPuzzles": 96598
+      "difficulty": "expert",
+      "chunks": 194,
+      "chunk_size": 500,
+      "last_file": "0193.json",
+      "totalPuzzles": 96598,
+      "chunkPadding": 4,
+      "basePath": "/sudoku/v1/expert/"
     },
     "master": {
-        "difficulty": "master",
-        "chunks": 47,
-        "chunk_size": 500,
-        "last_file": "0046.json",
-        "totalPuzzles": 23083
+      "difficulty": "master",
+      "chunks": 47,
+      "chunk_size": 500,
+      "last_file": "0046.json",
+      "totalPuzzles": 23083,
+      "chunkPadding": 4,
+      "basePath": "/sudoku/v1/master/"
     }
+  }
 }
