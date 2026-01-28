@@ -1,5 +1,9 @@
+@layer theme, base, components, utilities;
+/* open-props defines CSS variables that Tailwind's theme/utilities may reference, so importing it first guarantees variables are available during build. */
 @import "open-props/style"; /* core props */
 @import "open-props/colors-hsl"; /* HSL variants */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 html {
   font-size: 16px;
@@ -100,7 +104,7 @@ html {
 }
 
 /* ===== Base Styles ===== */
-  body {
+body {
   /* font-family: var(--font-rounded-sans); */
   /* // TODO: check how to gaurentee fonts */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
