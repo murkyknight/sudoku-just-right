@@ -5,6 +5,15 @@ import './styles/global.css'
 // biome-ignore lint/style/noNonNullAssertion: creating root, relax.
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
-  <GameBoard />,
+  <App />,
   // </StrictMode>,
 )
+
+
+function App() {
+  return (
+    <div className="grid place-content-center">
+      <GameBoard />
+    </div>
+  )
+}
