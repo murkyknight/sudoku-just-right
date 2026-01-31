@@ -15,7 +15,7 @@
  * - Uses an existing manifest.json to pick up where it left off: fills the last partial chunk
  *   if present, then continues creating subsequent chunks
  * - Updates (merges) manifest.json with per-difficulty metadata:
- *     { chunks, chunk_size, last_file, totalPuzzles }
+ *     { chunks, chunkSize, lastFile, totalPuzzles }
  *
  * Notes:
  * - The script trusts input data (no deduplication by id); it validates minimal object shape
@@ -201,8 +201,8 @@ function determineStartChunkIndexAndFill(targetDirectory, manifestEntry) {
     const highestArray = readJsonArrayFile(highestPath) || []
     return { startIndex: highest.index, currentFill: highestArray.length }
   }
-  if (manifestEntry && manifestEntry.last_file) {
-    const match = String(manifestEntry.last_file).match(/^0*(\d+)\.json$/)
+  if (manifestEntry && manifestEntry.lastFile) {
+    const match = String(manifestEntry.lastFile).match(/^0*(\d+)\.json$/)
     if (match) {
       return { startIndex: Number(match[1]), currentFill: 0 }
     }
@@ -257,7 +257,7 @@ function writeChunksFromItems(targetDirectory, startingChunkIndex, itemsToWrite,
 function computeChunkDirectoryStats(targetDirectory) {
   const numericFiles = listNumericChunkFiles(targetDirectory)
   if (numericFiles.length === 0) {
-    return { chunks: 0, last_file: null, totalPuzzles: 0 }
+    return { chunks: 0, lastFile: null, totalPuzzles: 0 }
   }
   let totalCount = 0
   for (const fileDesc of numericFiles) {
@@ -265,7 +265,7 @@ function computeChunkDirectoryStats(targetDirectory) {
     totalCount += arr.length
   }
   const lastIndex = numericFiles[numericFiles.length - 1].index
-  return { chunks: lastIndex + 1, last_file: `${zeroPadNumber(lastIndex, PADDING_WIDTH)}.json`, totalPuzzles: totalCount }
+  return { chunks: lastIndex + 1, lastFile: `${zeroPadNumber(lastIndex, PADDING_WIDTH)}.json`, totalPuzzles: totalCount }
 }
 
 /* -----------------------
@@ -282,8 +282,8 @@ function processSourceFile(sourceFilePath, outputRoot, existingManifest) {
     return {
       difficulty: difficultyKey,
       chunks: 0,
-      chunk_size: chunkSize,
-      last_file: null,
+      chunkSize,
+      lastFile: null,
       totalPuzzles: 0
     }
   }
@@ -312,8 +312,8 @@ function processSourceFile(sourceFilePath, outputRoot, existingManifest) {
   return {
     difficulty: difficultyKey,
     chunks: finalStats.chunks,
-    chunk_size: chunkSize,
-    last_file: finalStats.last_file,
+    chunkSize,
+    lastFile: finalStats.lastFile,
     totalPuzzles: finalStats.totalPuzzles
   }
 }
