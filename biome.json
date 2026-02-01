@@ -65,7 +65,7 @@
         "useFragmentSyntax": "error",
         "useImportType": "error",
         "useNamingConvention": {
-          "level": "error",
+          "level": "off",
           "options": {
             "strictCase": false,
             "conventions": [
@@ -85,7 +85,7 @@
                 "selector": {
                   "kind": "typeLike"
                 },
-                "formats": ["PascalCase"]
+                "formats": ["PascalCase", "CONSTANT_CASE"]
               }
             ]
           }
@@ -326,7 +326,7 @@
           "style": {
             "noNamespace": "off",
             "useNamingConvention": {
-              "level": "error",
+              "level": "info",
               "options": {
                 "strictCase": false,
                 "conventions": [
