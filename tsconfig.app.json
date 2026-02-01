@@ -8,10 +8,10 @@
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
     "skipLibCheck": true,
 
-    /* Shadcn/ui */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"] /* Shadcn/ui */,
+      "@types": ["src/types.ts"]
     },
 
     /* Bundler mode */
