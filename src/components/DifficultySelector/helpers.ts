@@ -1,6 +1,6 @@
-import type { VersionManifest } from "@/types";
-import { loadFromStorage, saveToStorage } from "../utils/localStorageHelpers";
-import { fetchRootManifest, fetchVersionManifest } from "./api";
+import type { VersionManifest } from '@/types'
+import { loadFromStorage, saveToStorage } from '../utils/localStorageHelper'
+import { fetchRootManifest, fetchVersionManifest } from './api'
 
 export async function getLatestManifest(): Promise<VersionManifest> {
   const rootManifest = await fetchRootManifest()
@@ -8,7 +8,7 @@ export async function getLatestManifest(): Promise<VersionManifest> {
 
   const cachedVersionManifest = loadFromStorage<VersionManifest>(currentVersion)
 
-  if (cachedVersionManifest) {
+  if (cachedVersionManifest && typeof cachedVersionManifest !== 'string') {
     return cachedVersionManifest
   }
 

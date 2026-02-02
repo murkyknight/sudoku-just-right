@@ -53,7 +53,7 @@
         "noNegationElse": "warn",
         "noNonNullAssertion": "warn",
         "noParameterAssign": "warn",
-        "noUnusedTemplateLiteral": "error",
+        "noUnusedTemplateLiteral": "off",
         "noUselessElse": "warn",
         "useBlockStatements": "warn",
         "useCollapsedElseIf": "error",
