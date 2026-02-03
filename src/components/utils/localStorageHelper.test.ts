@@ -4,6 +4,10 @@ describe('localStorageHelper', () => {
   const setItemSpy = vi.spyOn(localStorage, 'setItem')
   const getItemSpy = vi.spyOn(localStorage, 'getItem')
 
+  /**
+   * When you want the serialised result to then act and assert on (usually JSON.parse())
+   * By passes the need to create the serialised object manually.
+   */
   function getSetItemActualMockValues(
     { callIndex }: { callIndex: number } = { callIndex: 0 },
   ): [key: string, value: string] {
@@ -27,7 +31,7 @@ describe('localStorageHelper', () => {
       saveToStorage('myKey', 'someValue')
 
       expect(setItemSpy).toHaveBeenCalledTimes(1)
-      expect(setItemSpy).toHaveBeenCalledWith('myKey', 'someValue')
+      expect(setItemSpy).toHaveBeenCalledWith('myKey', '"someValue"')
     })
 
     it('serialises simple objects', () => {
@@ -57,13 +61,10 @@ describe('localStorageHelper', () => {
       expect(JSON.parse(actualSerialized)).toEqual(complexObj)
     })
 
-    it('does not serialise value if string', () => {
-      const stringifySpy = vi.spyOn(JSON, 'stringify')
+    it('stringifies strings', () => {
+      saveToStorage('str', 'foo')
 
-      saveToStorage('myKey', 'someValue')
-
-      expect(stringifySpy).not.toHaveBeenCalled()
-      stringifySpy.mockRestore()
+      expect(setItemSpy).toHaveBeenCalledWith('str', '"foo"')
     })
 
     it('stringifies numbers', () => {
@@ -84,25 +85,26 @@ describe('localStorageHelper', () => {
       expect(setItemSpy).toHaveBeenCalledWith('nullKey', 'null')
     })
 
-    it('stringifies undefined', () => {
+    it('stringifies undefined to undefined', () => {
       saveToStorage('undefKey', undefined)
 
-      expect(setItemSpy).toHaveBeenCalledWith('undefKey', 'undefined')
+      expect(setItemSpy).toHaveBeenCalledWith('undefKey', undefined)
     })
 
-    it('serialises arrays', () => {
+    it('stringifies arrays', () => {
       const arr = [1, 2, 3]
       saveToStorage('arr', arr)
 
-      const [, value] = getSetItemActualMockValues()
-      expect(JSON.parse(value)).toEqual(arr)
+      const [, serialisedArrValue] = getSetItemActualMockValues()
+      expect(JSON.parse(serialisedArrValue)).toEqual(arr)
     })
 
-    it('stringifies functions using String()', () => {
+    it('stringifies functions to undefined', () => {
       saveToStorage('fn', () => {})
 
-      const [, value] = getSetItemActualMockValues()
-      expect(value).toContain('=>')
+      const [_, actualSerialized] = getSetItemActualMockValues()
+      expect(actualSerialized).toEqual(undefined)
+      expect(setItemSpy).toHaveBeenCalledWith('fn', undefined)
     })
   })
 
@@ -113,23 +115,15 @@ describe('localStorageHelper', () => {
       expect(value).toBeNull()
     })
 
-    it('returns string when value is not an object', () => {
-      saveToStorage('myKey', 'someValue')
-
-      const value = loadFromStorage<string>('myKey')
-
-      expect(value).toEqual('someValue')
-    })
-
     it('does not validate runtime shape against generic type', () => {
-      localStorage.setItem('bad', JSON.stringify({ wrong: true }))
+      saveToStorage('bad', { wrong: true })
 
       const value = loadFromStorage<{ expected: string }>('bad')
 
       expect(value).toEqual({ wrong: true })
     })
 
-    it('returns object of passed type when key found', () => {
+    it('returns the stored value typed as the requested generic', () => {
       type Inner = {
         bar: string
         arr: number[]
@@ -147,52 +141,69 @@ describe('localStorageHelper', () => {
 
       const value = loadFromStorage<Complex>('myKey')
 
-      if (value === null || typeof value === 'string') {
-        throw new Error('Value should not be null')
+      if (value === null) {
+        throw new Error('Value should not be null or a string')
       }
       expectTypeOf(value).toEqualTypeOf<Complex>()
       expect(value).toEqual(complexObj)
     })
 
-    it('returns raw string when JSON.parse fails', () => {
-      localStorage.setItem('bad', '{not:valid:json')
+    it('parses objects', () => {
+      saveToStorage('obj', { a: 1 })
 
-      const value = loadFromStorage('bad')
-
-      expect(value).toEqual('{not:valid:json')
-    })
-
-    it('keeps numeric strings as strings', () => {
-      localStorage.setItem('num', '42')
-      expect(loadFromStorage('num')).toBe('42')
-    })
-
-    it('keeps boolean strings as strings', () => {
-      localStorage.setItem('bool', 'true')
-      expect(loadFromStorage('bool')).toBe('true')
-    })
-
-    it('parses JSON objects', () => {
-      localStorage.setItem('obj', '{"a":1}')
       expect(loadFromStorage('obj')).toEqual({ a: 1 })
     })
 
-    it('parses JSON arrays', () => {
-      localStorage.setItem('arr', '[1,2]')
-      expect(loadFromStorage('arr')).toEqual([1, 2])
+    it('parses arrays', () => {
+      saveToStorage('arr', [1, '2'])
+
+      expect(loadFromStorage('arr')).toEqual([1, '2'])
     })
 
-    it('returns raw string for invalid JSON object', () => {
-      localStorage.setItem('bad', '{not valid}')
-      expect(loadFromStorage('bad')).toBe('{not valid}')
+    it('keeps numeric strings as strings', () => {
+      saveToStorage('num', '42')
+
+      expect(loadFromStorage('num')).toBe('42')
+    })
+
+    it('keeps numbers as numbers', () => {
+      saveToStorage('num', 42)
+
+      const result = loadFromStorage<number>('num')
+
+      expect(result).toBe(42)
+    })
+
+    it('keeps boolean strings as strings', () => {
+      saveToStorage('bool', 'true')
+
+      expect(loadFromStorage('bool')).toBe('true')
+    })
+
+    it('keeps boolean as boolean', () => {
+      saveToStorage('bool', true)
+
+      const result = loadFromStorage<number>('bool')
+
+      expect(result).toBe(true)
     })
 
     it('returns empty string when stored value is an empty string', () => {
-      localStorage.setItem('empty', '')
+      saveToStorage('empty', '')
 
       const value = loadFromStorage('empty')
 
       expect(value).toBe('')
+    })
+
+    describe('loading variables saved with raw localStroage.setItem, not helper', () => {
+      it('returns null when JSON.parse fails', () => {
+        localStorage.setItem('bad', '{not:valid:json')
+
+        const value = loadFromStorage('bad')
+
+        expect(value).toEqual(null)
+      })
     })
   })
 })

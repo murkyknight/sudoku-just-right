@@ -8,7 +8,7 @@ export async function getLatestManifest(): Promise<VersionManifest> {
 
   const cachedVersionManifest = loadFromStorage<VersionManifest>(currentVersion)
 
-  if (cachedVersionManifest && typeof cachedVersionManifest !== 'string') {
+  if (cachedVersionManifest) {
     return cachedVersionManifest
   }
 
