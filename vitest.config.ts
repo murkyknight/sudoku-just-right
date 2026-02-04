@@ -11,10 +11,12 @@ export default defineConfig({
     environment: 'jsdom', // 'jsdom' if you test browser APIs/React components
     globals: true, // enables describe/test/it/expect as globals
     setupFiles: ['./vitest.setup.ts', 'vitest-localstorage-mock'], // enables testing libary globals
+    unstubEnvs: true,
 
     // Two seperate projects so we can run quick unit test & heavier storybook tets seperatly in pipeline
     projects: [
       {
+        extends: true,
         test: {
           name: 'unit',
           include: ['src/**/*.{test,spec}.{ts,tsx,js,jsx}'],
@@ -54,6 +56,8 @@ export default defineConfig({
   // expect(button).toHaveClass('muted')
   resolve: {
     alias: {
+      '@': path.resolve(dirname, 'src'),
+      // CSS module mocks
       '\\.module\\.css$': 'identity-obj-proxy',
       '\\.module\\.scss$': 'identity-obj-proxy',
       '\\.module\\.sass$': 'identity-obj-proxy',

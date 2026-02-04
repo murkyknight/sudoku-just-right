@@ -1,4 +1,4 @@
-import type { VersionManifest } from '@types'
+import type { VersionManifest } from '@/types'
 import { useCallback, useEffect, useState } from 'react'
 import { getLatestManifest } from '../helpers'
 
@@ -30,8 +30,6 @@ export default function useManifest() {
   useEffect(() => {
    loadManifest()
   }, [loadManifest])
-
-  // TODO: add onFocus listener to re-fetch rootManifest - that way on browser focus, we refretch for freshness
 
   return {
     isLoading,
