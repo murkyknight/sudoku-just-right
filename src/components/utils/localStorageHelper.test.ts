@@ -16,14 +16,12 @@ describe('localStorageHelper', () => {
 
   beforeEach(() => {
     localStorage.clear()
-    getItemSpy.mockClear()
-    setItemSpy.mockClear()
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
     localStorage.clear()
-    getItemSpy.mockClear()
-    setItemSpy.mockClear()
+    vi.clearAllMocks()
   })
 
   describe('saveToStorage()', () => {
@@ -31,6 +29,14 @@ describe('localStorageHelper', () => {
       saveToStorage('myKey', 'someValue')
 
       expect(setItemSpy).toHaveBeenCalledTimes(1)
+      expect(setItemSpy).toHaveBeenCalledWith('myKey', '"someValue"')
+    })
+
+    it('allows saving key with same value twice', () => {
+      saveToStorage('myKey', 'someValue')
+      saveToStorage('myKey', 'someValue')
+
+      expect(setItemSpy).toHaveBeenCalledTimes(2)
       expect(setItemSpy).toHaveBeenCalledWith('myKey', '"someValue"')
     })
 
@@ -112,7 +118,18 @@ describe('localStorageHelper', () => {
     it('returns null when value does not exist', () => {
       const value = loadFromStorage('key-does-not-exist')
 
+      expect(getItemSpy).toHaveBeenCalledTimes(1)
+      expect(getItemSpy).toHaveBeenCalledWith('key-does-not-exist')
       expect(value).toBeNull()
+    })
+
+    it('returns updated value when using same key with different value', () => {
+      saveToStorage('myKey', 'firstValue')
+      saveToStorage('myKey', 'secondValue')
+
+      const value = loadFromStorage('myKey')
+
+      expect(value).toEqual('secondValue')
     })
 
     it('does not validate runtime shape against generic type', () => {
