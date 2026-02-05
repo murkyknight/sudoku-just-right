@@ -1,4 +1,3 @@
-import type { HttpError } from '@/api/errors/HttpError'
 import * as storage from '@/components/utils/localStorageHelper'
 import type { RootManifest, VersionManifest } from '@/types'
 import type { Mock } from 'vitest'
@@ -87,7 +86,7 @@ describe('helpers', () => {
 
       await getLatestManifest()
 
-      expect(saveToStorageSpy).toHaveBeenCalledWith('v1', defaultVersionManifest)
+      expect(saveToStorageSpy).toHaveBeenCalledWith(`sjr:manifest:v1`, defaultVersionManifest)
     })
 
     it('loads verison manifest from cache when it exists', async () => {
@@ -127,7 +126,7 @@ describe('helpers', () => {
 
       expect(expectedCachedVersionManifest).toEqual(v2VrsionManifest)
       expect(fetchSpy).toHaveBeenCalledWith(`${BASE_URL}/v2/manifestPath/manifest.json`)
-      expect(saveToStorageSpy).toHaveBeenCalledWith('v2', v2VrsionManifest)
+      expect(saveToStorageSpy).toHaveBeenCalledWith(`sjr:manifest:v2`, v2VrsionManifest)
     })
 
     it('fetches the root manifest every time it is called', async () => {
@@ -149,20 +148,6 @@ describe('helpers', () => {
     })
 
     it('throws HttpError when root manifest returns non 2xx', async () => {
-      fetchSpy.mockResolvedValueOnce(badRequestResponse())
-
-      try {
-        await getLatestManifest()
-      } catch (e) {
-        const error = e as HttpError
-        expect(error.message).toEqual('HTTP 400 (fetchRootManifest)')
-        expect(fetchSpy).toHaveBeenCalledWith(`${BASE_URL}/manifest.json`)
-        return
-      }
-      assert.fail('Should have thrown HttpError')
-    })
-
-    it('throws HttpError when root manifest returns non 2xx 2', async () => {
       fetchSpy.mockResolvedValueOnce(badRequestResponse())
 
       await expect(getLatestManifest()).rejects.toMatchObject({

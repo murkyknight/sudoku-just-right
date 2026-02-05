@@ -6,7 +6,8 @@ export async function getLatestManifest(): Promise<VersionManifest> {
   const rootManifest = await fetchRootManifest()
   const { currentVersion, versions } = rootManifest
 
-  const cachedVersionManifest = loadFromStorage<VersionManifest>(currentVersion)
+  const cacheKey = `sjr:manifest:${currentVersion}`
+  const cachedVersionManifest = loadFromStorage<VersionManifest>(cacheKey)
 
   if (cachedVersionManifest) {
     return cachedVersionManifest
@@ -14,7 +15,7 @@ export async function getLatestManifest(): Promise<VersionManifest> {
 
   const currentRootVersion = versions[currentVersion]
   const versionManifest = await fetchVersionManifest(currentRootVersion.manifestPath)
-  saveToStorage(currentVersion, versionManifest)
+  saveToStorage(cacheKey, versionManifest)
 
   return versionManifest
 }
