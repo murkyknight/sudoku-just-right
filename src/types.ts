@@ -1,4 +1,6 @@
 
+// TODO: This file will become unwieldy. Instead, we should create a types directory
+// and add specific type files, e.g., /types/difficulty.ts
 export const difficultyType = {
   EASY: 'easy',
   MEDIUM: 'medium',
