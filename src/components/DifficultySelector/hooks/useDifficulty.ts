@@ -8,18 +8,18 @@ type UseDifficultyProps = {
   difficulty: Difficulty
 }
 
-const MAX_CACHED_PUZZLES = 5
+const MAX_SUDOKU_CACHE_SIZE = 5
 
 export default function useDifficulty({ difficulty }: UseDifficultyProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  const [gameCache, setGameCache] = useState<SudokuPuzzleSource[]>([])
+  const [sudokuCache, setSudokuCache] = useState<SudokuPuzzleSource[]>([])
   const [gamePointer, setGamePointer] = useState(0)
   const { isLoading: isManifestLoading, error: manifestError, manifest } = useManifest()
 
   const generateRandomDifficultyPaddedChunkNumber = useCallback(
     (entry: DifficultyManifestEntry) => {
-      // last page might not contain the full chuck size, best to avoid it
+      // last page might not contain the full chuck size, best to avoid it since we don't keep track of its size
       const ARRAY_OFFSET_AND_NO_LAST_PAGE = 2
       const usableChunkSize = entry.chunks - ARRAY_OFFSET_AND_NO_LAST_PAGE
       const randomChunkNumber = getRandomInt(usableChunkSize)
@@ -43,23 +43,21 @@ export default function useDifficulty({ difficulty }: UseDifficultyProps) {
     const paddedChunkNumber = generateRandomDifficultyPaddedChunkNumber(difficultyManifestEntry)
 
     try {
-      const puzzleChunk = await fetchDifficultyChunk(
+      const sudokuPuzzleChunk = await fetchDifficultyChunk(
         `${difficultyManifestEntry.basePath}${paddedChunkNumber}.json`,
       )
-      console.log(`fetched file: ${paddedChunkNumber}.json`, puzzleChunk)
+      console.log(`fetched file: ${paddedChunkNumber}.json`, sudokuPuzzleChunk)
 
-      // select 5 random SudokuPuzzleSource
-
-      const randomPuzzleIndexes = getXRandomUniqueNumbers(
+      const randomSudokuPuzzleIndexes = getXRandomUniqueNumbers(
         difficultyManifestEntry.chunkSize,
-        MAX_CACHED_PUZZLES,
+        MAX_SUDOKU_CACHE_SIZE,
       )
-      console.log('Selecting puzzles: ', randomPuzzleIndexes)
-      const chosenPuzzles = randomPuzzleIndexes.map(
-        (puzzleIndex: number) => puzzleChunk[puzzleIndex],
+      console.log('Selecting puzzles: ', randomSudokuPuzzleIndexes)
+      const chosenSudokus = randomSudokuPuzzleIndexes.map(
+        (puzzleIndex: number) => sudokuPuzzleChunk[puzzleIndex],
       )
-      console.log('About to save these chosen puzzles to GAME CACHE: ', chosenPuzzles)
-      setGameCache(chosenPuzzles)
+      console.log('About to save these chosen puzzles to GAME CACHE: ', chosenSudokus)
+      setSudokuCache(chosenSudokus)
     } catch (err) {
       if (err instanceof Error) {
         console.error(err)
@@ -79,7 +77,7 @@ export default function useDifficulty({ difficulty }: UseDifficultyProps) {
     }
 
     setGamePointer((prev) => {
-      const hasNextPuzzle = gamePointer < gameCache.length - 1
+      const hasNextPuzzle = gamePointer < sudokuCache.length - 1
       if (hasNextPuzzle) {
         return prev + 1
       }
@@ -87,7 +85,7 @@ export default function useDifficulty({ difficulty }: UseDifficultyProps) {
       loadDifficulty()
       return prev
     })
-  }, [isLoading, gameCache.length, loadDifficulty, gamePointer])
+  }, [isLoading, sudokuCache.length, loadDifficulty, gamePointer])
 
   useEffect(() => {
     if (manifest && difficulty) {
@@ -97,9 +95,9 @@ export default function useDifficulty({ difficulty }: UseDifficultyProps) {
   }, [manifest, loadDifficulty, difficulty])
 
   return {
-    currentSudoku: gameCache[gamePointer],
+    currentSudoku: sudokuCache[gamePointer],
     loadNextSudoku,
-    puzzles: gameCache, // TODO: exposing just for dev testing - remove
+    puzzles: sudokuCache, // TODO: exposing just for dev testing - remove
     isLoading: isManifestLoading || isLoading,
     error: manifestError || error,
   }
