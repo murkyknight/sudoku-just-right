@@ -1,4 +1,4 @@
-import type { Difficulty } from '@/types'
+import type { Difficulty, DifficultyManifestEntry } from '@/types'
 import { useCallback, useEffect, useState } from 'react'
 import { fetchDifficultyChunk, type SudokuPuzzleSource } from '../api'
 import { getRandomInt, getXRandomUniqueNumbers, zeroPadNumber } from '../helpers'
@@ -17,6 +17,19 @@ export default function useDifficulty({ difficulty }: UseDifficultyProps) {
   const [gamePointer, setGamePointer] = useState(0)
   const { isLoading: isManifestLoading, error: manifestError, manifest } = useManifest()
 
+  const generateRandomDifficultyPaddedChunkNumber = useCallback(
+    (entry: DifficultyManifestEntry) => {
+      // last page might not contain the full chuck size, best to avoid it
+      const ARRAY_OFFSET_AND_NO_LAST_PAGE = 2
+      const usableChunkSize = entry.chunks - ARRAY_OFFSET_AND_NO_LAST_PAGE
+      const randomChunkNumber = getRandomInt(usableChunkSize)
+      const paddedChunkNumber = zeroPadNumber(randomChunkNumber, entry.chunkPadding)
+
+      return paddedChunkNumber
+    },
+    [],
+  )
+
   const loadDifficulty = useCallback(async () => {
     if (!manifest) {
       return
@@ -26,23 +39,19 @@ export default function useDifficulty({ difficulty }: UseDifficultyProps) {
     setError(null)
     setGamePointer(0)
 
-    // create the url
-    const difficultyManifest = manifest.difficulties[difficulty]
-    const NO_LAST_PAGE_AND_ARRAY_OFFSET = 2
-    const usableChunkSize = difficultyManifest.chunks - NO_LAST_PAGE_AND_ARRAY_OFFSET
-    const randomChunkNumber = getRandomInt(usableChunkSize)
-    const paddedChunkNumber = zeroPadNumber(randomChunkNumber, difficultyManifest.chunkPadding)
+    const difficultyManifestEntry = manifest.difficulties[difficulty]
+    const paddedChunkNumber = generateRandomDifficultyPaddedChunkNumber(difficultyManifestEntry)
 
     try {
       const puzzleChunk = await fetchDifficultyChunk(
-        `${difficultyManifest.basePath}${paddedChunkNumber}.json`,
+        `${difficultyManifestEntry.basePath}${paddedChunkNumber}.json`,
       )
       console.log(`fetched file: ${paddedChunkNumber}.json`, puzzleChunk)
 
       // select 5 random SudokuPuzzleSource
 
       const randomPuzzleIndexes = getXRandomUniqueNumbers(
-        difficultyManifest.chunkSize,
+        difficultyManifestEntry.chunkSize,
         MAX_CACHED_PUZZLES,
       )
       console.log('Selecting puzzles: ', randomPuzzleIndexes)
@@ -62,7 +71,7 @@ export default function useDifficulty({ difficulty }: UseDifficultyProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [difficulty, manifest])
+  }, [manifest, generateRandomDifficultyPaddedChunkNumber, difficulty])
 
   const loadNextSudoku = useCallback(() => {
     if (isLoading) {
