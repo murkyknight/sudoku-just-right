@@ -52,7 +52,7 @@
         "noNamespace": "error",
         "noNegationElse": "warn",
         "noNonNullAssertion": "warn",
-        "noParameterAssign": "warn",
+        "noParameterAssign": "off",
         "noUnusedTemplateLiteral": "off",
         "noUselessElse": "warn",
         "useBlockStatements": "warn",

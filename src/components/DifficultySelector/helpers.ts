@@ -19,3 +19,28 @@ export async function getLatestManifest(): Promise<VersionManifest> {
 
   return versionManifest
 }
+
+export function getRandomInt(max: number): number {
+  return Math.floor(Math.random() * max)
+}
+
+export function getXRandomUniqueNumbers(maxUpperBound: number, amount: number): number[] {
+  const selectedNumbers: number[] = []
+  while (selectedNumbers.length < amount) {
+    const randomInt = getRandomInt(maxUpperBound)
+    const hasSameNumber = selectedNumbers.some((num) => num === randomInt)
+
+    if (!hasSameNumber) {
+      selectedNumbers.push(randomInt)
+    }
+  }
+  return selectedNumbers
+}
+
+export function zeroPadNumber(num: number, width: number) {
+  const s = String(num)
+  if (s.length >= width) {
+    return s
+  }
+  return '0'.repeat(width - s.length) + s
+}
