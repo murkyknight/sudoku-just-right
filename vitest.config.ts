@@ -10,7 +10,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom', // 'jsdom' if you test browser APIs/React components
     globals: true, // enables describe/test/it/expect as globals
-    setupFiles: ['./vitest.setup.ts', 'vitest-localstorage-mock'], // enables testing libary globals
+    setupFiles: ['./vitest.setup.ts'], // enables testing libary globals
     unstubEnvs: true,
 
     // Two seperate projects so we can run quick unit test & heavier storybook tets seperatly in pipeline
@@ -47,7 +47,7 @@ export default defineConfig({
               },
             ],
           },
-          setupFiles: ['.storybook/vitest.setup.ts', 'vitest-localstorage-mock'],
+          setupFiles: ['.storybook/vitest.setup.ts'],
         },
       },
     ],
