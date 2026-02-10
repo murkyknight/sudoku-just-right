@@ -1,6 +1,6 @@
 import type { Draft } from 'immer'
 import { peers, peersInclusive } from '../../utils/indices'
-import type { State } from '../useGameStore'
+import type { Cell, State } from '../useGameStore'
 
 /**
  * Updates all conflict flags within the passed cell's peer list, including the target cell itself.
@@ -36,6 +36,21 @@ export function clearResolvedPeerConflictsForCellInDraft(
     clearConflictIfResolved(draft, conflictedCellIndex)
   }
 }
+
+export function createBoardInDraft(draft: Draft<State>, rawBoard: string) {
+  const board: Array<Cell> = Array.from({ length: 81 }, (_, i) => ({
+    value: Number(rawBoard[i]) || null,
+    candidates: 0,
+    highlightedCandidates: 0,
+    strikedCandidates: 0,
+    given: !!Number(rawBoard[i]),
+    hasConflict: false,
+  }))
+
+  draft.board = board
+}
+
+// Private functions
 
 function clearConflictIfResolved(draft: Draft<State>, targetCellIndex: number) {
   const targetCell = draft.board[targetCellIndex]

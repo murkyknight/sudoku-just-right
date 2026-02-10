@@ -22,6 +22,8 @@ export type State = {
 }
 
 type Actions = {
+  loadBoard: (rawBoard: string) => void
+
   selectCell: (index: number | null) => void
   removeSelectedCell: () => void
 
@@ -39,9 +41,9 @@ type Actions = {
 export type StoreState = State & Actions
 
 const defaultSudokuNumbers = [
-  0, 0, 0, 5, 0, 3, 6, 0, 8, 8, 0, 9, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 6, 3, 7, 0,
-  2, 0, 0, 0, 8, 0, 0, 0, 0, 0, 5, 0, 0, 0, 7, 0, 9, 2, 4, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  2, 0, 0, 1, 0, 9, 2, 0, 3, 6, 0, 9, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
 
 const initialState: State = {
@@ -61,6 +63,11 @@ export const createUseStore = () =>
     devtools(
       immer(
         combine(initialState, (set, _get) => ({
+          loadBoard: (rawBoard) =>
+            set((draft) => {
+              draftHeleprs.createBoardInDraft(draft, rawBoard)
+            }),
+
           selectCell: (index) =>
             set((state) => {
               state.selectedCellIndex = index

@@ -263,6 +263,42 @@ describe('useDifficulty', () => {
       expect(result.current.isLoading).toBe(true)
       expect(fetchDifficultyAPISpy).toHaveBeenCalledTimes(2)
     })
+
+    it('resets game pointer when refreshing puzzle cache', async () => {
+      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
+      getRandomIntMock.mockReturnValue(55)
+      getXRandomUniqueNumbersMock.mockReturnValue([0, 1])
+      const expectedPuzzleSources = generatePuzzleSources(2)
+      const nextExpectedPuzzleSources = generatePuzzleSources(2)
+      fetchDifficultyAPISpy
+        .mockResolvedValueOnce(expectedPuzzleSources)
+        .mockResolvedValueOnce(nextExpectedPuzzleSources)
+
+      const { result } = renderHook(() => useDifficulty({ difficulty: 'easy' }))
+
+      await vi.waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.currentSudoku).toEqual(expectedPuzzleSources[0])
+      })
+
+      act(() => {
+        result.current.loadNextSudoku()
+      })
+
+      await vi.waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.currentSudoku).toEqual(expectedPuzzleSources[1])
+      })
+
+      act(() => {
+        result.current.loadNextSudoku() // will refresh cache
+      })
+
+      await vi.waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.currentSudoku).toEqual(nextExpectedPuzzleSources[0])
+      })
+    })
   })
 
   describe('error', () => {

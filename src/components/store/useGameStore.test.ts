@@ -1,4 +1,5 @@
 import { getConflictingCellIndexes } from '../testLib/boardTestHelpers'
+import { createBoard } from '../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../utils/indices'
 import { createUseStore, type StoreState } from './useGameStore'
 
@@ -8,6 +9,7 @@ describe('useGameStore', () => {
 
   beforeEach(() => {
     useStore = createUseStore()
+    useStore.setState({ board: createBoard() })
     store = () => useStore.getState()
   })
 
