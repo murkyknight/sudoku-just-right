@@ -1,3 +1,5 @@
+import type { Difficulty, RootManifest } from '@/types'
+import type { SudokuPuzzleSource } from '../DifficultySelector/api'
 import type { Cell, State } from '../store/useGameStore'
 import { addDigits } from '../utils/bitMaskHelper'
 
@@ -84,6 +86,35 @@ export function storeWithCell(state: Partial<Cell> = {}): State {
   }
 }
 
+// Difficulty Helpers
+
+export function generatePuzzleSources(
+  amount: number,
+  difficulty: Difficulty = 'easy',
+): SudokuPuzzleSource[] {
+  return Array.from({ length: amount }).map((_, _index) => {
+    const id = Math.floor(Math.random() * 10000)
+    return {
+      id: id.toString(),
+      difficulty,
+      rating: '1.2',
+      board: getDefaultStrBoard(),
+    }
+  })
+}
+
+export function createRootManifest(version: string): RootManifest {
+  return {
+    currentVersion: version,
+    versions: {
+      [version]: {
+        basePath: '/basePath',
+        manifestPath: `/${version}/manifestPath/manifest.json`,
+      },
+    },
+  }
+}
+
 // ======================
 // ==== MISC Helpers ====
 // ======================
@@ -109,6 +140,10 @@ export function cssSelectorToRegEx(cssClass: string): RegExp {
 // 6, 0, 0, 0, 0, 0, 0, 0, 0, // 62
 // 0, 0, 0, 2, 0, 0, 1, 0, 9, // 71
 // 2, 0, 3, 6, 0, 9, 0, 0, 0  // 80
+
+export function getDefaultStrBoard(): string {
+  return '0005036088090040000000000000040063702000080000050000700924060000000000000000000002001090203609000'
+}
 
 export function getDefaultBoard(): number[] {
   return [
@@ -195,3 +230,4 @@ export function getDefaultBoard(): number[] {
     0, // 80
   ]
 }
+

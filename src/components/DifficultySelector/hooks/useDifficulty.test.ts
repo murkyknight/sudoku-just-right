@@ -1,7 +1,7 @@
-import type { SudokuPuzzleSource } from '@/components/DifficultySelector/api'
 import * as api from '@/components/DifficultySelector/api'
 import { getRandomInt, getXRandomUniqueNumbers } from '@/components/DifficultySelector/helpers'
 import useManifest from '@/components/DifficultySelector/hooks/useManifest'
+import { generatePuzzleSources } from '@/components/testLib/helpers'
 import type { Difficulty, VersionManifest } from '@/types'
 import { act, renderHook } from '@testing-library/react'
 import type { Mock } from 'vitest'
@@ -40,21 +40,6 @@ const defaultVersionManifest: VersionManifest = {
       basePath: '/sudoku/v1/medium/',
     },
   },
-}
-
-export function generatePuzzleSources(
-  amount: number,
-  difficulty: Difficulty = 'easy',
-): SudokuPuzzleSource[] {
-  return Array.from({ length: amount }).map((_, index) => {
-    const id = Math.floor(Math.random() * 10000)
-    return {
-      id: id.toString(),
-      difficulty,
-      rating: '1.2',
-      board: index.toString().repeat(10),
-    }
-  })
 }
 
 describe('useDifficulty', () => {

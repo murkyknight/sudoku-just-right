@@ -1,20 +1,9 @@
 import * as storage from '@/components/utils/localStorageHelper'
 import type { RootManifest, VersionManifest } from '@/types'
 import type { Mock } from 'vitest'
+import { createRootManifest } from '../testLib/helpers'
 import { badRequestResponse, okResponse } from '../testLib/helpers/api'
 import { getLatestManifest } from './helpers'
-
-function createRootManifest(version: string): RootManifest {
-  return {
-    currentVersion: version,
-    versions: {
-      [version]: {
-        basePath: '/basePath',
-        manifestPath: `/${version}/manifestPath/manifest.json`,
-      },
-    },
-  }
-}
 
 const rootManiDefault: RootManifest = createRootManifest('v1')
 const rootManiV2: RootManifest = createRootManifest('v2')
