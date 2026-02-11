@@ -15,8 +15,8 @@ Online Sudoku apps, to me, lack the charm of pen-and-paper Sudoku. While some of
 Even writing the above felt tedious and boring. Sudoku Just Right aims to bring the fun of pen-and-paper Sudoku back, plus a range of usability and quality-of-life improvements, such as:
 
 - Single-click candidate placement in a cell
-- Long-press for single-number cell selection
-- Simple keyboard shortcut + click to highlight, strike, or remove a candidate
+- Long-press digit selection 
+- Simple key/mouse shortcuts to: highlight, strike, or remove a candidate
 
 The main goal is to speed up gameplay and sharpen focus while eliminating tedious, awkward, and repetitive button clicks.
 
@@ -53,7 +53,7 @@ A Sudoku UI built with React + TypeScript + Vite. This README explains how to bu
 - Run unit tests:
   - npm run test
 
-- Run Storybook tests (in terminal):
+- Run Storybook tests (within terminal):
   - npm run test-storybook
 
 ## Current features (what works now)
