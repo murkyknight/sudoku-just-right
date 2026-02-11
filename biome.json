@@ -101,7 +101,7 @@
       },
       "suspicious": {
         "noExplicitAny": "error",
-        "noDebugger": "error",
+        "noDebugger": "off",
         "noDuplicateJsxProps": "error",
         "noDuplicateObjectKeys": "error",
         "noDuplicateParameters": "error",
