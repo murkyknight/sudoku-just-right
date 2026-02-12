@@ -23,17 +23,19 @@ export interface RootManifest {
 }
 
 export interface DifficultyManifestEntry {
-  difficulty: string;
-  chunks: number;
-  chunkSize: number;
-  totalPuzzles: number;
-  chunkPadding: number;
-  basePath: string;
+  difficulty: string
+  chunks: number
+  chunkSize: number
+  totalPuzzles: number
+  chunkPadding: number
+  basePath: string
 }
 
 export interface VersionManifest {
-  version: string;
-  basePath: string;
-  difficulties: Record<string, DifficultyManifestEntry>;
+  version: string
+  basePath: string
+  difficulties: Record<string, DifficultyManifestEntry>
 }
+
+export type GamePhase = 'idle' | 'loading' | 'playing' | 'completed'
 

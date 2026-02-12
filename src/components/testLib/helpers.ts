@@ -13,6 +13,7 @@ const createInitialState = (baseBoard: number[] = getDefaultBoard()): State => (
     hasConflict: false,
   })),
   selectedCellIndex: null,
+  gamePhase: 'idle',
 })
 
 //======================================

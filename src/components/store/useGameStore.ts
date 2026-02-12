@@ -1,3 +1,4 @@
+import type { GamePhase } from '@/types'
 import { create } from 'zustand'
 import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -19,6 +20,7 @@ export type Cell = {
 export type State = {
   board: Array<Cell>
   selectedCellIndex: number | null
+  gamePhase: GamePhase
 }
 
 type Actions = {
@@ -56,6 +58,7 @@ const initialState: State = {
     hasConflict: false,
   })),
   selectedCellIndex: null,
+  gamePhase: 'idle',
 }
 
 export const createUseStore = () =>
