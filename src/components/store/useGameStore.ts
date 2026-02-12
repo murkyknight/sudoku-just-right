@@ -1,4 +1,4 @@
-import type { GamePhase } from '@/types'
+import { difficultyType, type Difficulty, type GamePhase } from '@/types'
 import { create } from 'zustand'
 import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -20,11 +20,14 @@ export type Cell = {
 export type State = {
   board: Array<Cell>
   selectedCellIndex: number | null
+
   gamePhase: GamePhase
+  difficulty: Difficulty
 }
 
 type Actions = {
   loadBoard: (rawBoard: string) => void
+  setDifficulty: (difficulty: Difficulty) => void
 
   selectCell: (index: number | null) => void
   removeSelectedCell: () => void
@@ -59,6 +62,7 @@ const initialState: State = {
   })),
   selectedCellIndex: null,
   gamePhase: 'idle',
+  difficulty: difficultyType.EASY,
 }
 
 export const createUseStore = () =>
@@ -69,6 +73,12 @@ export const createUseStore = () =>
           loadBoard: (rawBoard) =>
             set((draft) => {
               draftHeleprs.createBoardInDraft(draft, rawBoard)
+            }),
+
+          setDifficulty: (difficulty: Difficulty) =>
+            set((draft) => {
+              draft.difficulty = difficulty
+              draft.gamePhase = 'loading'
             }),
 
           selectCell: (index) =>

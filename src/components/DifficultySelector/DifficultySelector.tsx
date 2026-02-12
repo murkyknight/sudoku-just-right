@@ -1,5 +1,5 @@
 import { difficultyType, type Difficulty } from '@/types'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useShallow } from 'zustand/shallow'
 import useGameStore from '../store/useGameStore'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
@@ -7,11 +7,12 @@ import styles from './DifficultySelector.module.css'
 import useDifficulty from './hooks/useDifficulty'
 
 export default function DifficultySelector() {
-  const [difficulty, setDifficulty] = useState<Difficulty>(difficultyType.EASY)
+  const difficulty = useGameStore((s) => s.difficulty)
   const { loadNextSudoku, currentSudoku, isLoading } = useDifficulty({ difficulty })
-  const { loadBoard } = useGameStore(
+  const { loadBoard, setDifficulty } = useGameStore(
     useShallow((s) => ({
       loadBoard: s.loadBoard,
+      setDifficulty: s.setDifficulty,
     })),
   )
 
