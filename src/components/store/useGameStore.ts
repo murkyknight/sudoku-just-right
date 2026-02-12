@@ -2,6 +2,7 @@ import { difficultyType, type Difficulty, type GamePhase } from '@/types'
 import { create } from 'zustand'
 import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
+import type { SudokuPuzzleSource } from '../DifficultySelector/api'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 import * as draftHeleprs from './helpers/draftHelpers'
 
@@ -23,11 +24,15 @@ export type State = {
 
   gamePhase: GamePhase
   difficulty: Difficulty
+  puzzles: Array<SudokuPuzzleSource>
+  puzzleIndex: number
 }
 
 type Actions = {
   loadBoard: (rawBoard: string) => void
   setDifficulty: (difficulty: Difficulty) => void
+  setPuzzles: (puzzles: Array<SudokuPuzzleSource>) => void
+  nextSudokuPuzzle: () => void
 
   selectCell: (index: number | null) => void
   removeSelectedCell: () => void
@@ -52,6 +57,7 @@ const defaultSudokuNumbers = [
 ]
 
 const initialState: State = {
+  // TODO: probably should be null now
   board: Array.from({ length: 81 }, (_, i) => ({
     value: defaultSudokuNumbers[i] || null,
     candidates: 0,
@@ -61,8 +67,11 @@ const initialState: State = {
     hasConflict: false,
   })),
   selectedCellIndex: null,
+
   gamePhase: 'idle',
   difficulty: difficultyType.EASY,
+  puzzles: [],
+  puzzleIndex: 0,
 }
 
 export const createUseStore = () =>
@@ -79,6 +88,24 @@ export const createUseStore = () =>
             set((draft) => {
               draft.difficulty = difficulty
               draft.gamePhase = 'loading'
+            }),
+
+          setPuzzles: (puzzles: Array<SudokuPuzzleSource>) =>
+            set((draft) => {
+              draft.puzzles = puzzles
+              draft.puzzleIndex = 0
+              draft.gamePhase = 'playing'
+            }),
+
+          nextSudokuPuzzle: () =>
+            set((draft) => {
+              // TODO: probably pull this into a draft helper so it's easy to cover in tests
+              const { puzzleIndex, puzzles } = draft
+              const hasNextPuzzle = puzzleIndex < puzzles.length - 1
+
+              if (hasNextPuzzle) {
+                draft.puzzleIndex++
+              }
             }),
 
           selectCell: (index) =>
