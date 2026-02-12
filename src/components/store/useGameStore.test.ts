@@ -1,14 +1,15 @@
 import { getConflictingCellIndexes } from '../testLib/boardTestHelpers'
-import { createBoard } from '../testLib/helpers'
+import { createBoard, resetGameStore } from '../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../utils/indices'
-import { createUseStore, type StoreState } from './useGameStore'
+import useGameStore, { type createUseStore, type StoreState } from './useGameStore'
 
 describe('useGameStore', () => {
   let useStore: ReturnType<typeof createUseStore>
   let store: () => StoreState
 
   beforeEach(() => {
-    useStore = createUseStore()
+    resetGameStore()
+    useStore = useGameStore
     useStore.setState({ board: createBoard() })
     store = () => useStore.getState()
   })
@@ -130,12 +131,16 @@ describe('useGameStore', () => {
         store().placeValue(firstPlacedCellIndex, placedValue)
         store().placeValue(secondPlacedCellIndex, placedValue)
         expect(getConflictingCellIndexes(store().board)).toEqual(
-          expect.arrayContaining([firstPlacedCellIndex, secondPlacedCellIndex, conflictingGivenIndex]),
+          expect.arrayContaining([
+            firstPlacedCellIndex,
+            secondPlacedCellIndex,
+            conflictingGivenIndex,
+          ]),
         )
-        
+
         const newNonConflictedPlacedValue = 1
         store().placeValue(firstPlacedCellIndex, newNonConflictedPlacedValue)
-        
+
         const expectedSameColIndex = 4
         expect(cellCol[firstPlacedCellIndex]).toEqual(expectedSameColIndex)
         expect(cellCol[secondPlacedCellIndex]).toEqual(expectedSameColIndex)
@@ -153,12 +158,16 @@ describe('useGameStore', () => {
         store().placeValue(firstPlacedCellIndex, placedValue)
         store().placeValue(secondPlacedCellIndex, placedValue)
         expect(getConflictingCellIndexes(store().board)).toEqual(
-          expect.arrayContaining([firstPlacedCellIndex, secondPlacedCellIndex, conflictingGivenIndex]),
+          expect.arrayContaining([
+            firstPlacedCellIndex,
+            secondPlacedCellIndex,
+            conflictingGivenIndex,
+          ]),
         )
-        
+
         const newNonConflictedPlacedValue = 1
         store().placeValue(firstPlacedCellIndex, newNonConflictedPlacedValue)
-        
+
         const expectedSameRowIndex = 0
         expect(cellRow[firstPlacedCellIndex]).toEqual(expectedSameRowIndex)
         expect(cellRow[secondPlacedCellIndex]).toEqual(expectedSameRowIndex)
@@ -176,12 +185,16 @@ describe('useGameStore', () => {
         store().placeValue(firstPlacedCellIndex, placedValue)
         store().placeValue(secondPlacedCellIndex, placedValue)
         expect(getConflictingCellIndexes(store().board)).toEqual(
-          expect.arrayContaining([firstPlacedCellIndex, secondPlacedCellIndex, conflictingGivenIndex]),
+          expect.arrayContaining([
+            firstPlacedCellIndex,
+            secondPlacedCellIndex,
+            conflictingGivenIndex,
+          ]),
         )
-        
+
         const newNonConflictedPlacedValue = 7
         store().placeValue(firstPlacedCellIndex, newNonConflictedPlacedValue)
-        
+
         const expectedSameRowIndex = 0
         expect(cellBox[firstPlacedCellIndex]).toEqual(expectedSameRowIndex)
         expect(cellBox[secondPlacedCellIndex]).toEqual(expectedSameRowIndex)

@@ -1,16 +1,14 @@
-import type { Difficulty, DifficultyManifestEntry } from '@/types'
+import useGameStore from '@/components/store/useGameStore'
+import type { DifficultyManifestEntry } from '@/types'
 import { useCallback, useEffect, useState } from 'react'
 import { fetchDifficultyChunk, type SudokuPuzzleSource } from '../api'
 import { getRandomInt, getXRandomUniqueNumbers, zeroPadNumber } from '../helpers'
 import useManifest from './useManifest'
 
-type UseDifficultyProps = {
-  difficulty: Difficulty
-}
-
 const MAX_SUDOKU_CACHE_SIZE = 5
 
-export default function useDifficulty({ difficulty }: UseDifficultyProps) {
+export default function useDifficulty() {
+  const difficulty = useGameStore((s) => s.difficulty)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [sudokuCache, setSudokuCache] = useState<SudokuPuzzleSource[]>([])

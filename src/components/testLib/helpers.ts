@@ -1,6 +1,7 @@
 import type { Difficulty, RootManifest } from '@/types'
 import type { SudokuPuzzleSource } from '../DifficultySelector/api'
 import type { Cell, State } from '../store/useGameStore'
+import useGameStore from '../store/useGameStore'
 import { addDigits } from '../utils/bitMaskHelper'
 
 const createInitialState = (baseBoard: number[] = getDefaultBoard()): State => ({
@@ -14,7 +15,18 @@ const createInitialState = (baseBoard: number[] = getDefaultBoard()): State => (
   })),
   selectedCellIndex: null,
   gamePhase: 'idle',
+  difficulty: 'easy',
+  puzzles: [],
+  puzzleIndex: 0,
 })
+
+// Reset the singleton store to initial state in tests.
+export function resetGameStore(withState: Partial<State> = {}) {
+  useGameStore.setState({
+    ...createInitialState(),
+    ...withState,
+  })
+}
 
 //======================================
 //======= State Creator Helpers ========
