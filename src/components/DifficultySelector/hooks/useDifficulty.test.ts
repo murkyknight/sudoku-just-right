@@ -52,7 +52,7 @@ describe('useDifficulty', () => {
   let getXRandomUniqueNumbersMock: Mock
 
   beforeEach(() => {
-    resetGameStore()
+    resetGameStore({ gamePhase: 'loading' })
     store = () => useGameStore.getState()
 
     getRandomIntMock = vi.mocked(getRandomInt)
@@ -84,6 +84,15 @@ describe('useDifficulty', () => {
       expect(fetchDifficultyAPISpy).not.toHaveBeenCalled()
     })
 
+    it('does not attempt to load puzzles when phase is "playing" even with loaded manifest', () => {
+      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
+      store().gamePhase = 'playing'
+
+      renderHook(() => useDifficulty())
+
+      expect(fetchDifficultyAPISpy).not.toHaveBeenCalled()
+    })
+
     it('keeps isLoading true while loading difficulty chunk after manifest', async () => {
       useManifestMock
         .mockReturnValueOnce({ isLoading: true, manifest: null })
@@ -101,7 +110,8 @@ describe('useDifficulty', () => {
       })
     })
 
-    it('starts loading difficulty chunk with a present manifest', () => {
+    it('starts loading difficulty chunk with a present manifest and phase is "loading"', () => {
+      store().gamePhase = 'loading'
       useManifestMock.mockReturnValue({
         isLoading: false,
         manifest: defaultVersionManifest,

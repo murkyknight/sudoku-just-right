@@ -72,6 +72,7 @@ export default function useDifficulty() {
     }
   }, [manifest, difficulty, setPuzzles])
 
+  // refill cache
   useEffect(() => {
     const isPlaying = phase === 'playing'
     const isLastPuzzle = puzzles.length > 0 && puzzleIndex === puzzles.length - 1
@@ -81,12 +82,12 @@ export default function useDifficulty() {
     }
   }, [phase, puzzles.length, loadDifficulty, puzzleIndex, isLoading])
 
+  // inital load
   useEffect(() => {
-    if (manifest && difficulty) {
-      console.log('Loading for difficulty: ', difficulty)
+    if (phase === 'loading' && manifest) {
       loadDifficulty()
     }
-  }, [manifest, loadDifficulty, difficulty])
+  }, [manifest, loadDifficulty, phase])
 
   return {
     isLoading: isManifestLoading || isLoading,
