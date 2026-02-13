@@ -1,7 +1,7 @@
 import * as api from '@/components/DifficultySelector/api'
 import { getRandomInt, getXRandomUniqueNumbers } from '@/components/DifficultySelector/helpers'
 import useManifest from '@/components/DifficultySelector/hooks/useManifest'
-import useGameStore from '@/components/store/useGameStore'
+import useGameStore, { type StoreState } from '@/components/store/useGameStore'
 import { generatePuzzleSources, resetGameStore } from '@/components/testLib/helpers'
 import type { VersionManifest } from '@/types'
 import { act, renderHook } from '@testing-library/react'
@@ -44,6 +44,8 @@ const defaultVersionManifest: VersionManifest = {
 }
 
 describe('useDifficulty', () => {
+  let store: () => StoreState
+  
   let useManifestMock: Mock
   let fetchDifficultyAPISpy: Mock
   let getRandomIntMock: Mock
@@ -51,6 +53,7 @@ describe('useDifficulty', () => {
 
   beforeEach(() => {
     resetGameStore()
+    store = () => useGameStore.getState()
 
     getRandomIntMock = vi.mocked(getRandomInt)
     getXRandomUniqueNumbersMock = vi.mocked(getXRandomUniqueNumbers)
@@ -120,7 +123,22 @@ describe('useDifficulty', () => {
       expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
     })
 
-    it('on new difficulty, fetches puzzles for that difficulty', async () => {
+    it('saves fetched puzzles to store cache', async () => {
+      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
+      getRandomIntMock.mockReturnValue(55)
+      getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
+      const expectedEasyPuzzleSources = generatePuzzleSources(5, 'easy')
+      fetchDifficultyAPISpy.mockResolvedValueOnce(expectedEasyPuzzleSources)
+
+      renderHook(() => useDifficulty())
+
+      await vi.waitFor(() => {
+        expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
+      })
+      expect(store().puzzles).toEqual(expectedEasyPuzzleSources)
+    })
+
+    it('on new difficulty, fetches puzzles for that difficulty and stores in cache', async () => {
       useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
       getRandomIntMock.mockReturnValue(55)
       getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
@@ -130,11 +148,10 @@ describe('useDifficulty', () => {
         .mockResolvedValueOnce(expectedEasyPuzzleSources)
         .mockResolvedValueOnce(expectedMediumPuzzleSources)
 
-      const { result, rerender } = renderHook(() => useDifficulty())
+      const { rerender } = renderHook(() => useDifficulty())
 
       await vi.waitFor(() => {
         expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
-        expect(result.current.isLoading).toBe(false)
       })
 
       useGameStore.getState().setDifficulty('medium')
@@ -142,8 +159,8 @@ describe('useDifficulty', () => {
 
       await vi.waitFor(() => {
         expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/medium/0055.json')
-        expect(result.current.isLoading).toBe(false)
       })
+      expect(store().puzzles).toEqual(expectedMediumPuzzleSources)
     })
   })
 
