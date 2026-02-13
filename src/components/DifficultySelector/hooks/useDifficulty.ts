@@ -76,7 +76,7 @@ export default function useDifficulty() {
   useEffect(() => {
     const isPlaying = phase === 'playing'
     const isLastPuzzle = puzzles.length > 0 && puzzleIndex === puzzles.length - 1
-
+    
     if (isPlaying && isLastPuzzle && !isLoading) {
       loadDifficulty()
     }

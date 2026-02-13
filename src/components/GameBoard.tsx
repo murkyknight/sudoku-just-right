@@ -21,6 +21,9 @@ export default function GameBoard() {
   useEffect(() => {
     const isLoading = phase === 'loading'
     if (!isLoading && currentPuzzle) {
+      // TODO: we overwirte the last game while refreshing the cache
+      // Need to fix this - maybe using `const isComplete = phase === 'completed'`
+      // once we add this when we complete a game
       loadBoard(currentPuzzle.board)
     }
   }, [loadBoard, currentPuzzle, phase])

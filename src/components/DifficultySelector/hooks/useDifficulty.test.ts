@@ -172,6 +172,32 @@ describe('useDifficulty', () => {
       })
       expect(store().puzzles).toEqual(expectedMediumPuzzleSources)
     })
+
+    it('refetches puzzles for cache exhustion refill', async () => {
+      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
+      getRandomIntMock.mockReturnValue(55)
+      getXRandomUniqueNumbersMock.mockReturnValue([0, 1]) // small cache
+      const expectedEasyPuzzleSources = generatePuzzleSources(2, 'easy')
+      const expectedNextEasyPuzzleSources = generatePuzzleSources(2, 'easy')
+      fetchDifficultyAPISpy
+        .mockResolvedValueOnce(expectedEasyPuzzleSources)
+        .mockResolvedValueOnce(expectedNextEasyPuzzleSources)
+
+      const { result } = renderHook(() => useDifficulty())
+
+      await vi.waitFor(() => {
+        expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      store().nextSudokuPuzzle() // moves to last puzzle in cache - triggers refetch in hook
+
+      await vi.waitFor(() => {
+        expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
+        expect(result.current.isLoading).toBe(false)
+        expect(store().puzzles).toEqual(expectedNextEasyPuzzleSources)
+      })
+    })
   })
 
   // TODO: We'll probably repurpose these tests soon
