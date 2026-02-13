@@ -8,6 +8,16 @@ import useManifest from './useManifest'
 
 const MAX_SUDOKU_CACHE_SIZE = 5
 
+  const generateRandomDifficultyPaddedChunkNumber = (entry: DifficultyManifestEntry) => {
+    // last page might not contain the full chuck size, best to avoid it since we don't keep track of its size
+    const ARRAY_OFFSET_AND_NO_LAST_PAGE = 2
+    const usableChunkSize = entry.chunks - ARRAY_OFFSET_AND_NO_LAST_PAGE
+    const randomChunkNumber = getRandomInt(usableChunkSize)
+    const paddedChunkNumber = zeroPadNumber(randomChunkNumber, entry.chunkPadding)
+
+    return paddedChunkNumber
+  }
+
 export default function useDifficulty() {
   const { difficulty, puzzleIndex, puzzles, phase, setPuzzles } = useGameStore(
     useShallow((s) => ({
@@ -21,19 +31,6 @@ export default function useDifficulty() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const { isLoading: isManifestLoading, error: manifestError, manifest } = useManifest()
-
-  const generateRandomDifficultyPaddedChunkNumber = useCallback(
-    (entry: DifficultyManifestEntry) => {
-      // last page might not contain the full chuck size, best to avoid it since we don't keep track of its size
-      const ARRAY_OFFSET_AND_NO_LAST_PAGE = 2
-      const usableChunkSize = entry.chunks - ARRAY_OFFSET_AND_NO_LAST_PAGE
-      const randomChunkNumber = getRandomInt(usableChunkSize)
-      const paddedChunkNumber = zeroPadNumber(randomChunkNumber, entry.chunkPadding)
-
-      return paddedChunkNumber
-    },
-    [],
-  )
 
   const loadDifficulty = useCallback(async () => {
     if (!manifest) {
@@ -73,7 +70,7 @@ export default function useDifficulty() {
     } finally {
       setIsLoading(false)
     }
-  }, [manifest, generateRandomDifficultyPaddedChunkNumber, difficulty, setPuzzles])
+  }, [manifest, difficulty, setPuzzles])
 
   useEffect(() => {
     const isPlaying = phase === 'playing'
@@ -92,8 +89,6 @@ export default function useDifficulty() {
   }, [manifest, loadDifficulty, difficulty])
 
   return {
-    currentSudoku: puzzles[puzzleIndex], // TODO: removing soon
-    puzzles: puzzles, // TODO: exposing just for dev testing - remove
     isLoading: isManifestLoading || isLoading,
     error: manifestError || error,
   }
