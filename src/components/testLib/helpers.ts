@@ -4,6 +4,9 @@ import type { Cell, State } from '../store/useGameStore'
 import useGameStore from '../store/useGameStore'
 import { addDigits } from '../utils/bitMaskHelper'
 
+/**
+ * The only test function that creates the complete initial state
+ */
 const createInitialState = (baseBoard: number[] = getDefaultBoard()): State => ({
   board: Array.from({ length: 81 }, (_, i) => ({
     value: baseBoard[i] || null,

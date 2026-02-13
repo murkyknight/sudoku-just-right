@@ -1,18 +1,25 @@
 import useGameStore from '@/components/store/useGameStore'
 import type { DifficultyManifestEntry } from '@/types'
 import { useCallback, useEffect, useState } from 'react'
-import { fetchDifficultyChunk, type SudokuPuzzleSource } from '../api'
+import { useShallow } from 'zustand/shallow'
+import { fetchDifficultyChunk } from '../api'
 import { getRandomInt, getXRandomUniqueNumbers, zeroPadNumber } from '../helpers'
 import useManifest from './useManifest'
 
 const MAX_SUDOKU_CACHE_SIZE = 5
 
 export default function useDifficulty() {
-  const difficulty = useGameStore((s) => s.difficulty)
+  const { difficulty, puzzleIndex, puzzles, phase, setPuzzles } = useGameStore(
+    useShallow((s) => ({
+      difficulty: s.difficulty,
+      puzzleIndex: s.puzzleIndex,
+      puzzles: s.puzzles,
+      phase: s.gamePhase,
+      setPuzzles: s.setPuzzles,
+    })),
+  )
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  const [sudokuCache, setSudokuCache] = useState<SudokuPuzzleSource[]>([])
-  const [gamePointer, setGamePointer] = useState(0)
   const { isLoading: isManifestLoading, error: manifestError, manifest } = useManifest()
 
   const generateRandomDifficultyPaddedChunkNumber = useCallback(
@@ -35,7 +42,6 @@ export default function useDifficulty() {
 
     setIsLoading(true)
     setError(null)
-    setGamePointer(0)
 
     const difficultyManifestEntry = manifest.difficulties[difficulty]
     const paddedChunkNumber = generateRandomDifficultyPaddedChunkNumber(difficultyManifestEntry)
@@ -55,7 +61,7 @@ export default function useDifficulty() {
         (puzzleIndex: number) => sudokuPuzzleChunk[puzzleIndex],
       )
       console.log('About to save these chosen puzzles to GAME CACHE: ', chosenSudokus)
-      setSudokuCache(chosenSudokus)
+      setPuzzles(chosenSudokus)
     } catch (err) {
       if (err instanceof Error) {
         console.error(err)
@@ -67,23 +73,16 @@ export default function useDifficulty() {
     } finally {
       setIsLoading(false)
     }
-  }, [manifest, generateRandomDifficultyPaddedChunkNumber, difficulty])
+  }, [manifest, generateRandomDifficultyPaddedChunkNumber, difficulty, setPuzzles])
 
-  const loadNextSudoku = useCallback(() => {
-    if (isLoading) {
-      return
-    }
+  useEffect(() => {
+    const isPlaying = phase === 'playing'
+    const isLastPuzzle = puzzles.length > 0 && puzzleIndex === puzzles.length - 1
 
-    setGamePointer((prev) => {
-      const hasNextPuzzle = gamePointer < sudokuCache.length - 1
-      if (hasNextPuzzle) {
-        return prev + 1
-      }
-
+    if (isPlaying && isLastPuzzle && !isLoading) {
       loadDifficulty()
-      return prev
-    })
-  }, [isLoading, sudokuCache.length, loadDifficulty, gamePointer])
+    }
+  }, [phase, puzzles.length, loadDifficulty, puzzleIndex, isLoading])
 
   useEffect(() => {
     if (manifest && difficulty) {
@@ -93,9 +92,8 @@ export default function useDifficulty() {
   }, [manifest, loadDifficulty, difficulty])
 
   return {
-    currentSudoku: sudokuCache[gamePointer],
-    loadNextSudoku,
-    puzzles: sudokuCache, // TODO: exposing just for dev testing - remove
+    currentSudoku: puzzles[puzzleIndex], // TODO: removing soon
+    puzzles: puzzles, // TODO: exposing just for dev testing - remove
     isLoading: isManifestLoading || isLoading,
     error: manifestError || error,
   }

@@ -7,19 +7,21 @@ import styles from './DifficultySelector.module.css'
 import useDifficulty from './hooks/useDifficulty'
 
 export default function DifficultySelector() {
-  const difficulty = useGameStore((s) => s.difficulty)
-  const { loadNextSudoku, currentSudoku, isLoading } = useDifficulty({ difficulty })
-  const { loadBoard, setDifficulty } = useGameStore(
+  const { isLoading } = useDifficulty()
+  const currentPuzzle = useGameStore((s) => s.puzzles[s.puzzleIndex])
+  const { difficulty, setDifficulty, loadBoard, nextSudokuPuzzle } = useGameStore(
     useShallow((s) => ({
-      loadBoard: s.loadBoard,
+      difficulty: s.difficulty,
       setDifficulty: s.setDifficulty,
+      loadBoard: s.loadBoard,
+      nextSudokuPuzzle: s.nextSudokuPuzzle,
     })),
   )
 
   const handleChange = (newDifficulty: string) => {
     if (!newDifficulty) {
       // if same difficulty selected, empty string is passed
-      return loadNextSudoku()
+      return nextSudokuPuzzle()
     }
 
     if (newDifficulty.toUpperCase() in difficultyType) {
@@ -27,11 +29,12 @@ export default function DifficultySelector() {
     }
   }
 
+  // TODO: move to GAmeBoartd
   useEffect(() => {
-    if (!isLoading && currentSudoku) {
-      loadBoard(currentSudoku.board)
+    if (!isLoading && currentPuzzle) {
+      loadBoard(currentPuzzle.board)
     }
-  }, [loadBoard, currentSudoku, isLoading])
+  }, [loadBoard, currentPuzzle, isLoading])
 
   return (
     <div className={styles.container}>
