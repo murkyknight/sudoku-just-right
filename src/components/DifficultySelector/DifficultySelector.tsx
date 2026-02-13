@@ -1,5 +1,4 @@
 import { difficultyType, type Difficulty } from '@/types'
-import { useEffect } from 'react'
 import { useShallow } from 'zustand/shallow'
 import useGameStore from '../store/useGameStore'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
@@ -7,20 +6,18 @@ import styles from './DifficultySelector.module.css'
 import useDifficulty from './hooks/useDifficulty'
 
 export default function DifficultySelector() {
-  const { isLoading } = useDifficulty()
-  const currentPuzzle = useGameStore((s) => s.puzzles[s.puzzleIndex])
-  const { difficulty, setDifficulty, loadBoard, nextSudokuPuzzle } = useGameStore(
+  useDifficulty()
+  const { difficulty, setDifficulty, nextSudokuPuzzle } = useGameStore(
     useShallow((s) => ({
       difficulty: s.difficulty,
       setDifficulty: s.setDifficulty,
-      loadBoard: s.loadBoard,
       nextSudokuPuzzle: s.nextSudokuPuzzle,
     })),
   )
 
   const handleChange = (newDifficulty: string) => {
     if (!newDifficulty) {
-      // if same difficulty selected, empty string is passed
+      // if same difficulty selected, empty string is passed, thus move to next puzzle
       return nextSudokuPuzzle()
     }
 
@@ -28,13 +25,6 @@ export default function DifficultySelector() {
       setDifficulty(newDifficulty as Difficulty)
     }
   }
-
-  // TODO: move to GAmeBoartd
-  useEffect(() => {
-    if (!isLoading && currentPuzzle) {
-      loadBoard(currentPuzzle.board)
-    }
-  }, [loadBoard, currentPuzzle, isLoading])
 
   return (
     <div className={styles.container}>
