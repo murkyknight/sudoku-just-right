@@ -19,10 +19,9 @@ const MAX_SUDOKU_CACHE_SIZE = 5
   }
 
 export default function useDifficulty() {
-  const { difficulty, puzzleIndex, puzzles, phase, setPuzzles } = useGameStore(
+  const { difficulty, puzzles, phase, setPuzzles } = useGameStore(
     useShallow((s) => ({
       difficulty: s.difficulty,
-      puzzleIndex: s.puzzleIndex,
       puzzles: s.puzzles,
       phase: s.gamePhase,
       setPuzzles: s.setPuzzles,
@@ -75,12 +74,11 @@ export default function useDifficulty() {
   // refill cache
   useEffect(() => {
     const isPlaying = phase === 'playing'
-    const isLastPuzzle = puzzles.length > 0 && puzzleIndex === puzzles.length - 1
-    
-    if (isPlaying && isLastPuzzle && !isLoading) {
+
+    if (isPlaying && !puzzles.length && !isLoading) {
       loadDifficulty()
     }
-  }, [phase, puzzles.length, loadDifficulty, puzzleIndex, isLoading])
+  }, [phase, puzzles.length, loadDifficulty, isLoading])
 
   // inital load
   useEffect(() => {

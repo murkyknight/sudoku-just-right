@@ -22,8 +22,9 @@ export type State = {
   board: Array<Cell>
   selectedCellIndex: number | null
 
-  gamePhase: GamePhase
+  activeGame: SudokuPuzzleSource | null
   difficulty: Difficulty
+  gamePhase: GamePhase
   puzzles: Array<SudokuPuzzleSource>
   puzzleIndex: number
 }
@@ -68,8 +69,9 @@ const initialState: State = {
   })),
   selectedCellIndex: null,
 
-  gamePhase: 'idle',
+  activeGame: null,
   difficulty: difficultyType.EASY,
+  gamePhase: 'idle',
   puzzles: [],
   puzzleIndex: 0,
 }
@@ -87,25 +89,38 @@ export const createUseStore = () =>
           setDifficulty: (difficulty: Difficulty) =>
             set((draft) => {
               draft.difficulty = difficulty
+              draft.activeGame = null
+              draft.puzzles = []
               draft.gamePhase = 'loading'
             }),
 
-          setPuzzles: (puzzles: Array<SudokuPuzzleSource>) =>
+          setPuzzles: (newPuzzles: Array<SudokuPuzzleSource>) =>
             set((draft) => {
-              draft.puzzles = puzzles
-              draft.puzzleIndex = 0
-              draft.gamePhase = 'playing'
+              if (!newPuzzles.length) {
+                return
+              }
+
+              draft.puzzles.push(...newPuzzles)
+
+              if (!draft.activeGame) {
+                const nextPuzzle = draft.puzzles.shift()
+                if (nextPuzzle) {
+                  draft.activeGame = nextPuzzle
+                  draft.gamePhase = 'playing'
+                }
+              }
             }),
 
           nextSudokuPuzzle: () =>
             set((draft) => {
               // TODO: probably pull this into a draft helper so it's easy to cover in tests
-              const { puzzleIndex, puzzles } = draft
-              const hasNextPuzzle = puzzleIndex < puzzles.length - 1
-
-              if (hasNextPuzzle) {
-                draft.puzzleIndex++
+              const nextPuzzle = draft.puzzles.shift()
+              if (nextPuzzle) {
+                draft.activeGame = nextPuzzle
+                draft.gamePhase = 'playing'
               }
+              // TODO: Question: if no next puzzle should we single to load more here?
+              // For now, lets leave that in useDifficulty - although we might not even need useDifficulty
             }),
 
           selectCell: (index) =>
@@ -192,6 +207,6 @@ export const createUseStore = () =>
     ),
   )
 
-  // Default singleton for app usage (to not be used in tests)
-  const useGameStore = createUseStore()
-  export default useGameStore
+// Default singleton for app usage (to not be used in tests)
+const useGameStore = createUseStore()
+export default useGameStore

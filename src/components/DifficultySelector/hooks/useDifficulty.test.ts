@@ -4,7 +4,7 @@ import useManifest from '@/components/DifficultySelector/hooks/useManifest'
 import useGameStore, { type StoreState } from '@/components/store/useGameStore'
 import { generatePuzzleSources, resetGameStore } from '@/components/testLib/helpers'
 import type { VersionManifest } from '@/types'
-import { act, renderHook } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import type { Mock } from 'vitest'
 import useDifficulty from './useDifficulty'
 
@@ -133,190 +133,82 @@ describe('useDifficulty', () => {
       expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
     })
 
-    it('saves fetched puzzles to store cache', async () => {
-      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
-      getRandomIntMock.mockReturnValue(55)
-      getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
-      const expectedEasyPuzzleSources = generatePuzzleSources(5, 'easy')
-      fetchDifficultyAPISpy.mockResolvedValueOnce(expectedEasyPuzzleSources)
+    describe('when no active game', () => {
+      it('saves inital fetched puzzles to store cache and sets first as the active game', async () => {
+        useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
+        getRandomIntMock.mockReturnValue(55)
+        getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
+        const expectedEasyPuzzleSources = generatePuzzleSources(5, 'easy')
+        fetchDifficultyAPISpy.mockResolvedValueOnce(expectedEasyPuzzleSources)
 
-      renderHook(() => useDifficulty())
+        renderHook(() => useDifficulty())
 
-      await vi.waitFor(() => {
-        expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
-      })
-      expect(store().puzzles).toEqual(expectedEasyPuzzleSources)
-    })
-
-    it('on new difficulty, fetches puzzles for that difficulty and stores in cache', async () => {
-      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
-      getRandomIntMock.mockReturnValue(55)
-      getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
-      const expectedEasyPuzzleSources = generatePuzzleSources(5, 'easy')
-      const expectedMediumPuzzleSources = generatePuzzleSources(5, 'medium')
-      fetchDifficultyAPISpy
-        .mockResolvedValueOnce(expectedEasyPuzzleSources)
-        .mockResolvedValueOnce(expectedMediumPuzzleSources)
-
-      const { rerender } = renderHook(() => useDifficulty())
-
-      await vi.waitFor(() => {
-        expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
-      })
-
-      useGameStore.getState().setDifficulty('medium')
-      rerender()
-
-      await vi.waitFor(() => {
-        expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/medium/0055.json')
-      })
-      expect(store().puzzles).toEqual(expectedMediumPuzzleSources)
-    })
-
-    it('refetches puzzles for cache exhustion refill', async () => {
-      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
-      getRandomIntMock.mockReturnValue(55)
-      getXRandomUniqueNumbersMock.mockReturnValue([0, 1]) // small cache
-      const expectedEasyPuzzleSources = generatePuzzleSources(2, 'easy')
-      const expectedNextEasyPuzzleSources = generatePuzzleSources(2, 'easy')
-      fetchDifficultyAPISpy
-        .mockResolvedValueOnce(expectedEasyPuzzleSources)
-        .mockResolvedValueOnce(expectedNextEasyPuzzleSources)
-
-      const { result } = renderHook(() => useDifficulty())
-
-      await vi.waitFor(() => {
-        expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
-        expect(result.current.isLoading).toBe(false)
-      })
-
-      store().nextSudokuPuzzle() // moves to last puzzle in cache - triggers refetch in hook
-
-      await vi.waitFor(() => {
-        expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
-        expect(result.current.isLoading).toBe(false)
-        expect(store().puzzles).toEqual(expectedNextEasyPuzzleSources)
-      })
-    })
-  })
-
-  // TODO: We'll probably repurpose these tests soon
-  describe.skip('loadNextSudoku', () => {
-    it('returns a function to move to the next fetched puzzle', async () => {
-      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
-      getRandomIntMock.mockReturnValue(55)
-      getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
-      const expectedPuzzleSources = generatePuzzleSources(5)
-      fetchDifficultyAPISpy.mockResolvedValueOnce(expectedPuzzleSources)
-
-      const { result } = renderHook(() => useDifficulty())
-
-      expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
-      await vi.waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
-        // expect(result.current.loadNextSudoku).not.toBeNull()
+        await vi.waitFor(() => {
+          expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
+        })
+        const expectedActiveGame = expectedEasyPuzzleSources.shift()
+        expect(store().activeGame).toEqual(expectedActiveGame)
+        expect(store().puzzles).toEqual(expectedEasyPuzzleSources)
       })
     })
 
-    it('does not move to next puzzle if hook is currently loading', async () => {
-      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
-      getRandomIntMock.mockReturnValue(55)
-      getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
-      const expectedPuzzleSources = generatePuzzleSources(5)
-      fetchDifficultyAPISpy.mockResolvedValueOnce(expectedPuzzleSources)
+    describe('when active game', () => {
+      it('refetches puzzles for cache exhustion refill but does not update active game with them', async () => {
+        useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
+        getRandomIntMock.mockReturnValue(55)
+        store().activeGame = generatePuzzleSources(1, 'easy')[0] // random active game - doesn't matter we're about to move to new one
+        getXRandomUniqueNumbersMock.mockReturnValue([0]) // small cache
+        const expectedNextGame = generatePuzzleSources(1, 'easy')
+        const expectedCacheRefillPuzzles = generatePuzzleSources(1, 'easy')
+        fetchDifficultyAPISpy
+          .mockResolvedValueOnce(expectedNextGame)
+          .mockResolvedValueOnce(expectedCacheRefillPuzzles)
 
-      const { result } = renderHook(() => useDifficulty())
+        const { result } = renderHook(() => useDifficulty())
 
-      expect(result.current.isLoading).toBe(true)
-      act(() => {
-        // result.current.loadNextSudoku()
-      })
-      await vi.waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
-        // expect(result.current.currentSudoku).toEqual(expectedPuzzleSources[0]) // still at index 0
+        await vi.waitFor(() => {
+          expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
+          expect(result.current.isLoading).toBe(false)
+        })
+
+        store().nextSudokuPuzzle() // uses last puzzle in cache - triggers refetch in hook
+
+        await vi.waitFor(() => {
+          expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
+          expect(result.current.isLoading).toBe(false)
+          // active game moves to last game in cache - though not to any puzzle in the cache refill
+          expect(store().activeGame).toEqual(expectedNextGame[0])
+          expect(store().puzzles).toEqual(expectedCacheRefillPuzzles)
+        })
       })
     })
 
-    it('returns next cached puzzle when loadNextSudoku is called without refetching again', async () => {
-      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
-      getRandomIntMock.mockReturnValue(55)
-      getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
-      const expectedPuzzleSources = generatePuzzleSources(5)
-      fetchDifficultyAPISpy.mockResolvedValueOnce(expectedPuzzleSources)
+    describe('on new difficulty', () => {
+      it('fetches puzzles for that difficulty and stores in cache and shifts first on as active game', async () => {
+        useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
+        getRandomIntMock.mockReturnValue(55)
+        getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
+        const expectedEasyPuzzleSources = generatePuzzleSources(5, 'easy')
+        const expectedMediumPuzzleSources = generatePuzzleSources(5, 'medium')
+        fetchDifficultyAPISpy
+          .mockResolvedValueOnce(expectedEasyPuzzleSources)
+          .mockResolvedValueOnce(expectedMediumPuzzleSources)
 
-      const { result } = renderHook(() => useDifficulty())
+        const { rerender } = renderHook(() => useDifficulty())
 
-      await vi.waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
-        // expect(result.current.currentSudoku).toEqual(expectedPuzzleSources[0])
-      })
+        await vi.waitFor(() => {
+          expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
+        })
 
-      act(() => {
-        // result.current.loadNextSudoku()
-      })
+        useGameStore.getState().setDifficulty('medium')
+        rerender()
 
-      await vi.waitFor(() => {
-        // expect(result.current.currentSudoku).toEqual(expectedPuzzleSources[1])
-      })
-
-      // ensure no refetch happened
-      expect(fetchDifficultyAPISpy).toHaveBeenCalledTimes(1)
-    })
-
-    it('refetches puzzle cache when cache is exhausted', async () => {
-      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
-      getRandomIntMock.mockReturnValue(55)
-      getXRandomUniqueNumbersMock.mockReturnValue([0]) // only put 1 puzzle in cache for testing purpose
-      const expectedPuzzleSources = generatePuzzleSources(1)
-      fetchDifficultyAPISpy.mockResolvedValueOnce(expectedPuzzleSources)
-
-      const { result } = renderHook(() => useDifficulty())
-
-      await vi.waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
-        // expect(result.current.currentSudoku).toEqual(expectedPuzzleSources[0])
-      })
-
-      act(() => {
-        // result.current.loadNextSudoku()
-      })
-      expect(result.current.isLoading).toBe(true)
-      expect(fetchDifficultyAPISpy).toHaveBeenCalledTimes(2)
-    })
-
-    it('resets game pointer when refreshing puzzle cache', async () => {
-      useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
-      getRandomIntMock.mockReturnValue(55)
-      getXRandomUniqueNumbersMock.mockReturnValue([0, 1])
-      const expectedPuzzleSources = generatePuzzleSources(2)
-      const nextExpectedPuzzleSources = generatePuzzleSources(2)
-      fetchDifficultyAPISpy
-        .mockResolvedValueOnce(expectedPuzzleSources)
-        .mockResolvedValueOnce(nextExpectedPuzzleSources)
-
-      const { result } = renderHook(() => useDifficulty())
-
-      await vi.waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
-        // expect(result.current.currentSudoku).toEqual(expectedPuzzleSources[0])
-      })
-
-      act(() => {
-        // result.current.loadNextSudoku()
-      })
-
-      await vi.waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
-        // expect(result.current.currentSudoku).toEqual(expectedPuzzleSources[1])
-      })
-
-      act(() => {
-        // result.current.loadNextSudoku() // will refresh cache
-      })
-
-      await vi.waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
-        // expect(result.current.currentSudoku).toEqual(nextExpectedPuzzleSources[0])
+        await vi.waitFor(() => {
+          expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/medium/0055.json')
+        })
+        const newDiffActiveGame = expectedMediumPuzzleSources.shift() // remove first puzzle for active game
+        expect(store().activeGame).toEqual(newDiffActiveGame)
+        expect(store().puzzles).toEqual(expectedMediumPuzzleSources)
       })
     })
   })
