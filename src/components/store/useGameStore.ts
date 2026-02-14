@@ -27,6 +27,8 @@ export type State = {
   gamePhase: GamePhase
   puzzles: Array<SudokuPuzzleSource>
   puzzleIndex: number
+
+  hasHydrated: boolean
 }
 
 type Actions = {
@@ -34,6 +36,7 @@ type Actions = {
   setDifficulty: (difficulty: Difficulty) => void
   setPuzzles: (puzzles: Array<SudokuPuzzleSource>) => void
   nextSudokuPuzzle: () => void
+  ensureActiveGame: () => void
 
   selectCell: (index: number | null) => void
   removeSelectedCell: () => void
@@ -74,6 +77,8 @@ const initialState: State = {
   gamePhase: 'idle',
   puzzles: [],
   puzzleIndex: 0,
+
+  hasHydrated: true, // TODO: true for now but change to false when we add `persist` middleware
 }
 
 export const createUseStore = () =>
@@ -121,6 +126,15 @@ export const createUseStore = () =>
               }
               // TODO: Question: if no next puzzle should we single to load more here?
               // For now, lets leave that in useDifficulty - although we might not even need useDifficulty
+            }),
+
+          ensureActiveGame: () =>
+            set((draft) => {
+              if (draft.activeGame) {
+                return
+              }
+
+              draft.gamePhase = 'loading'
             }),
 
           selectCell: (index) =>

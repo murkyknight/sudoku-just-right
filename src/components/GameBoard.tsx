@@ -10,23 +10,29 @@ export const BOXS = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 // const root = window.document.documentElement
 // root.classList.add('dark')
 export default function GameBoard() {
-  const { currentPuzzle, phase, loadBoard } = useGameStore(
+  const { activeGame, phase, hasHydrated, ensureActiveGame, loadBoard } = useGameStore(
     useShallow((s) => ({
-      currentPuzzle: s.puzzles[s.puzzleIndex],
+      activeGame: s.activeGame,
       phase: s.gamePhase,
+      hasHydrated: s.hasHydrated,
+      ensureActiveGame: s.ensureActiveGame,
       loadBoard: s.loadBoard,
     })),
   )
 
   useEffect(() => {
-    const isLoading = phase === 'loading'
-    if (!isLoading && currentPuzzle) {
-      // TODO: we overwirte the last game while refreshing the cache
-      // Need to fix this - maybe using `const isComplete = phase === 'completed'`
-      // once we add this when we complete a game
-      loadBoard(currentPuzzle.board)
+    if (!hasHydrated) {
+      return
     }
-  }, [loadBoard, currentPuzzle, phase])
+    ensureActiveGame()
+  }, [hasHydrated, ensureActiveGame])
+
+  useEffect(() => {
+    const isGamePhaseLoading = phase === 'loading'
+    if (!isGamePhaseLoading && activeGame) {
+      loadBoard(activeGame.board)
+    }
+  }, [loadBoard, activeGame, phase])
 
   return (
     <div className={styles.container}>
