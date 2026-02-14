@@ -21,7 +21,6 @@ const createInitialState = (baseBoard: number[] = getDefaultBoard()): State => (
   difficulty: 'easy',
   gamePhase: 'idle',
   puzzles: [],
-  puzzleIndex: 0,
 })
 
 // Reset the singleton store to initial state in tests.

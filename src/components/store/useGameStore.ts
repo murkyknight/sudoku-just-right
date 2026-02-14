@@ -26,7 +26,6 @@ export type State = {
   difficulty: Difficulty
   gamePhase: GamePhase
   puzzles: Array<SudokuPuzzleSource>
-  puzzleIndex: number
 
   hasHydrated: boolean
 }
@@ -76,7 +75,6 @@ const initialState: State = {
   difficulty: difficultyType.EASY,
   gamePhase: 'idle',
   puzzles: [],
-  puzzleIndex: 0,
 
   hasHydrated: true, // TODO: true for now but change to false when we add `persist` middleware
 }
