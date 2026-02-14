@@ -91,6 +91,7 @@ export function updateBoard(board: Array<Cell>, { placedCells }: CreateBoardProp
 
 export function createStoreState(state: Partial<State> = {}): State {
   return {
+    ...createInitialState(),
     board: [createCell()],
     selectedCellIndex: null,
     ...state,
@@ -99,6 +100,7 @@ export function createStoreState(state: Partial<State> = {}): State {
 
 export function storeWithCell(state: Partial<Cell> = {}): State {
   return {
+    ...createInitialState(),
     board: [createCell(state)],
     selectedCellIndex: null,
   }
