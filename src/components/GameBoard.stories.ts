@@ -1,18 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import type { RootManifest, VersionManifest } from '@/types'
-// import { within } from '@testing-library/react'
+import { within } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
-// import { expect, mocked } from 'storybook/test'
-// import { getXRandomUniqueNumbers } from './DifficultySelector/helpers'
+import { expect, mocked } from 'storybook/test'
+import { getXRandomUniqueNumbers } from './DifficultySelector/helpers'
 import GameBoard from './GameBoard'
-import { createRootManifest, cssSelectorToRegEx, generatePuzzleSources } from './testLib/helpers'
-import { withFullBoardGameStore } from './testLib/storybook/decorators'
-// import { getCellButton, selectNumber } from './testLib/storybook/helpers'
+import {
+  createRootManifest,
+  cssSelectorToRegEx,
+  generatePuzzleSources,
+  resetGameStore,
+} from './testLib/helpers'
+import { getCellButton, selectNumber } from './testLib/storybook/helpers'
 
 const meta = {
   title: 'Board/GameBoard',
   component: GameBoard,
+  beforeEach() {
+    resetGameStore()
+    mocked(getXRandomUniqueNumbers).mockReturnValue([0, 1, 2, 3, 4])
+  },
   parameters: {
     layout: 'centered',
     msw: {
@@ -30,7 +38,6 @@ const meta = {
       ],
     },
   },
-  decorators: [withFullBoardGameStore],
 } satisfies Meta<typeof GameBoard>
 
 export default meta
@@ -71,29 +78,24 @@ const defaultVersionManifest: VersionManifest = {
 // return:
 // HttpResponse.json(generatePuzzleSources(5))
 
-// TODO: fix the double load
+export const MultiUnitConflict: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const cellIndex = 1
+    const placedValue = '8'
+    const cell = getCellButton(canvas, cellIndex)
 
-// export const MultiUnitConflict: Story = {
-//   beforeEach: () => {
-//     mocked(getXRandomUniqueNumbers).mockReturnValue([0, 1, 2, 3, 4])
-//   },
-//   play: async ({ canvasElement }) => {
-//     const canvas = within(canvasElement)
-//     const cellIndex = 1
-//     const placedValue = '8'
-//     const cell = getCellButton(canvas, cellIndex)
+    await selectNumber(cell, placedValue)
 
-//     await selectNumber(cell, placedValue)
-
-//     const expectedConflictColumnCellIndex = 37
-//     const expectedConflictRowCellIndex = 8
-//     const expectedConflictBoxCellIndex = 9
-//     const colConflict = getCellButton(canvas, expectedConflictColumnCellIndex)
-//     const rowConflict = getCellButton(canvas, expectedConflictRowCellIndex)
-//     const boxConflict = getCellButton(canvas, expectedConflictBoxCellIndex)
-//     await expect(cell).toHaveClass(cssSelectorToRegEx('conflicted'))
-//     await expect(colConflict).toHaveClass(cssSelectorToRegEx('conflicted'))
-//     await expect(rowConflict).toHaveClass(cssSelectorToRegEx('conflicted'))
-//     await expect(boxConflict).toHaveClass(cssSelectorToRegEx('conflicted'))
-//   },
-// }
+    const expectedConflictColumnCellIndex = 37
+    const expectedConflictRowCellIndex = 8
+    const expectedConflictBoxCellIndex = 9
+    const colConflict = getCellButton(canvas, expectedConflictColumnCellIndex)
+    const rowConflict = getCellButton(canvas, expectedConflictRowCellIndex)
+    const boxConflict = getCellButton(canvas, expectedConflictBoxCellIndex)
+    await expect(cell).toHaveClass(cssSelectorToRegEx('conflicted'))
+    await expect(colConflict).toHaveClass(cssSelectorToRegEx('conflicted'))
+    await expect(rowConflict).toHaveClass(cssSelectorToRegEx('conflicted'))
+    await expect(boxConflict).toHaveClass(cssSelectorToRegEx('conflicted'))
+  },
+}
