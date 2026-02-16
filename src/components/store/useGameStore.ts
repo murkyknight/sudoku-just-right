@@ -91,6 +91,10 @@ export const createUseStore = () =>
 
           setDifficulty: (difficulty: Difficulty) =>
             set((draft) => {
+              if (difficulty === draft.difficulty) {
+                return
+              }
+
               draft.difficulty = difficulty
               draft.activeGame = null
               draft.puzzles = []
