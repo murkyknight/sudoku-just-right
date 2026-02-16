@@ -1,9 +1,10 @@
 import useGameStore from '@/components/store/useGameStore'
+import { getRandomInt } from '@/components/utils/random'
 import type { DifficultyManifestEntry } from '@/types'
 import { useCallback, useEffect, useState } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { fetchDifficultyChunk } from '../api'
-import { getRandomInt, getXRandomUniqueNumbers, zeroPadNumber } from '../helpers'
+import { getXRandomUniqueNumbers, zeroPadNumber } from '../helpers'
 import useManifest from './useManifest'
 
 const MAX_SUDOKU_CACHE_SIZE = 5

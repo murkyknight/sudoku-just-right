@@ -1,8 +1,9 @@
 import * as api from '@/components/DifficultySelector/api'
-import { getRandomInt, getXRandomUniqueNumbers } from '@/components/DifficultySelector/helpers'
+import { getXRandomUniqueNumbers } from '@/components/DifficultySelector/helpers'
 import useManifest from '@/components/DifficultySelector/hooks/useManifest'
 import useGameStore, { type StoreState } from '@/components/store/useGameStore'
 import { generatePuzzleSources, resetGameStore } from '@/components/testLib/helpers'
+import * as randomUtils from '@/components/utils/random'
 import type { VersionManifest } from '@/types'
 import { renderHook } from '@testing-library/react'
 import type { Mock } from 'vitest'
@@ -16,7 +17,6 @@ vi.mock('@/components/DifficultySelector/helpers', async (importOriginal) => {
   return {
     ...(await importOriginal<typeof import('@/components/DifficultySelector/helpers.ts')>()),
     getXRandomUniqueNumbers: vi.fn(),
-    getRandomInt: vi.fn(),
   }
 })
 
@@ -55,7 +55,7 @@ describe('useDifficulty', () => {
     resetGameStore({ gamePhase: 'loading' })
     store = () => useGameStore.getState()
 
-    getRandomIntMock = vi.mocked(getRandomInt)
+    getRandomIntMock = vi.spyOn(randomUtils, 'getRandomInt')
     getXRandomUniqueNumbersMock = vi.mocked(getXRandomUniqueNumbers)
     useManifestMock = vi.mocked(useManifest)
     fetchDifficultyAPISpy = vi.spyOn(api, 'fetchDifficultyChunk').mockResolvedValue([])

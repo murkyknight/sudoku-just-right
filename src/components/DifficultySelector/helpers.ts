@@ -1,5 +1,6 @@
 import type { VersionManifest } from '@/types'
 import { loadFromStorage, saveToStorage } from '../utils/localStorageHelper'
+import { getRandomInt } from '../utils/random'
 import { fetchRootManifest, fetchVersionManifest } from './api'
 
 export async function getLatestManifest(): Promise<VersionManifest> {
@@ -18,10 +19,6 @@ export async function getLatestManifest(): Promise<VersionManifest> {
   saveToStorage(cacheKey, versionManifest)
 
   return versionManifest
-}
-
-export function getRandomInt(max: number): number {
-  return Math.floor(Math.random() * max)
 }
 
 export function getXRandomUniqueNumbers(maxUpperBound: number, amount: number): number[] {
