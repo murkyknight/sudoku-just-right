@@ -1,17 +1,19 @@
+import { difficultyType } from '@/types'
 import { getConflictingCellIndexes } from '../testLib/boardTestHelpers'
-import { createBoard, resetGameStore } from '../testLib/helpers'
+import { generatePuzzleSources, resetGameStore } from '../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../utils/indices'
-import useGameStore, { type createUseStore, type StoreState } from './useGameStore'
+import useGameStore, { type StoreState } from './useGameStore'
 
 describe('useGameStore', () => {
-  let useStore: ReturnType<typeof createUseStore>
   let store: () => StoreState
 
   beforeEach(() => {
     resetGameStore()
-    useStore = useGameStore
-    useStore.setState({ board: createBoard() })
-    store = () => useStore.getState()
+    store = () => useGameStore.getState()
+  })
+
+  afterAll(() => {
+    resetGameStore()
   })
 
   function getValueAt(cellIndex: number): number | null {
@@ -202,6 +204,54 @@ describe('useGameStore', () => {
         expect(getConflictingCellIndexes(store().board)).toEqual(
           expect.arrayContaining([secondPlacedCellIndex, conflictingGivenIndex]),
         )
+      })
+    })
+  })
+
+  describe('setDifficulty', () => {
+    describe('on same difficulty', () => {
+      it('does nothing', () => {
+        store().difficulty = difficultyType.EASY
+        store().activeGame = generatePuzzleSources(1, 'easy')[0]
+
+        store().setDifficulty(difficultyType.EASY)
+
+        expect(store().difficulty).toEqual(difficultyType.EASY)
+        expect(store().activeGame).not.toBeNull()
+      })
+    })
+
+    describe('on new difficulty', () => {
+      it('sets new difficulty', () => {
+        store().difficulty = difficultyType.EASY
+
+        store().setDifficulty(difficultyType.HARD)
+
+        expect(store().difficulty).toEqual(difficultyType.HARD)
+      })
+
+      it('sets active game to null', () => {
+        store().difficulty = difficultyType.EASY
+
+        store().setDifficulty(difficultyType.HARD)
+
+        expect(store().activeGame).toBeNull()
+      })
+
+      it('empties game cache', () => {
+        store().difficulty = difficultyType.EASY
+
+        store().setDifficulty(difficultyType.HARD)
+
+        expect(store().puzzles).toEqual([])
+      })
+
+      it('sets gamePhase to loading', () => {
+        store().difficulty = difficultyType.EASY
+
+        store().setDifficulty(difficultyType.HARD)
+
+        expect(store().gamePhase).toBe('loading')
       })
     })
   })
