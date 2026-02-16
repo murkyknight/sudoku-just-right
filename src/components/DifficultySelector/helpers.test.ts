@@ -1,9 +1,10 @@
 import * as storage from '@/components/utils/localStorageHelper'
+import * as randomUtils from '@/components/utils/random'
 import type { RootManifest, VersionManifest } from '@/types'
 import type { Mock } from 'vitest'
 import { createRootManifest } from '../testLib/helpers'
 import { badRequestResponse, okResponse } from '../testLib/helpers/api'
-import { getLatestManifest } from './helpers'
+import { getLatestManifest, getXRandomUniqueNumbers } from './helpers'
 
 const rootManiDefault: RootManifest = createRootManifest('v1')
 const rootManiV2: RootManifest = createRootManifest('v2')
@@ -32,27 +33,27 @@ const defaultVersionManifest: VersionManifest = {
 }
 
 describe('helpers', () => {
-  let fetchSpy: Mock
-  let saveToStorageSpy: Mock
-  let loadFromStorageSpy: Mock
-  const BASE_URL = 'https://test.api'
-
-  beforeEach(() => {
-    localStorage.clear()
-    vi.restoreAllMocks()
-
-    vi.stubEnv('VITE_SJR_PUZZLE_BASE_URL', BASE_URL)
-    fetchSpy = vi.spyOn(global, 'fetch')
-    loadFromStorageSpy = vi.spyOn(storage, 'loadFromStorage')
-    saveToStorageSpy = vi.spyOn(storage, 'saveToStorage')
-  })
-
   afterAll(() => {
     vi.unstubAllEnvs()
     vi.restoreAllMocks()
   })
 
   describe('getLatestManifest', () => {
+    let fetchSpy: Mock
+    let saveToStorageSpy: Mock
+    let loadFromStorageSpy: Mock
+    const BASE_URL = 'https://test.api'
+
+    beforeEach(() => {
+      localStorage.clear()
+      vi.restoreAllMocks()
+
+      vi.stubEnv('VITE_SJR_PUZZLE_BASE_URL', BASE_URL)
+      fetchSpy = vi.spyOn(global, 'fetch')
+      loadFromStorageSpy = vi.spyOn(storage, 'loadFromStorage')
+      saveToStorageSpy = vi.spyOn(storage, 'saveToStorage')
+    })
+
     it('fetches and returns verison manifest if not found in cache', async () => {
       loadFromStorageSpy.mockReturnValue(null)
       fetchSpy
@@ -158,6 +159,64 @@ describe('helpers', () => {
       })
 
       expect(fetchSpy).toHaveBeenLastCalledWith(`${BASE_URL}/v1/manifestPath/manifest.json`)
+    })
+  })
+
+  describe('getXRandomUniqueNumbers', () => {
+    let getRandomIntSpy: Mock
+
+    beforeEach(() => {
+      vi.restoreAllMocks()
+      getRandomIntSpy = vi.spyOn(randomUtils, 'getRandomInt')
+    })
+
+    afterAll(() => {
+      vi.restoreAllMocks()
+    })
+
+    it('returns the requested amount of unique numbers', () => {
+      const maxUpperBound = 10
+      const amount = 3
+      getRandomIntSpy
+        .mockImplementationOnce(() => 1)
+        .mockImplementationOnce(() => 2)
+        .mockImplementationOnce(() => 3)
+
+      const result = getXRandomUniqueNumbers(maxUpperBound, amount)
+
+      expect(result).toHaveLength(amount)
+      expect(new Set(result).size).toBe(amount)
+    })
+
+    it('skips duplicates from the random generator and returns unique numbers', () => {
+      const maxUpperBound = 5
+      const amount = 3
+      getRandomIntSpy
+        .mockImplementationOnce(() => 2)
+        .mockImplementationOnce(() => 2)
+        .mockImplementationOnce(() => 3)
+        .mockImplementationOnce(() => 3)
+        .mockImplementationOnce(() => 4)
+
+      const result = getXRandomUniqueNumbers(maxUpperBound, amount)
+
+      expect(result).toEqual([2, 3, 4])
+    })
+
+    it('keeps calling getRandomInt until amount unique numbers collected and passes maxUpperBound', () => {
+      const maxUpperBound = 8
+      const amount = 2
+      getRandomIntSpy
+        .mockImplementationOnce(() => 1)
+        .mockImplementationOnce(() => 1)
+        .mockImplementationOnce(() => 1)
+        .mockImplementationOnce(() => 2)
+
+      const result = getXRandomUniqueNumbers(maxUpperBound, amount)
+
+      expect(result).toEqual([1, 2])
+      expect(getRandomIntSpy).toHaveBeenCalledTimes(4)
+      expect(getRandomIntSpy).toHaveBeenCalledWith(maxUpperBound)
     })
   })
 })
