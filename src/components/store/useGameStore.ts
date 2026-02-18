@@ -131,57 +131,57 @@ export const createUseStore = () =>
             }),
 
           selectCell: (index) =>
-            set((state) => {
-              state.selectedCellIndex = index
+            set((draft) => {
+              draft.selectedCellIndex = index
             }),
 
           removeSelectedCell: () =>
-            set((state) => {
-              state.selectedCellIndex = null
+            set((draft) => {
+              draft.selectedCellIndex = null
             }),
 
           placeValue: (index, value) =>
-            set((state) => {
-              const cell = state.board[index]
+            set((draft) => {
+              const cell = draft.board[index]
               if (cell.value === value) {
                 return // returning early tells immer and zustard there is nothing to do - no-op
               }
 
               cell.value = value
-              updateConflictsForCellInDraft(state, index)
+              updateConflictsForCellInDraft(draft, index)
 
               // with immer, we can just update what we wanted changed and immer takes care of the rest
               // See: "Store implementation with Immer" in our notes.
             }),
 
           removeValue: (index) =>
-            set((state) => {
-              const cell = state.board[index]
+            set((draft) => {
+              const cell = draft.board[index]
               if (cell.value === null) {
                 return
               }
 
               cell.value = null
-              clearResolvedPeerConflictsForCellInDraft(state, index)
+              clearResolvedPeerConflictsForCellInDraft(draft, index)
             }),
 
           addCandidate: (index, candidate) =>
-            set((state) => {
-              const cell = state.board[index]
+            set((draft) => {
+              const cell = draft.board[index]
               cell.candidates = addDigit(cell.candidates, candidate)
             }),
 
           removeCandidate: (index, candidate) =>
-            set((state) => {
-              const cell = state.board[index]
+            set((draft) => {
+              const cell = draft.board[index]
               cell.strikedCandidates = removeDigit(cell.strikedCandidates, candidate)
               cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
               cell.candidates = removeDigit(cell.candidates, candidate)
             }),
 
           highlightCandidate: (index, candidate) =>
-            set((state) => {
-              const cell = state.board[index]
+            set((draft) => {
+              const cell = draft.board[index]
               if (!hasDigit(cell.candidates, candidate)) {
                 cell.candidates = addDigit(cell.candidates, candidate)
               }
@@ -189,14 +189,14 @@ export const createUseStore = () =>
             }),
 
           removeCandidateHighlight: (index, candidate) =>
-            set((state) => {
-              const cell = state.board[index]
+            set((draft) => {
+              const cell = draft.board[index]
               cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
             }),
 
           strikeCandidate: (index, candidate) =>
-            set((state) => {
-              const cell = state.board[index]
+            set((draft) => {
+              const cell = draft.board[index]
               if (!hasDigit(cell.candidates, candidate)) {
                 return
               }
@@ -205,8 +205,8 @@ export const createUseStore = () =>
             }),
 
           removeCandidateStrike: (index, candidate) =>
-            set((state) => {
-              const cell = state.board[index]
+            set((draft) => {
+              const cell = draft.board[index]
               cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
             }),
         })),
