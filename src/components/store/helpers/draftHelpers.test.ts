@@ -1,9 +1,11 @@
 import { produce } from 'immer'
 import { getConflictingCellIndexes } from '../../testLib/boardTestHelpers'
-import { createBoard, createStoreState } from '../../testLib/helpers'
+import { createBoard, createStoreState, generatePuzzleSources } from '../../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../../utils/indices'
 import {
+  addPuzzlesToCacheInDraft,
   clearResolvedPeerConflictsForCellInDraft,
+  startNextPuzzleInDraft,
   updateConflictsForCellInDraft,
 } from './draftHelpers'
 
@@ -518,6 +520,113 @@ describe('draftHelpers', () => {
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
+      })
+    })
+  })
+
+  describe('addPuzzlesToCacheInDraft', () => {
+    it('does nothing if new puzzle array is empty', () => {
+      const puzzleSources = generatePuzzleSources(1)
+      const baseState = createStoreState({
+        puzzles: puzzleSources,
+      })
+
+      const next = produce(baseState, (draft) => {
+        addPuzzlesToCacheInDraft(draft, [])
+      })
+
+      expect(next.puzzles).toEqual(puzzleSources) // unchanged
+    })
+
+    describe('when puzzle cache is empty', () => {
+      it('adds new puzzles to the cache', () => {
+        const newPuzzles = generatePuzzleSources(2)
+        const baseState = createStoreState({
+          puzzles: [],
+        })
+
+        const next = produce(baseState, (draft) => {
+          addPuzzlesToCacheInDraft(draft, newPuzzles)
+        })
+
+        expect(next.puzzles).toEqual(newPuzzles)
+      })
+    })
+
+    describe('when puzzles in cache exist', () => {
+      it('adds new puzzles to the end of the cache', () => {
+        const existingPuzzleCache = generatePuzzleSources(1)
+        const newPuzzles = generatePuzzleSources(2)
+        const baseState = createStoreState({
+          puzzles: existingPuzzleCache,
+        })
+
+        const next = produce(baseState, (draft) => {
+          addPuzzlesToCacheInDraft(draft, newPuzzles)
+        })
+
+        expect(next.puzzles).toEqual([...existingPuzzleCache, ...newPuzzles])
+      })
+    })
+  })
+
+  describe('startNextPuzzleInDraft', () => {
+    describe('when no puzzles in cache exist', () => {
+      it('does nothing, since there is no game to start', () => {
+        const baseState = createStoreState({
+          puzzles: [],
+          activeGame: null,
+        })
+
+        const next = produce(baseState, (draft) => {
+          startNextPuzzleInDraft(draft)
+        })
+
+        expect(next.puzzles).toEqual([])
+        expect(next.activeGame).toBeNull()
+      })
+    })
+
+    describe('when puzzles in cache exist', () => {
+      it('removes first puzzle from cache', () => {
+        const cachedPuzzles = generatePuzzleSources(2)
+        const baseState = createStoreState({
+          puzzles: cachedPuzzles,
+        })
+
+        const next = produce(baseState, (draft) => {
+          startNextPuzzleInDraft(draft)
+        })
+
+        const remainingCache = cachedPuzzles[1]
+        expect(next.puzzles).toEqual([remainingCache])
+      })
+
+      it('sets first cached puzzle as active game', () => {
+        const cachedPuzzles = generatePuzzleSources(2)
+        const baseState = createStoreState({
+          puzzles: cachedPuzzles,
+          activeGame: null,
+        })
+
+        const next = produce(baseState, (draft) => {
+          startNextPuzzleInDraft(draft)
+        })
+
+        const firstPuzzleInCache = cachedPuzzles[0]
+        expect(next.activeGame).toEqual(firstPuzzleInCache)
+      })
+
+      it('sets game phase to "playing"', () => {
+        const baseState = createStoreState({
+          puzzles: generatePuzzleSources(2),
+        })
+
+        const next = produce(baseState, (draft) => {
+          startNextPuzzleInDraft(draft)
+        })
+
+        expect(next.gamePhase).toEqual('playing')
       })
     })
   })

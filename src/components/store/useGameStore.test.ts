@@ -255,4 +255,36 @@ describe('useGameStore', () => {
       })
     })
   })
+
+  describe('setPuzzles', () => {
+    describe('when no active game', () => {
+      it('starts a game when puzzles are added using first puzzle in cache', () => {
+        const newCachePuzzleSources = generatePuzzleSources(3)
+        store().activeGame = null
+        store().puzzles = []
+
+        store().setPuzzles(newCachePuzzleSources)
+
+        const activeGamePuzzleSource = newCachePuzzleSources.shift() // first puzzle becomes active game
+        expect(store().activeGame).toEqual(activeGamePuzzleSource)
+        expect(store().puzzles).toEqual(newCachePuzzleSources)
+        expect(store().gamePhase).toEqual('playing')
+      })
+    })
+
+    describe('when active game exists', () => {
+      it('does not start a new game when puzzles are added to cache', () => {
+        const currentActiveGame = generatePuzzleSources(1)[0]
+        const cachePuzzleSources = generatePuzzleSources(3)
+        const newPuzzleSources = generatePuzzleSources(3)
+        store().activeGame = currentActiveGame
+        store().puzzles = cachePuzzleSources
+
+        store().setPuzzles(newPuzzleSources)
+
+        expect(store().activeGame).toEqual(currentActiveGame)
+        expect(store().puzzles).toEqual([...cachePuzzleSources, ...newPuzzleSources])
+      })
+    })
+  })
 })

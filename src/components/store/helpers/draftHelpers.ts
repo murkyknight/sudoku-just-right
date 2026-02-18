@@ -1,3 +1,4 @@
+import type { SudokuPuzzleSource } from '@/components/DifficultySelector/api'
 import type { Draft } from 'immer'
 import { peers, peersInclusive } from '../../utils/indices'
 import type { Cell, State } from '../useGameStore'
@@ -48,6 +49,23 @@ export function createBoardInDraft(draft: Draft<State>, rawBoard: string) {
   }))
 
   draft.board = board
+}
+
+export function addPuzzlesToCacheInDraft(draft: Draft<State>, newPuzzles: SudokuPuzzleSource[]) {
+  if (newPuzzles.length === 0) {
+    return
+  }
+
+  draft.puzzles.push(...newPuzzles)
+}
+
+export function startNextPuzzleInDraft(draft: Draft<State>) {
+  const nextPuzzle = draft.puzzles.shift()
+
+  if (nextPuzzle) {
+    draft.activeGame = nextPuzzle
+    draft.gamePhase = 'playing'
+  }
 }
 
 // Private functions

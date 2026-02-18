@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer'
 import type { SudokuPuzzleSource } from '../DifficultySelector/api'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 import * as draftHeleprs from './helpers/draftHelpers'
+import { addPuzzlesToCacheInDraft, startNextPuzzleInDraft } from './helpers/draftHelpers'
 
 // We could also add helper functions like:
 //  hasCandidate(value:number)
@@ -103,31 +104,16 @@ export const createUseStore = () =>
 
           setPuzzles: (newPuzzles: Array<SudokuPuzzleSource>) =>
             set((draft) => {
-              if (!newPuzzles.length) {
-                return
-              }
-
-              draft.puzzles.push(...newPuzzles)
+              addPuzzlesToCacheInDraft(draft, newPuzzles)
 
               if (!draft.activeGame) {
-                const nextPuzzle = draft.puzzles.shift()
-                if (nextPuzzle) {
-                  draft.activeGame = nextPuzzle
-                  draft.gamePhase = 'playing'
-                }
+                startNextPuzzleInDraft(draft)
               }
             }),
 
           nextSudokuPuzzle: () =>
             set((draft) => {
-              // TODO: probably pull this into a draft helper so it's easy to cover in tests
-              const nextPuzzle = draft.puzzles.shift()
-              if (nextPuzzle) {
-                draft.activeGame = nextPuzzle
-                draft.gamePhase = 'playing'
-              }
-              // TODO: Question: if no next puzzle should we single to load more here?
-              // For now, lets leave that in useDifficulty - although we might not even need useDifficulty
+              startNextPuzzleInDraft(draft)
             }),
 
           ensureActiveGame: () =>
