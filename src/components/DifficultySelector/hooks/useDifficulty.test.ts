@@ -158,10 +158,10 @@ describe('useDifficulty', () => {
         getRandomIntMock.mockReturnValue(55)
         store().activeGame = generatePuzzleSources(1, 'easy')[0] // random active game - doesn't matter we're about to move to new one
         getXRandomUniqueNumbersMock.mockReturnValue([0]) // small cache
-        const expectedNextGame = generatePuzzleSources(1, 'easy')
+        const previousCache = generatePuzzleSources(1, 'easy')
         const expectedCacheRefillPuzzles = generatePuzzleSources(1, 'easy')
         fetchDifficultyAPISpy
-          .mockResolvedValueOnce(expectedNextGame)
+          .mockResolvedValueOnce(previousCache)
           .mockResolvedValueOnce(expectedCacheRefillPuzzles)
 
         const { result } = renderHook(() => useDifficulty())
@@ -171,20 +171,20 @@ describe('useDifficulty', () => {
           expect(result.current.isLoading).toBe(false)
         })
 
-        store().nextSudokuPuzzle() // uses last puzzle in cache - triggers refetch in hook
+        store().nextSudokuPuzzle() // uses last puzzle in cache for activeGame - triggers refetch in hook
 
         await vi.waitFor(() => {
           expect(fetchDifficultyAPISpy).toHaveBeenCalledWith('/sudoku/v1/easy/0055.json')
           expect(result.current.isLoading).toBe(false)
-          // active game moves to last game in cache - though not to any puzzle in the cache refill
-          expect(store().activeGame).toEqual(expectedNextGame[0])
+          // active game does not move to new puzzle from cache refill
+          expect(store().activeGame).toEqual(previousCache[0])
           expect(store().puzzles).toEqual(expectedCacheRefillPuzzles)
         })
       })
     })
 
     describe('on new difficulty', () => {
-      it('fetches puzzles for that difficulty and stores in cache and shifts first on as active game', async () => {
+      it('fetches puzzles for that difficulty and stores in cache and shifts first one as active game', async () => {
         useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
         getRandomIntMock.mockReturnValue(55)
         getXRandomUniqueNumbersMock.mockReturnValue([0, 1, 2, 3, 4])
