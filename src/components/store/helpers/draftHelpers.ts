@@ -9,9 +9,9 @@ import type { Cell, State } from '../useGameStore'
  * @param draft
  * @param cellIndex - target cell
  */
-export function updateConflictsForCellInDraft(draft: Draft<State>, cellIndex: number) {
-  clearResolvedPeerConflictsForCellInDraft(draft, cellIndex)
-  markAllPeerConflictsForCellInDraft(draft, cellIndex)
+export function updateConflictsForCell(draft: Draft<State>, cellIndex: number) {
+  clearResolvedPeerConflictsForCell(draft, cellIndex)
+  markAllPeerConflictsForCell(draft, cellIndex)
 }
 
 /**
@@ -23,10 +23,7 @@ export function updateConflictsForCellInDraft(draft: Draft<State>, cellIndex: nu
  * @param targetCellIndex - The cell we want to clear all resolved peer conflicts from,
  *  which may also include resolving a conflict on itself.
  */
-export function clearResolvedPeerConflictsForCellInDraft(
-  draft: Draft<State>,
-  targetCellIndex: number,
-) {
+export function clearResolvedPeerConflictsForCell(draft: Draft<State>, targetCellIndex: number) {
   const targetPeers = peersInclusive[targetCellIndex]
 
   const currentlyConflictedPeerCellIndexes = targetPeers.filter(
@@ -38,7 +35,7 @@ export function clearResolvedPeerConflictsForCellInDraft(
   }
 }
 
-export function createBoardInDraft(draft: Draft<State>, rawBoard: string) {
+export function createBoard(draft: Draft<State>, rawBoard: string) {
   const board: Array<Cell> = Array.from({ length: 81 }, (_, i) => ({
     value: Number(rawBoard[i]) || null,
     candidates: 0,
@@ -51,7 +48,7 @@ export function createBoardInDraft(draft: Draft<State>, rawBoard: string) {
   draft.board = board
 }
 
-export function addPuzzlesToCacheInDraft(draft: Draft<State>, newPuzzles: SudokuPuzzleSource[]) {
+export function addPuzzlesToCache(draft: Draft<State>, newPuzzles: SudokuPuzzleSource[]) {
   if (newPuzzles.length === 0) {
     return
   }
@@ -59,7 +56,7 @@ export function addPuzzlesToCacheInDraft(draft: Draft<State>, newPuzzles: Sudoku
   draft.puzzles.push(...newPuzzles)
 }
 
-export function startNextPuzzleInDraft(draft: Draft<State>) {
+export function startNextPuzzle(draft: Draft<State>) {
   const nextPuzzle = draft.puzzles.shift()
 
   if (nextPuzzle) {
@@ -102,7 +99,7 @@ function hasConflicts(draft: Draft<State>, cellIndex: number): boolean {
   return hasConflict
 }
 
-function markAllPeerConflictsForCellInDraft(draft: Draft<State>, cellIndex: number) {
+function markAllPeerConflictsForCell(draft: Draft<State>, cellIndex: number) {
   const cell = draft.board[cellIndex]
   const cellPeers = peers[cellIndex]
   const nonNullSelectedValue = !!cell.value && cell.value

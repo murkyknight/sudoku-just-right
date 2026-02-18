@@ -3,10 +3,10 @@ import { getConflictingCellIndexes } from '../../testLib/boardTestHelpers'
 import { createBoard, createStoreState, generatePuzzleSources } from '../../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../../utils/indices'
 import {
-  addPuzzlesToCacheInDraft,
-  clearResolvedPeerConflictsForCellInDraft,
-  startNextPuzzleInDraft,
-  updateConflictsForCellInDraft,
+  addPuzzlesToCache,
+  clearResolvedPeerConflictsForCell,
+  startNextPuzzle,
+  updateConflictsForCell,
 } from './draftHelpers'
 
 /**
@@ -17,7 +17,7 @@ import {
  */
 
 describe('draftHelpers', () => {
-  describe('updateConflictsInDraft()', () => {
+  describe('updateConflicts()', () => {
     describe('with no existing conflicts on board', () => {
       it('does not mark the cell as conflicting when the placed value has no conflicts', () => {
         const placedCellIndex = 2
@@ -30,7 +30,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(0)
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, placedCellIndex)
+          updateConflictsForCell(draft, placedCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -48,7 +48,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, placedCellIndex)
+          updateConflictsForCell(draft, placedCellIndex)
         })
 
         const expectedConflictRowCellIndex = 3
@@ -69,7 +69,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, placedCellIndex)
+          updateConflictsForCell(draft, placedCellIndex)
         })
 
         const expectedConflictColumnCellIndex = 47
@@ -90,7 +90,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, placedCellIndex)
+          updateConflictsForCell(draft, placedCellIndex)
         })
 
         const expectedConflictBoxCellIndex = 11
@@ -111,7 +111,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, placedCellIndex)
+          updateConflictsForCell(draft, placedCellIndex)
         })
 
         const expectedConflictBoxCellIndex = 9
@@ -140,7 +140,7 @@ describe('draftHelpers', () => {
 
         // try place same value again
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, placedIndex)
+          updateConflictsForCell(draft, placedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -167,7 +167,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, placedIndex)
+          updateConflictsForCell(draft, placedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -191,7 +191,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, nextPlacedIndex)
+          updateConflictsForCell(draft, nextPlacedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual([placedIndex, conflictedIndex])
@@ -219,7 +219,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, nextPlacedIndex)
+          updateConflictsForCell(draft, nextPlacedIndex)
         })
 
         const newConflictedIndexes = [nextPlacedIndex, 6]
@@ -248,7 +248,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, nextPlacedIndex)
+          updateConflictsForCell(draft, nextPlacedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual(
@@ -280,7 +280,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(3)
 
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, boxPlacedIndex)
+          updateConflictsForCell(draft, boxPlacedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual(
@@ -304,7 +304,7 @@ describe('draftHelpers', () => {
 
         // try place same value again
         const next = produce(baseState, (draft) => {
-          updateConflictsForCellInDraft(draft, placedIndex)
+          updateConflictsForCell(draft, placedIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual([placedIndex, conflictedIndex])
@@ -312,7 +312,7 @@ describe('draftHelpers', () => {
     })
   })
 
-  describe('clearResolvedPeerConflictsForCellInDraft()', () => {
+  describe('clearResolvedPeerConflictsForCell()', () => {
     describe('with no existing conflicts on board', () => {
       it('does not do anything', () => {
         const placedCellIndex = 0
@@ -326,7 +326,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(0)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, placedCellIndex)
+          clearResolvedPeerConflictsForCell(draft, placedCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -351,7 +351,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, targetCellIndex)
+          clearResolvedPeerConflictsForCell(draft, targetCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -372,7 +372,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, targetCellIndex)
+          clearResolvedPeerConflictsForCell(draft, targetCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -393,7 +393,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, targetCellIndex)
+          clearResolvedPeerConflictsForCell(draft, targetCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -420,7 +420,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(4)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, targetCellIndex)
+          clearResolvedPeerConflictsForCell(draft, targetCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -443,7 +443,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(4)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, targetCellIndex)
+          clearResolvedPeerConflictsForCell(draft, targetCellIndex)
         })
 
         const otherConflicts = [7, 8]
@@ -472,7 +472,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(4)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, targetCellIndex)
+          clearResolvedPeerConflictsForCell(draft, targetCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toEqual(
@@ -495,7 +495,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(2)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, targetCellIndex)
+          clearResolvedPeerConflictsForCell(draft, targetCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -516,7 +516,7 @@ describe('draftHelpers', () => {
         expect(getConflictingCellIndexes(baseState.board)).toHaveLength(1)
 
         const next = produce(baseState, (draft) => {
-          clearResolvedPeerConflictsForCellInDraft(draft, targetCellIndex)
+          clearResolvedPeerConflictsForCell(draft, targetCellIndex)
         })
 
         expect(getConflictingCellIndexes(next.board)).toHaveLength(0)
@@ -524,7 +524,7 @@ describe('draftHelpers', () => {
     })
   })
 
-  describe('addPuzzlesToCacheInDraft', () => {
+  describe('addPuzzlesToCache', () => {
     it('does nothing if new puzzle array is empty', () => {
       const puzzleSources = generatePuzzleSources(1)
       const baseState = createStoreState({
@@ -532,7 +532,7 @@ describe('draftHelpers', () => {
       })
 
       const next = produce(baseState, (draft) => {
-        addPuzzlesToCacheInDraft(draft, [])
+        addPuzzlesToCache(draft, [])
       })
 
       expect(next.puzzles).toEqual(puzzleSources) // unchanged
@@ -546,7 +546,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          addPuzzlesToCacheInDraft(draft, newPuzzles)
+          addPuzzlesToCache(draft, newPuzzles)
         })
 
         expect(next.puzzles).toEqual(newPuzzles)
@@ -562,7 +562,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          addPuzzlesToCacheInDraft(draft, newPuzzles)
+          addPuzzlesToCache(draft, newPuzzles)
         })
 
         expect(next.puzzles).toEqual([...existingPuzzleCache, ...newPuzzles])
@@ -570,7 +570,7 @@ describe('draftHelpers', () => {
     })
   })
 
-  describe('startNextPuzzleInDraft', () => {
+  describe('startNextPuzzle', () => {
     describe('when no puzzles in cache exist', () => {
       it('does nothing, since there is no game to start', () => {
         const baseState = createStoreState({
@@ -579,7 +579,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          startNextPuzzleInDraft(draft)
+          startNextPuzzle(draft)
         })
 
         expect(next.puzzles).toEqual([])
@@ -595,7 +595,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          startNextPuzzleInDraft(draft)
+          startNextPuzzle(draft)
         })
 
         const remainingCache = cachedPuzzles[1]
@@ -610,7 +610,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          startNextPuzzleInDraft(draft)
+          startNextPuzzle(draft)
         })
 
         const firstPuzzleInCache = cachedPuzzles[0]
@@ -623,7 +623,7 @@ describe('draftHelpers', () => {
         })
 
         const next = produce(baseState, (draft) => {
-          startNextPuzzleInDraft(draft)
+          startNextPuzzle(draft)
         })
 
         expect(next.gamePhase).toEqual('playing')

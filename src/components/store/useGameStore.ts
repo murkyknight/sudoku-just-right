@@ -5,11 +5,11 @@ import { immer } from 'zustand/middleware/immer'
 import type { SudokuPuzzleSource } from '../DifficultySelector/api'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 import {
-  addPuzzlesToCacheInDraft,
-  clearResolvedPeerConflictsForCellInDraft,
-  createBoardInDraft,
-  startNextPuzzleInDraft,
-  updateConflictsForCellInDraft,
+  addPuzzlesToCache,
+  clearResolvedPeerConflictsForCell,
+  createBoard,
+  startNextPuzzle,
+  updateConflictsForCell,
 } from './helpers/draftHelpers'
 
 // We could also add helper functions like:
@@ -92,7 +92,7 @@ export const createUseStore = () =>
         combine(initialState, (set, _get) => ({
           loadBoard: (rawBoard) =>
             set((draft) => {
-              createBoardInDraft(draft, rawBoard)
+              createBoard(draft, rawBoard)
             }),
 
           setDifficulty: (difficulty: Difficulty) =>
@@ -109,16 +109,16 @@ export const createUseStore = () =>
 
           setPuzzles: (newPuzzles: Array<SudokuPuzzleSource>) =>
             set((draft) => {
-              addPuzzlesToCacheInDraft(draft, newPuzzles)
+              addPuzzlesToCache(draft, newPuzzles)
 
               if (!draft.activeGame) {
-                startNextPuzzleInDraft(draft)
+                startNextPuzzle(draft)
               }
             }),
 
           nextSudokuPuzzle: () =>
             set((draft) => {
-              startNextPuzzleInDraft(draft)
+              startNextPuzzle(draft)
             }),
 
           ensureActiveGame: () =>
@@ -148,7 +148,7 @@ export const createUseStore = () =>
               }
 
               cell.value = value
-              updateConflictsForCellInDraft(draft, index)
+              updateConflictsForCell(draft, index)
 
               // with immer, we can just update what we wanted changed and immer takes care of the rest
               // See: "Store implementation with Immer" in our notes.
@@ -162,7 +162,7 @@ export const createUseStore = () =>
               }
 
               cell.value = null
-              clearResolvedPeerConflictsForCellInDraft(draft, index)
+              clearResolvedPeerConflictsForCell(draft, index)
             }),
 
           addCandidate: (index, candidate) =>
