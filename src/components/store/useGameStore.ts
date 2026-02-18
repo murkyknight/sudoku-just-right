@@ -4,8 +4,13 @@ import { combine, devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import type { SudokuPuzzleSource } from '../DifficultySelector/api'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
-import * as draftHeleprs from './helpers/draftHelpers'
-import { addPuzzlesToCacheInDraft, startNextPuzzleInDraft } from './helpers/draftHelpers'
+import {
+  addPuzzlesToCacheInDraft,
+  clearResolvedPeerConflictsForCellInDraft,
+  createBoardInDraft,
+  startNextPuzzleInDraft,
+  updateConflictsForCellInDraft,
+} from './helpers/draftHelpers'
 
 // We could also add helper functions like:
 //  hasCandidate(value:number)
@@ -87,7 +92,7 @@ export const createUseStore = () =>
         combine(initialState, (set, _get) => ({
           loadBoard: (rawBoard) =>
             set((draft) => {
-              draftHeleprs.createBoardInDraft(draft, rawBoard)
+              createBoardInDraft(draft, rawBoard)
             }),
 
           setDifficulty: (difficulty: Difficulty) =>
@@ -143,7 +148,7 @@ export const createUseStore = () =>
               }
 
               cell.value = value
-              draftHeleprs.updateConflictsForCellInDraft(state, index)
+              updateConflictsForCellInDraft(state, index)
 
               // with immer, we can just update what we wanted changed and immer takes care of the rest
               // See: "Store implementation with Immer" in our notes.
@@ -157,7 +162,7 @@ export const createUseStore = () =>
               }
 
               cell.value = null
-              draftHeleprs.clearResolvedPeerConflictsForCellInDraft(state, index)
+              clearResolvedPeerConflictsForCellInDraft(state, index)
             }),
 
           addCandidate: (index, candidate) =>
