@@ -1,13 +1,12 @@
 import { difficultyType, type Difficulty, type GamePhase } from '@/types'
 import { create } from 'zustand'
-import { combine, devtools } from 'zustand/middleware'
+import { combine, devtools, persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import type { SudokuPuzzleSource } from '../DifficultySelector/api'
 import { addDigit, hasDigit, removeDigit } from '../utils/bitMaskHelper'
 import {
   addPuzzlesToCache,
   clearResolvedPeerConflictsForCell,
-  createBoard,
   startNextPuzzle,
   updateConflictsForCell,
 } from './helpers/draftHelpers'
@@ -37,7 +36,6 @@ export type State = {
 }
 
 type Actions = {
-  loadBoard: (rawBoard: string) => void
   setDifficulty: (difficulty: Difficulty) => void
   setPuzzles: (puzzles: Array<SudokuPuzzleSource>) => void
   nextSudokuPuzzle: () => void
@@ -82,135 +80,164 @@ const initialState: State = {
   gamePhase: 'idle',
   puzzles: [],
 
-  hasHydrated: true, // TODO: true for now but change to false when we add `persist` middleware
+  hasHydrated: false,
 }
 
 export const createUseStore = () =>
   create<StoreState>()(
-    devtools(
-      immer(
-        combine(initialState, (set, _get) => ({
-          loadBoard: (rawBoard) =>
-            set((draft) => {
-              createBoard(draft, rawBoard)
-            }),
+    persist(
+      devtools(
+        immer(
+          combine(initialState, (set, _get) => ({
+            setDifficulty: (difficulty: Difficulty) =>
+              set((draft) => {
+                if (difficulty === draft.difficulty) {
+                  return
+                }
 
-          setDifficulty: (difficulty: Difficulty) =>
-            set((draft) => {
-              if (difficulty === draft.difficulty) {
-                return
-              }
+                draft.difficulty = difficulty
+                draft.activeGame = null
+                draft.puzzles = []
+                draft.gamePhase = 'loading'
+              }),
 
-              draft.difficulty = difficulty
-              draft.activeGame = null
-              draft.puzzles = []
-              draft.gamePhase = 'loading'
-            }),
+            setPuzzles: (newPuzzles: Array<SudokuPuzzleSource>) =>
+              set((draft) => {
+                addPuzzlesToCache(draft, newPuzzles)
 
-          setPuzzles: (newPuzzles: Array<SudokuPuzzleSource>) =>
-            set((draft) => {
-              addPuzzlesToCache(draft, newPuzzles)
+                if (!draft.activeGame) {
+                  startNextPuzzle(draft)
+                }
+              }),
 
-              if (!draft.activeGame) {
+            nextSudokuPuzzle: () =>
+              set((draft) => {
                 startNextPuzzle(draft)
-              }
-            }),
+              }),
 
-          nextSudokuPuzzle: () =>
-            set((draft) => {
-              startNextPuzzle(draft)
-            }),
+            ensureActiveGame: () =>
+              set((draft) => {
+                if (draft.activeGame) {
+                  return
+                }
 
-          ensureActiveGame: () =>
-            set((draft) => {
-              if (draft.activeGame) {
-                return
-              }
+                draft.gamePhase = 'loading'
+              }),
 
-              draft.gamePhase = 'loading'
-            }),
+            selectCell: (index) =>
+              set((draft) => {
+                draft.selectedCellIndex = index
+              }),
 
-          selectCell: (index) =>
-            set((draft) => {
-              draft.selectedCellIndex = index
-            }),
+            removeSelectedCell: () =>
+              set((draft) => {
+                draft.selectedCellIndex = null
+              }),
 
-          removeSelectedCell: () =>
-            set((draft) => {
-              draft.selectedCellIndex = null
-            }),
+            placeValue: (index, value) =>
+              set((draft) => {
+                const cell = draft.board[index]
+                if (cell.value === value) {
+                  return // returning early tells immer and zustard there is nothing to do - no-op
+                }
 
-          placeValue: (index, value) =>
-            set((draft) => {
-              const cell = draft.board[index]
-              if (cell.value === value) {
-                return // returning early tells immer and zustard there is nothing to do - no-op
-              }
+                cell.value = value
+                updateConflictsForCell(draft, index)
 
-              cell.value = value
-              updateConflictsForCell(draft, index)
+                // with immer, we can just update what we wanted changed and immer takes care of the rest
+                // See: "Store implementation with Immer" in our notes.
+              }),
 
-              // with immer, we can just update what we wanted changed and immer takes care of the rest
-              // See: "Store implementation with Immer" in our notes.
-            }),
+            removeValue: (index) =>
+              set((draft) => {
+                const cell = draft.board[index]
+                if (cell.value === null) {
+                  return
+                }
 
-          removeValue: (index) =>
-            set((draft) => {
-              const cell = draft.board[index]
-              if (cell.value === null) {
-                return
-              }
+                cell.value = null
+                clearResolvedPeerConflictsForCell(draft, index)
+              }),
 
-              cell.value = null
-              clearResolvedPeerConflictsForCell(draft, index)
-            }),
-
-          addCandidate: (index, candidate) =>
-            set((draft) => {
-              const cell = draft.board[index]
-              cell.candidates = addDigit(cell.candidates, candidate)
-            }),
-
-          removeCandidate: (index, candidate) =>
-            set((draft) => {
-              const cell = draft.board[index]
-              cell.strikedCandidates = removeDigit(cell.strikedCandidates, candidate)
-              cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-              cell.candidates = removeDigit(cell.candidates, candidate)
-            }),
-
-          highlightCandidate: (index, candidate) =>
-            set((draft) => {
-              const cell = draft.board[index]
-              if (!hasDigit(cell.candidates, candidate)) {
+            addCandidate: (index, candidate) =>
+              set((draft) => {
+                const cell = draft.board[index]
                 cell.candidates = addDigit(cell.candidates, candidate)
-              }
-              cell.highlightedCandidates = addDigit(cell.highlightedCandidates, candidate)
-            }),
+              }),
 
-          removeCandidateHighlight: (index, candidate) =>
-            set((draft) => {
-              const cell = draft.board[index]
-              cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-            }),
+            removeCandidate: (index, candidate) =>
+              set((draft) => {
+                const cell = draft.board[index]
+                cell.strikedCandidates = removeDigit(cell.strikedCandidates, candidate)
+                cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+                cell.candidates = removeDigit(cell.candidates, candidate)
+              }),
 
-          strikeCandidate: (index, candidate) =>
-            set((draft) => {
-              const cell = draft.board[index]
-              if (!hasDigit(cell.candidates, candidate)) {
-                return
-              }
-              cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-              cell.strikedCandidates = addDigit(cell.strikedCandidates, candidate)
-            }),
+            highlightCandidate: (index, candidate) =>
+              set((draft) => {
+                const cell = draft.board[index]
+                if (!hasDigit(cell.candidates, candidate)) {
+                  cell.candidates = addDigit(cell.candidates, candidate)
+                }
+                cell.highlightedCandidates = addDigit(cell.highlightedCandidates, candidate)
+              }),
 
-          removeCandidateStrike: (index, candidate) =>
-            set((draft) => {
-              const cell = draft.board[index]
-              cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
-            }),
-        })),
+            removeCandidateHighlight: (index, candidate) =>
+              set((draft) => {
+                const cell = draft.board[index]
+                cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+              }),
+
+            strikeCandidate: (index, candidate) =>
+              set((draft) => {
+                const cell = draft.board[index]
+                if (!hasDigit(cell.candidates, candidate)) {
+                  return
+                }
+                cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+                cell.strikedCandidates = addDigit(cell.strikedCandidates, candidate)
+              }),
+
+            removeCandidateStrike: (index, candidate) =>
+              set((draft) => {
+                const cell = draft.board[index]
+                cell.highlightedCandidates = removeDigit(cell.highlightedCandidates, candidate)
+              }),
+          })),
+        ),
       ),
+      {
+        name: 'sjr:storage',
+        version: 0,
+        partialize: (state) => ({
+          difficulty: state.difficulty,
+          gamePhase: state.gamePhase,
+          activeGame: state.activeGame,
+          puzzles: state.puzzles,
+          board: state.board,
+        }),
+        onRehydrateStorage: (persistedState) => {
+          console.log('onRehydrateStorage - starting hydration')
+          if (!persistedState) {
+            console.log('onRehydrateStorage - no persistedState -> returning')
+            return
+          }
+
+          const recoverable =
+            persistedState.gamePhase === 'playing' && persistedState.puzzles.length > 0
+
+          persistedState.gamePhase = recoverable ? 'playing' : 'idle'
+
+          // Return a post-rehydrate callback that runs after state is applied.
+          return (state?: StoreState, error?: unknown) => {
+            if (error) {
+              console.warn('an error happened during hydration', error)
+            } else if (state) {
+              state.hasHydrated = true
+            }
+          }
+        },
+      },
     ),
   )
 

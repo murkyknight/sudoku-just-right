@@ -1,7 +1,7 @@
 import type { SudokuPuzzleSource } from '@/components/DifficultySelector/api'
 import type { Draft } from 'immer'
 import { peers, peersInclusive } from '../../utils/indices'
-import type { Cell, State } from '../useGameStore'
+import type { State } from '../useGameStore'
 
 /**
  * Updates all conflict flags within the passed cell's peer list, including the target cell itself.
@@ -35,19 +35,6 @@ export function clearResolvedPeerConflictsForCell(draft: Draft<State>, targetCel
   }
 }
 
-export function createBoard(draft: Draft<State>, rawBoard: string) {
-  const board: Array<Cell> = Array.from({ length: 81 }, (_, i) => ({
-    value: Number(rawBoard[i]) || null,
-    candidates: 0,
-    highlightedCandidates: 0,
-    strikedCandidates: 0,
-    given: !!Number(rawBoard[i]),
-    hasConflict: false,
-  }))
-
-  draft.board = board
-}
-
 export function addPuzzlesToCache(draft: Draft<State>, newPuzzles: SudokuPuzzleSource[]) {
   if (newPuzzles.length === 0) {
     return
@@ -61,6 +48,7 @@ export function startNextPuzzle(draft: Draft<State>) {
 
   if (nextPuzzle) {
     draft.activeGame = nextPuzzle
+    draft.board = createBoard(nextPuzzle.board)
     draft.gamePhase = 'playing'
   }
 }
@@ -111,4 +99,15 @@ function markAllPeerConflictsForCell(draft: Draft<State>, cellIndex: number) {
       cell.hasConflict = true
     }
   }
+}
+
+function createBoard(rawBoard: string) {
+  return Array.from({ length: 81 }, (_, i) => ({
+    value: Number(rawBoard[i]) || null,
+    candidates: 0,
+    highlightedCandidates: 0,
+    strikedCandidates: 0,
+    given: !!Number(rawBoard[i]),
+    hasConflict: false,
+  }))
 }
