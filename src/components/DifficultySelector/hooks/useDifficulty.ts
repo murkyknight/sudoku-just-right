@@ -7,7 +7,7 @@ import { fetchDifficultyChunk } from '../api'
 import { getXRandomUniqueNumbers, zeroPadNumber } from '../helpers'
 import useManifest from './useManifest'
 
-const MAX_SUDOKU_CACHE_SIZE = 5
+const MAX_SUDOKU_CACHE_SIZE = 10
 
   const generateRandomDifficultyPaddedChunkNumber = (entry: DifficultyManifestEntry) => {
     // last page might not contain the full chuck size, best to avoid it since we don't keep track of its size
