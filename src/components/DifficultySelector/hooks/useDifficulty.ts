@@ -20,11 +20,12 @@ const MAX_SUDOKU_CACHE_SIZE = 5
   }
 
 export default function useDifficulty() {
-  const { difficulty, puzzles, phase, setPuzzles } = useGameStore(
+  const { difficulty, puzzles, phase, hasHydrated, setPuzzles } = useGameStore(
     useShallow((s) => ({
       difficulty: s.difficulty,
       puzzles: s.puzzles,
       phase: s.gamePhase,
+      hasHydrated: s.hasHydrated,
       setPuzzles: s.setPuzzles,
     })),
   )
@@ -83,10 +84,14 @@ export default function useDifficulty() {
 
   // inital load
   useEffect(() => {
+    if (!hasHydrated) {
+      return
+    }
+
     if (phase === 'loading' && manifest) {
       loadDifficulty()
     }
-  }, [manifest, loadDifficulty, phase])
+  }, [manifest, loadDifficulty, phase, hasHydrated])
 
   return {
     isLoading: isManifestLoading || isLoading,

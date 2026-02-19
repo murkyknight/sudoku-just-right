@@ -84,6 +84,16 @@ describe('useDifficulty', () => {
       expect(fetchDifficultyAPISpy).not.toHaveBeenCalled()
     })
 
+    it('does not attempt to load puzzles when store still hydrating even if game phase is already loading + manifest', () => {
+      useManifestMock.mockReturnValueOnce({ isLoading: false, manifest: defaultVersionManifest })
+      store().gamePhase = 'loading'
+      store().hasHydrated = false
+
+      renderHook(() => useDifficulty())
+
+      expect(fetchDifficultyAPISpy).not.toHaveBeenCalled()
+    })
+
     it('does not attempt to load puzzles when phase is "playing" even with loaded manifest', () => {
       useManifestMock.mockReturnValue({ isLoading: false, manifest: defaultVersionManifest })
       store().gamePhase = 'playing'
@@ -110,8 +120,9 @@ describe('useDifficulty', () => {
       })
     })
 
-    it('starts loading difficulty chunk with a present manifest and phase is "loading"', () => {
+    it('starts loading difficulty chunk when store has hydrated and with a present manifest and phase is "loading"', () => {
       store().gamePhase = 'loading'
+      store().hasHydrated = true
       useManifestMock.mockReturnValue({
         isLoading: false,
         manifest: defaultVersionManifest,
