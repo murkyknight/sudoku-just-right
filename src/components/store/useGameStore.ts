@@ -217,9 +217,7 @@ export const createUseStore = () =>
           board: state.board,
         }),
         onRehydrateStorage: (persistedState) => {
-          console.log('onRehydrateStorage - starting hydration')
           if (!persistedState) {
-            console.log('onRehydrateStorage - no persistedState -> returning')
             return
           }
 

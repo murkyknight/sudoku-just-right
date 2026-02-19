@@ -84,7 +84,7 @@ describe('useDifficulty', () => {
       expect(fetchDifficultyAPISpy).not.toHaveBeenCalled()
     })
 
-    it('does not attempt to load puzzles when store still hydrating even if game phase is already loading + manifest', () => {
+    it('does not attempt to load puzzles when store is still hydrating even if game phase is already loading + manifest', () => {
       useManifestMock.mockReturnValueOnce({ isLoading: false, manifest: defaultVersionManifest })
       store().gamePhase = 'loading'
       store().hasHydrated = false

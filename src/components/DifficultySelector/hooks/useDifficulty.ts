@@ -48,17 +48,16 @@ export default function useDifficulty() {
       const sudokuPuzzleChunk = await fetchDifficultyChunk(
         `${difficultyManifestEntry.basePath}${paddedChunkNumber}.json`,
       )
-      console.log(`fetched file: ${paddedChunkNumber}.json`, sudokuPuzzleChunk)
+      console.log(`fetched file: ${paddedChunkNumber}.json`)
 
       const randomSudokuPuzzleIndexes = getXRandomUniqueNumbers(
         difficultyManifestEntry.chunkSize,
         MAX_SUDOKU_CACHE_SIZE,
       )
-      console.log('Selecting puzzles: ', randomSudokuPuzzleIndexes)
       const chosenSudokus = randomSudokuPuzzleIndexes.map(
         (puzzleIndex: number) => sudokuPuzzleChunk[puzzleIndex],
       )
-      console.log('About to save these chosen puzzles to GAME CACHE: ', chosenSudokus)
+      console.log('About to save these chosen puzzles to CACHE: ', chosenSudokus)
       setPuzzles(chosenSudokus)
     } catch (err) {
       if (err instanceof Error) {
@@ -80,7 +79,7 @@ export default function useDifficulty() {
     if (isPlaying && !puzzles.length && !isLoading) {
       loadDifficulty()
     }
-  }, [phase, puzzles.length, loadDifficulty, isLoading])
+  }, [phase, puzzles.length, loadDifficulty, isLoading, puzzles])
 
   // inital load
   useEffect(() => {
