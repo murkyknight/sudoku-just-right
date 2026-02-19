@@ -1,5 +1,5 @@
 import { produce } from 'immer'
-import { getConflictingCellIndexes } from '../../testLib/boardTestHelpers'
+import { getConflictingCellIndexes, isSameBoard } from '../../testLib/boardTestHelpers'
 import { createBoard, createStoreState, generatePuzzleSources } from '../../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../../utils/indices'
 import {
@@ -615,6 +615,20 @@ describe('draftHelpers', () => {
 
         const firstPuzzleInCache = cachedPuzzles[0]
         expect(next.activeGame).toEqual(firstPuzzleInCache)
+      })
+
+      it('loads board with active game puzzle', () => {
+        const cachedPuzzles = generatePuzzleSources(2)
+        const baseState = createStoreState({
+          puzzles: cachedPuzzles,
+          activeGame: null,
+        })
+
+        const next = produce(baseState, (draft) => {
+          startNextPuzzle(draft)
+        })
+
+        expect(isSameBoard(next.board, next.activeGame?.board)).toBe(true)
       })
 
       it('sets game phase to "playing"', () => {

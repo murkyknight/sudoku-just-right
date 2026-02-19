@@ -35,6 +35,12 @@ export function getConflictingCellIndexes(
   return getConflictingCells(board, skipCellIndexes).map((cell) => cell.index)
 }
 
+export function isSameBoard(board: Array<Cell>, rawBoard?: string): boolean {
+  const boardArrayToStr = board.map((cell) => cell.value || 0).join('')
+
+  return boardArrayToStr === rawBoard
+}
+
 // Helpful console logs
 
 export const quickLogBoard = (draft: Draft<State>) => {

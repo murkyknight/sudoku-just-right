@@ -1,5 +1,5 @@
 import { difficultyType } from '@/types'
-import { getConflictingCellIndexes } from '../testLib/boardTestHelpers'
+import { getConflictingCellIndexes, isSameBoard } from '../testLib/boardTestHelpers'
 import { generatePuzzleSources, resetGameStore } from '../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../utils/indices'
 import useGameStore, { type StoreState } from './useGameStore'
@@ -269,6 +269,7 @@ describe('useGameStore', () => {
         expect(store().activeGame).toEqual(activeGamePuzzleSource)
         expect(store().puzzles).toEqual(newCachePuzzleSources)
         expect(store().gamePhase).toEqual('playing')
+        expect(isSameBoard(store().board, store().activeGame?.board)).toBe(true)
       })
     })
 
@@ -283,6 +284,7 @@ describe('useGameStore', () => {
         store().setPuzzles(newPuzzleSources)
 
         expect(store().activeGame).toEqual(currentActiveGame)
+        expect(isSameBoard(store().board, store().activeGame?.board)).toBe(true)
         expect(store().puzzles).toEqual([...cachePuzzleSources, ...newPuzzleSources])
       })
     })
