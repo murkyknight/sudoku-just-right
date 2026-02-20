@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { within } from '@testing-library/react'
 import { expect, mocked } from 'storybook/test'
-import { getXRandomUniqueNumbers } from './DifficultySelector/helpers'
+import { getXRandomUniqueNumbers } from '../DifficultySelector/helpers'
+import { cssSelectorToRegEx, resetGameStore } from '../testLib/helpers'
+import { handlers } from '../testLib/msw/handlers'
+import { getCellButton, selectNumber } from '../testLib/storybook/helpers'
 import GameBoard from './GameBoard'
-import { cssSelectorToRegEx, resetGameStore } from './testLib/helpers'
-import { handlers } from './testLib/msw/handlers'
-import { getCellButton, selectNumber } from './testLib/storybook/helpers'
 
 const meta = {
   title: 'Board/GameBoard',
