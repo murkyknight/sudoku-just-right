@@ -38,6 +38,10 @@
   background-color: transparent;
   grid-column: 2 / 3;
   grid-row: 2 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .cellNumber.conflicted {
@@ -60,6 +64,7 @@
   background-color: transparent;
   outline: inherit;
   font-size: 18px;
+  line-height: 1;
 }
 
 .cell .candidate.highlight {
@@ -75,9 +80,13 @@
 
 .cell .candidate .striked {
   position: absolute;
-  right: 0px;
+  right: 0; /* covers the full candidate cell */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   stroke-width: 2px;
   stroke: rgb(143, 62, 89);
+  pointer-events: none;
 }
 
 .light-bg {

@@ -45,11 +45,10 @@
 
 .numberText {
   display: inline-block;
-  transition: font-size 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .numberOption:hover .numberText {
   filter: drop-shadow(0 0 10px #3d1df4);
-  font-size: 44px;
-  /* color: #dad5f6; makes text a little purple, I like just white though */
+  transform: scale(1.25);
 }
