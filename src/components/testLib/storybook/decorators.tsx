@@ -1,13 +1,12 @@
 import type { Decorator } from '@storybook/react-vite'
 import { useEffect } from 'react'
 import cellStyles from '../../Cell/Cell.module.css'
-import useGameStore, { createUseStore, type StoreState } from '../../store/useGameStore'
-import { createBoard, createStoreState } from '../helpers'
+import useGameStore, { type StoreState } from '../../store/useGameStore'
+import { createStoreState, resetGameStore } from '../helpers'
 
 export const withBasicGameStore: Decorator = (Story, { parameters }) => {
   const state: Partial<StoreState> = parameters.state ?? {}
   useEffect(() => {
-    // TODO: change to use createUseStore() so we don't use a dirty store in our tests
     useGameStore.setState(createStoreState(state))
   }, [state])
 
@@ -16,19 +15,15 @@ export const withBasicGameStore: Decorator = (Story, { parameters }) => {
 
 export const withFullBoardGameStore: Decorator = (Story, { parameters }) => {
   const state: Partial<StoreState> = parameters.state ?? {}
+
   useEffect(() => {
-    createUseStore().setState(
-      createStoreState({
-        board: createBoard(),
-        ...state,
-      }),
-    )
+    resetGameStore({
+      ...state,
+    })
   }, [state])
 
   return <Story />
 }
-
-// TODO: new function withFullBoardGameStore
 
 export const withOutsideDiv: Decorator = (Story, _context) => {
   return (
