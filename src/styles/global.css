@@ -3,7 +3,8 @@
 @import "open-props/colors-hsl"; /* HSL variants */
 @import "tailwindcss";
 @import "tw-animate-css";
-
+@import "shadcn/tailwind.css";
+@source "../components/ui";
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
