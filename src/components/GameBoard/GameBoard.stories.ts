@@ -4,7 +4,7 @@ import { within } from '@testing-library/react'
 import { expect, mocked } from 'storybook/test'
 import { getXRandomUniqueNumbers } from '../DifficultySelector/helpers'
 import { cssSelectorToRegEx, resetGameStore } from '../testLib/helpers'
-import { handlers } from '../testLib/msw/handlers'
+import { defaultHandlers } from '../testLib/msw/handlers'
 import { getCellButton, selectNumber } from '../testLib/storybook/helpers'
 import GameBoard from './GameBoard'
 
@@ -18,7 +18,7 @@ const meta = {
   parameters: {
     layout: 'centered',
     msw: {
-      handlers,
+      handlers: defaultHandlers(),
     },
   },
 } satisfies Meta<typeof GameBoard>

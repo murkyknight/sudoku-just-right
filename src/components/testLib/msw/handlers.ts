@@ -1,7 +1,9 @@
 import type { SudokuPuzzleSource } from '@/components/DifficultySelector/api'
 import type { RootManifest, VersionManifest } from '@/types'
-import { http, HttpResponse } from 'msw'
+import { http, HttpResponse, type RequestHandler } from 'msw'
 import { createRootManifest, generatePuzzleSources } from '../helpers'
+
+const BASE_URL = import.meta.env.VITE_SJR_PUZZLE_BASE_URL
 
 const defaultVersionManifest: VersionManifest = {
   version: 'v1',
@@ -26,28 +28,30 @@ const defaultVersionManifest: VersionManifest = {
   },
 }
 
-export const manifestHandler = (rootManiDefault: RootManifest = createRootManifest('v1')) => {
-  return http.get('https://sjr-puzzles.pages.dev/manifest.json', () => {
+export const manifestHandler = (
+  rootManiDefault: RootManifest = createRootManifest('v1'),
+): RequestHandler => {
+  return http.get(`${BASE_URL}/manifest.json`, () => {
     return HttpResponse.json(rootManiDefault)
   })
 }
 
-export const versionManifest = () => {
-  return http.get('https://sjr-puzzles.pages.dev/v1/manifestPath/manifest.json', () => {
+export const versionManifest = (): RequestHandler => {
+  return http.get(`${BASE_URL}/v1/manifestPath/manifest.json`, () => {
     return HttpResponse.json(defaultVersionManifest)
   })
 }
 
-export const puzzleSourceHandler = (puzzleSources: SudokuPuzzleSource[] = generatePuzzleSources(5, 'easy')) => {
-  return http.get('https://sjr-puzzles.pages.dev/sudoku/v1/easy/*', () => {
+export const puzzleSourceHandler = (
+  puzzleSources: SudokuPuzzleSource[] = generatePuzzleSources(5, 'easy'),
+): RequestHandler => {
+  return http.get(`${BASE_URL}/sudoku/v1/easy/*`, () => {
     return HttpResponse.json(puzzleSources)
   })
 }
 
-export const handlers = () => {
-  return [
-    manifestHandler,
-    versionManifest,
-    puzzleSourceHandler,
-  ]
+export const defaultHandlers = (overrides: RequestHandler[] = []) => {
+  const defaults = [manifestHandler(), versionManifest(), puzzleSourceHandler()]
+  // overrides take precedence — msw uses first-match wins
+  return [...overrides, ...defaults]
 }
