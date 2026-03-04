@@ -45,7 +45,8 @@ export const versionManifest = (): RequestHandler => {
 export const puzzleSourceHandler = (
   puzzleSources: SudokuPuzzleSource[] = generatePuzzleSources(5, 'easy'),
 ): RequestHandler => {
-  return http.get(`${BASE_URL}/sudoku/v1/easy/*`, () => {
+  const difficulty = puzzleSources[0]?.difficulty || 'easy'
+  return http.get(`${BASE_URL}/sudoku/v1/${difficulty}/*`, () => {
     return HttpResponse.json(puzzleSources)
   })
 }
