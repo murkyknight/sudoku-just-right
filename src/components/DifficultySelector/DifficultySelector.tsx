@@ -5,6 +5,15 @@ import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import styles from './DifficultySelector.module.css'
 import useDifficulty from './hooks/useDifficulty'
 
+const difficultyLabels = {
+  [difficultyType.EASY]: 'Breezy',
+  [difficultyType.MEDIUM]: 'Mild',
+  [difficultyType.HARD]: 'Tough',
+  [difficultyType.PRO]: 'Nasty',
+  [difficultyType.EXPERT]: 'Brutal',
+  [difficultyType.MASTER]: 'Sorry',
+}
+
 export default function DifficultySelector() {
   useDifficulty()
   const { difficulty, setDifficulty, nextSudokuPuzzle } = useGameStore(
@@ -29,30 +38,20 @@ export default function DifficultySelector() {
   return (
     <div className={styles.container}>
       <ToggleGroup
-        defaultValue="easy"
+        defaultValue={difficultyType.EASY}
         onValueChange={handleChange}
+        size="lg"
         type="single"
         value={difficulty}
         variant="outline"
       >
-        <ToggleGroupItem aria-label="Toggle Breezy" value="easy">
-          Breezy
-        </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle Mild" value="medium">
-          Mild
-        </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle Tough" value="hard">
-          Tough
-        </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle Nasty" value="pro">
-          Nasty
-        </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle Brutal" value="expert">
-          Brutal
-        </ToggleGroupItem>
-        <ToggleGroupItem aria-label="Toggle Sorry" value="master">
-          Sorry
-        </ToggleGroupItem>
+        {Object.entries(difficultyLabels).map(([diffLevel, diffLabel]) => {
+          return (
+            <ToggleGroupItem aria-label={`Toggle ${diffLabel}`} key={diffLevel} value={diffLevel}>
+              {diffLabel}
+            </ToggleGroupItem>
+          )
+        })}
       </ToggleGroup>
     </div>
   )
