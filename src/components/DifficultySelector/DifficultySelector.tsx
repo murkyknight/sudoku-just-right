@@ -47,7 +47,12 @@ export default function DifficultySelector() {
       >
         {Object.entries(difficultyLabels).map(([diffLevel, diffLabel]) => {
           return (
-            <ToggleGroupItem aria-label={`Toggle ${diffLabel}`} key={diffLevel} value={diffLevel}>
+            <ToggleGroupItem
+              aria-label={`Toggle ${diffLabel}`}
+              className={styles.selected}
+              key={diffLevel}
+              value={diffLevel}
+            >
               {diffLabel}
             </ToggleGroupItem>
           )

@@ -1,6 +1,7 @@
 /* open-props defines CSS variables that Tailwind's theme/utilities may reference, so importing it first guarantees variables are available during build. */
 @import "open-props/style"; /* core props */
 @import "open-props/colors-hsl"; /* HSL variants */
+@import "open-props/gradients";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -65,6 +66,8 @@ html {
   --cell-shadow-error-ring: hsl(var(--color-shadow-ring-error-hsl) / 55%);
   --cell-shadow-error-glow: hsl(var(--color-shadow-error-hsl) / 40%);
 
+  --difficulty-selected-gradient: var(--gradient-17);
+
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 0.75rem;
@@ -85,7 +88,7 @@ html {
   --shadow-glow: 0 0 30px var(--accent-glow);
 
   /*===============*/
-  /* Shadcn/ui  - violet */
+  /* Shadcn/ui  - violet - dark */
   /*===============*/
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
@@ -126,9 +129,7 @@ html {
       font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
       min-height: 100vh;
 
-      color-scheme: light dark;
-      color: var(--color-text-primary);
-      /* background: var(--bg-primary); */
+      color-scheme: dark light;
       background: #242424;
 
       font-synthesis: none;

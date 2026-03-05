@@ -1,3 +1,7 @@
 .container {
   /* TODO */
 }
+
+.selected[data-state="on"] {
+  background: var(--difficulty-selected-gradient);
+}
