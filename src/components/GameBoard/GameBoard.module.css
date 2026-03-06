@@ -25,12 +25,6 @@
   }
 }
 
-.difficultySelector {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .placeholderBoard {
   width: 625px;
   height: 625px;

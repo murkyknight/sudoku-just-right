@@ -1,5 +1,7 @@
 .container {
-  /* TODO */
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .selected[data-state="on"] {

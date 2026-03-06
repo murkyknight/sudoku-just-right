@@ -7,14 +7,17 @@ import DifficultySelector from "./DifficultySelector"
 import { getXRandomUniqueNumbers } from "./helpers"
 
 const meta = {
-  title: "Board/DifficultySelector",
+  title: 'Board/DifficultySelector',
   component: DifficultySelector,
   beforeEach() {
-    resetGameStore({ gamePhase: "loading" })
+    resetGameStore({ gamePhase: 'loading' })
     mocked(getXRandomUniqueNumbers).mockReturnValue([0, 1, 2, 3, 4])
   },
+  args: {
+    isLoading: false,
+  },
   parameters: {
-    layout: "centered",
+    layout: 'centered',
     msw: {
       handlers: defaultHandlers(),
     },
@@ -31,6 +34,18 @@ export const Default: Story = {
     const difficultyBtn = await canvas.findByLabelText(/Toggle Breezy/i)
     const buttonState = difficultyBtn.dataset.state
     expect(buttonState).toEqual("on")
+  },
+}
+
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    const loadingSpinner = await canvas.findByLabelText(/Loading/i)
+    expect(loadingSpinner).toBeInTheDocument()
   },
 }
 

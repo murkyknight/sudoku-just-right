@@ -1,6 +1,7 @@
 import { difficultyType, type Difficulty } from '@/types'
 import { useShallow } from 'zustand/shallow'
 import useGameStore from '../store/useGameStore'
+import { Spinner } from '../ui/spinner'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import styles from './DifficultySelector.module.css'
 import useDifficulty from './hooks/useDifficulty'
@@ -14,7 +15,11 @@ const difficultyLabels = {
   [difficultyType.MASTER]: 'Sorry',
 }
 
-export default function DifficultySelector() {
+type DifficultySelectorProps = {
+  isLoading: boolean
+}
+
+export default function DifficultySelector({ isLoading = false }: DifficultySelectorProps) {
   useDifficulty()
   const { difficulty, setDifficulty, nextSudokuPuzzle } = useGameStore(
     useShallow((s) => ({
@@ -58,6 +63,8 @@ export default function DifficultySelector() {
           )
         })}
       </ToggleGroup>
+
+      {isLoading && <Spinner className="size-5" />}
     </div>
   )
 }
