@@ -5,7 +5,11 @@ import { expect, mocked } from 'storybook/test'
 import { getXRandomUniqueNumbers } from '../DifficultySelector/helpers'
 import { cssSelectorToRegEx, resetGameStore } from '../testLib/helpers'
 import { defaultHandlers } from '../testLib/msw/handlers'
-import { getCellButton, selectNumber } from '../testLib/storybook/helpers'
+import {
+  findCellButton,
+  getCellButton,
+  selectNumber,
+} from '../testLib/storybook/helpers'
 import GameBoard from './GameBoard'
 
 const meta = {
@@ -33,7 +37,7 @@ export const MultiUnitConflict: Story = {
     const canvas = within(canvasElement)
     const cellIndex = 1
     const placedValue = '8'
-    const cell = getCellButton(canvas, cellIndex)
+    const cell = await findCellButton(canvas, cellIndex)
 
     await selectNumber(cell, placedValue)
 
