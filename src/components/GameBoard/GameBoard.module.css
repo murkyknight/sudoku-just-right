@@ -1,6 +1,5 @@
 .container {
   margin: 20px;
-  margin-top: 50px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -14,4 +13,25 @@
   border: 2px solid var(--cell-border-default);
   border-radius: var(--radius-md);
   overflow: visible;
+  animation: fade-in 350ms var(--ease-3);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.difficultySelector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.placeholderBoard {
+  width: 625px;
+  height: 625px;
 }

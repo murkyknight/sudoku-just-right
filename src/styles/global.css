@@ -2,6 +2,8 @@
 @import "open-props/style"; /* core props */
 @import "open-props/colors-hsl"; /* HSL variants */
 @import "open-props/gradients";
+@import "open-props/easings";
+@import "open-props/animations";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
