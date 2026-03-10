@@ -49,7 +49,7 @@ describe('helpers', () => {
       vi.restoreAllMocks()
 
       vi.stubEnv('VITE_SJR_PUZZLE_BASE_URL', BASE_URL)
-      fetchSpy = vi.spyOn(global, 'fetch')
+      fetchSpy = vi.spyOn(globalThis, 'fetch')
       loadFromStorageSpy = vi.spyOn(storage, 'loadFromStorage')
       saveToStorageSpy = vi.spyOn(storage, 'saveToStorage')
     })
