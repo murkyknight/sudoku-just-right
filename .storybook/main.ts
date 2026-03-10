@@ -11,5 +11,21 @@ const config: StorybookConfig = {
   ],
   framework: '@storybook/react-vite',
   staticDirs: ['../public'],
+  async viteFinal(config) {
+    return {
+      ...config,
+      optimizeDeps: {
+        ...config.optimizeDeps,
+        include: [
+          ...(config.optimizeDeps?.include ?? []),
+          'react',
+          'react-dom',
+          'react/jsx-runtime',
+          'react/jsx-dev-runtime',
+          'react-dom/client',
+        ],
+      },
+    }
+  },
 }
 export default config
