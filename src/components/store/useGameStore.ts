@@ -31,6 +31,7 @@ export type State = {
   difficulty: Difficulty
   gamePhase: GamePhase
   puzzles: Array<SudokuPuzzleSource>
+  puzzleSolution: number[] | null
 
   hasHydrated: boolean
 }
@@ -40,6 +41,7 @@ type Actions = {
   setPuzzles: (puzzles: Array<SudokuPuzzleSource>) => void
   nextSudokuPuzzle: () => void
   ensureActiveGame: () => void
+  setPuzzleSolution: (puzzleId: string, solution: number[]) => void
 
   selectCell: (index: number | null) => void
   removeSelectedCell: () => void
@@ -79,6 +81,7 @@ const initialState: State = {
   difficulty: difficultyType.EASY,
   gamePhase: 'idle',
   puzzles: [],
+  puzzleSolution: null,
 
   hasHydrated: false,
 }
@@ -122,6 +125,18 @@ export const createUseStore = () =>
                 }
 
                 draft.gamePhase = 'loading'
+              }),
+
+            // Accepts the solved puzzleId to guard against stale worker responses;
+            // discards results if the active puzzle changed.
+            setPuzzleSolution: (puzzleId: string, solution: number[]) =>
+              set((draft) => {
+                if (draft.activeGame?.id !== puzzleId) {
+                  return
+                }
+                draft.puzzleSolution = solution
+                // TODO: remove log once we're don't deving
+                console.log('Solution found: ', solution)
               }),
 
             selectCell: (index) =>
@@ -215,6 +230,7 @@ export const createUseStore = () =>
           activeGame: state.activeGame,
           puzzles: state.puzzles,
           board: state.board,
+          puzzleSolution: state.puzzleSolution,
         }),
         onRehydrateStorage: (persistedState) => {
           if (!persistedState) {
