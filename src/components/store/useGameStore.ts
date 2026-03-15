@@ -102,6 +102,7 @@ export const createUseStore = () =>
                 draft.activeGame = null
                 draft.puzzles = []
                 draft.gamePhase = 'loading'
+                draft.puzzleSolution = null
               }),
 
             setPuzzles: (newPuzzles: Array<SudokuPuzzleSource>) =>

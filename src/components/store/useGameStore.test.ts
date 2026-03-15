@@ -238,6 +238,14 @@ describe('useGameStore', () => {
         expect(store().activeGame).toBeNull()
       })
 
+      it('sets puzzleSolution to null', () => {
+        store().difficulty = difficultyType.EASY
+
+        store().setDifficulty(difficultyType.HARD)
+
+        expect(store().puzzleSolution).toBeNull()
+      })
+
       it('empties game cache', () => {
         store().difficulty = difficultyType.EASY
 
