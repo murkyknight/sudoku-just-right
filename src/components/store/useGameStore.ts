@@ -239,7 +239,8 @@ export const createUseStore = () =>
           }
 
           const recoverable =
-            persistedState.gamePhase === 'playing' && persistedState.puzzles.length > 0
+            persistedState.gamePhase === 'playing' &&
+            persistedState.puzzles.length > 0
 
           persistedState.gamePhase = recoverable ? 'playing' : 'idle'
 
