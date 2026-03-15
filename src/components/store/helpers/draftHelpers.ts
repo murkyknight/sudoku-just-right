@@ -50,6 +50,7 @@ export function startNextPuzzle(draft: Draft<State>) {
     draft.activeGame = nextPuzzle
     draft.board = createBoard(nextPuzzle.board)
     draft.gamePhase = 'playing'
+    draft.puzzleSolution = null
   }
 }
 

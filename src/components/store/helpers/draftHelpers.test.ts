@@ -587,7 +587,7 @@ describe('draftHelpers', () => {
       })
     })
 
-    describe('when puzzles in cache exist', () => {
+    describe('when puzzles in cache exist and we start the next puzzle', () => {
       it('removes first puzzle from cache', () => {
         const cachedPuzzles = generatePuzzleSources(2)
         const baseState = createStoreState({
@@ -641,6 +641,23 @@ describe('draftHelpers', () => {
         })
 
         expect(next.gamePhase).toEqual('playing')
+      })
+
+      it('sets puzzleSolution to null', () => {
+        const solution =
+          '193427568867915342524683197358764219612598734749132685435871926981256473276349851'
+            .split('')
+            .map(Number)
+        const baseState = createStoreState({
+          puzzleSolution: solution,
+          puzzles: generatePuzzleSources(2),
+        })
+
+        const next = produce(baseState, (draft) => {
+          startNextPuzzle(draft)
+        })
+
+        expect(next.puzzleSolution).toBeNull()
       })
     })
   })
