@@ -19,7 +19,6 @@ export function SudokuSolverSync() {
   const activeGame = useGameStore((s) => s.activeGame)
   const puzzleSolution = useGameStore((s) => s.puzzleSolution)
   const setPuzzleSolution = useGameStore((s) => s.setPuzzleSolution)
-
   const workerRef = useRef<Worker | null>(null)
   const solvingPuzzleIdRef = useRef<string | null>(null)
 
