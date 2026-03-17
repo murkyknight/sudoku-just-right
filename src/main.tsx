@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import GameBoard from './components/GameBoard/GameBoard.tsx'
+import { SudokuSolverSync } from './components/GameBoard/SudokuSolverSync.tsx'
 import './styles/global.css'
 
 // biome-ignore lint/style/noNonNullAssertion: creating root, relax.
@@ -14,6 +15,7 @@ function App() {
   return (
     <div className="grid place-content-center">
       <GameBoard />
+      <SudokuSolverSync />
     </div>
   )
 }
