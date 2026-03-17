@@ -37,7 +37,7 @@ function resolveWorker(response: SolverWorkerResponse) {
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 const { PUZZLE_A, SOLUTION_A } = puzzleEasyA()
-const { PUZZLE_B, SOLUTION_B } = puzzleEasyB()
+const { PUZZLE_B } = puzzleEasyB()
 
 const store = () => useGameStore.getState()
 

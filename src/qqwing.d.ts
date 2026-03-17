@@ -4,7 +4,6 @@ declare module 'qqwing' {
     solve(): boolean
     getSolutionString(): string
   }
-  
-  const QQWingConstructor: new () => QQWing
-  export default QQWingConstructor
+
+  export default QQWing
 }
