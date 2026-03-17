@@ -1,6 +1,11 @@
 import { produce } from 'immer'
 import { getConflictingCellIndexes, isSameBoard } from '../../testLib/boardTestHelpers'
-import { createBoard, createStoreState, generatePuzzleSources } from '../../testLib/helpers'
+import {
+  createBoard,
+  createStoreState,
+  generatePuzzleSources,
+  toNumberArray,
+} from '../../testLib/helpers'
 import { cellBox, cellCol, cellRow } from '../../utils/indices'
 import {
   addPuzzlesToCache,
@@ -644,10 +649,9 @@ describe('draftHelpers', () => {
       })
 
       it('sets puzzleSolution to null', () => {
-        const solution =
-          '193427568867915342524683197358764219612598734749132685435871926981256473276349851'
-            .split('')
-            .map(Number)
+        const solution = toNumberArray(
+          '193427568867915342524683197358764219612598734749132685435871926981256473276349851',
+        )
         const baseState = createStoreState({
           puzzleSolution: solution,
           puzzles: generatePuzzleSources(2),

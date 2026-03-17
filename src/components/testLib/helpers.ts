@@ -7,7 +7,9 @@ import { addDigits } from '../utils/bitMaskHelper'
 /**
  * The only test function that creates the complete initial state
  */
-const createInitialState = (baseBoard: number[] = getDefaultBoard()): State => ({
+const createInitialState = (
+  baseBoard: number[] = getDefaultBoard(),
+): State => ({
   board: Array.from({ length: 81 }, (_, i) => ({
     value: baseBoard[i] || null,
     candidates: 0,
@@ -18,6 +20,7 @@ const createInitialState = (baseBoard: number[] = getDefaultBoard()): State => (
   })),
   selectedCellIndex: null,
   activeGame: null,
+  puzzleSolution: null,
   difficulty: 'easy',
   gamePhase: 'idle',
   puzzles: [],
@@ -145,6 +148,10 @@ export function setMaskDigits(digits: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9], ma
 
 export function cssSelectorToRegEx(cssClass: string): RegExp {
   return new RegExp(`_${cssClass}_`)
+}
+
+export function toNumberArray(s: string): number[] {
+  return s.split('').map(Number)
 }
 
 // ========================================================

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { toNumberArray } from '../testLib/helpers'
 import { solvePuzzle } from './solvePuzzle'
 
 // Real puzzle/solution pairs verified against QQWing
@@ -12,28 +13,28 @@ const EXPERT_PUZZLE =
 const EXPERT_SOLUTION =
   '396745218157832496284196753415378962763429185928561374831257649549613827672984531'
 
-const toBoard = (s: string) => s.split('').map(Number)
-
 describe('output shape', () => {
   it('returns an array of exactly 81 numbers', () => {
-    const solution = solvePuzzle(toBoard(EASY_PUZZLE))
+    const solution = solvePuzzle(toNumberArray(EASY_PUZZLE))
     expect(solution).toHaveLength(81)
   })
 
   it('contains only digits 1–9 (no zeros)', () => {
-    const solution = solvePuzzle(toBoard(EASY_PUZZLE))!
+    const solution = solvePuzzle(toNumberArray(EASY_PUZZLE))!
     expect(solution.every((n) => n >= 1 && n <= 9)).toBe(true)
   })
 })
 
 describe('correctness', () => {
   it('solves an easy puzzle to the known solution', () => {
-    expect(solvePuzzle(toBoard(EASY_PUZZLE))).toEqual(toBoard(EASY_SOLUTION))
+    expect(solvePuzzle(toNumberArray(EASY_PUZZLE))).toEqual(
+      toNumberArray(EASY_SOLUTION),
+    )
   })
 
   it('solves an expert puzzle to the known solution', () => {
-    expect(solvePuzzle(toBoard(EXPERT_PUZZLE))).toEqual(
-      toBoard(EXPERT_SOLUTION),
+    expect(solvePuzzle(toNumberArray(EXPERT_PUZZLE))).toEqual(
+      toNumberArray(EXPERT_SOLUTION),
     )
   })
 })
@@ -44,7 +45,7 @@ describe('invalid inputs', () => {
   })
 
   it('returns null for a board longer than 81 elements', () => {
-    expect(solvePuzzle(toBoard(`${EASY_PUZZLE}0`))).toBeNull()
+    expect(solvePuzzle(toNumberArray(`${EASY_PUZZLE}0`))).toBeNull()
   })
 
   it('returns null for an empty array', () => {
@@ -52,6 +53,6 @@ describe('invalid inputs', () => {
   })
 
   it('returns null for a fully filled board (nothing to solve)', () => {
-    expect(solvePuzzle(toBoard(EASY_SOLUTION))).toBeNull()
+    expect(solvePuzzle(toNumberArray(EASY_SOLUTION))).toBeNull()
   })
 })
